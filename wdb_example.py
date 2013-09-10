@@ -80,7 +80,8 @@ def main(argv):
     # structure.
     #some_wmember = wdb.mk_addmember("box.s", ctypes.byref(wm_hd.l), wdb.mat_t(), ord("u"))
     #some_wmember = wdb.mk_addmember("box.s", wm_hd, wdb.mat_t(), ord("u"))
-    some_wmember = wdb._lib.mk_addmember("box.s", somelistp, wdb.mat_t(), ord("u"))
+    #some_wmember = wdb._lib.mk_addmember("box.s", somelistp, wdb.NULL, ord("u"))
+    some_wmember = wdb._libs['/usr/brlcad/lib/libwdb.so'].mk_addmember("box.s", somelistp, wdb.NULL, ord("u"))
 
     # Add the second member to the database.
     #
@@ -92,7 +93,8 @@ def main(argv):
     #no: another_wmember = wdb.mk_addmember("ball.s", some_wmember, (ctypes.c_double * 16)(), ord("u"))
     #another_wmember = wdb.mk_addmember("ball.s", ctypes.byref(wm_hd.l), wdb.mat_t(), ord("u"))
     #another_wmember = wdb.mk_addmember("ball.s", ctypes.byref(some_wmember.l), wdb.mat_t(), ord("u"))
-    another_wmember = wdb._lib.mk_addmember("ball.s", somelistp, wdb.mat_t(), ord("u"))
+    #another_wmember = wdb._lib.mk_addmember("ball.s", somelistp, trash, ord("u"))
+    another_wmember = wdb._libs['/usr/brlcad/lib/libwdb.so'].mk_addmember("ball.s", somelistp, wdb.NULL, ord("u"))
 
 
     # Create the combination
