@@ -38,6 +38,7 @@ def main(argv):
     p2 = (ctypes.c_double * 3)()
     rgb = (ctypes.c_double * 3)()
 
+    # TODO: wdb_fopen wasn't in wdb.h
     db_fp = wdb.wdb_fopen(argv[1])
 
     # create the database header record
@@ -60,27 +61,15 @@ def main(argv):
     # this, we need to create a linked list of the items that make up the
     # combination. The wm_hd structure serves as the head of the list of items.
 
-    # TODO: why can't i just pass None?
-    trash = (ctypes.c_double * 16)()
-
     wm_hd = wdb.wmember()
 
     somelistp = wdb.bu_list_new()
     wdb.mk_pipe_init(somelistp) # calls BU_LIST_INIT(headp)
     somelistp.contents.magic = 0x01016580 # BU_LIST_HEAD_MAGIC
 
-    # setup wm_hd.l because BU_LIST_INIT is broken
-    #pointer = wdb.POINTER(wdb.struct_bu_list)(wm_hd.l)
-    #wm_hd.l.forw = pointer
-    #wm_hd.l.back = pointer
-    #wm_hd.l.magic = 0x01016580 # BU_LIST_HEAD_MAGIC
-
     # Create a wmember structure for each of the items that we want in the
     # combination. The return from mk_addmember is a pointer to the wmember
     # structure.
-    #some_wmember = wdb.mk_addmember("box.s", ctypes.byref(wm_hd.l), wdb.mat_t(), ord("u"))
-    #some_wmember = wdb.mk_addmember("box.s", wm_hd, wdb.mat_t(), ord("u"))
-    #some_wmember = wdb._lib.mk_addmember("box.s", somelistp, wdb.NULL, ord("u"))
     some_wmember = wdb._libs['/usr/brlcad/lib/libwdb.so'].mk_addmember("box.s", somelistp, wdb.NULL, ord("u"))
 
     # Add the second member to the database.
@@ -89,13 +78,7 @@ def main(argv):
     # in the database when you create the wmember structure OR when you create
     # the combination. So mis-typing the name of a sub-element for a
     # region/combination can be a problem.
-    #maybe: another_wmember = wdb.mk_addmember("ball.s", pointer, (ctypes.c_double * 16)(), ord("u"))
-    #no: another_wmember = wdb.mk_addmember("ball.s", some_wmember, (ctypes.c_double * 16)(), ord("u"))
-    #another_wmember = wdb.mk_addmember("ball.s", ctypes.byref(wm_hd.l), wdb.mat_t(), ord("u"))
-    #another_wmember = wdb.mk_addmember("ball.s", ctypes.byref(some_wmember.l), wdb.mat_t(), ord("u"))
-    #another_wmember = wdb._lib.mk_addmember("ball.s", somelistp, trash, ord("u"))
     another_wmember = wdb._libs['/usr/brlcad/lib/libwdb.so'].mk_addmember("ball.s", somelistp, wdb.NULL, ord("u"))
-
 
     # Create the combination
     #
@@ -123,7 +106,7 @@ def main(argv):
 
     wdb.make_hole(db_fp, p1, p2, 0.75, 0, 0)
 
-    # TDOO: fix this one
+    # TDOO: fix this one, wdb_close wasn't in wdb.h
     wdb._libs["/usr/brlcad/lib/libwdb.so"].wdb_close(db_fp)
 
 if __name__ == "__main__":
