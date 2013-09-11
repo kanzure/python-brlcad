@@ -19,7 +19,7 @@ requires = open("requirements.txt").readlines()
 setup(
     name="brlcad",
     version="0.0.0",
-    description="python bindings for BRLCAD (cython)",
+    description="python bindings for BRLCAD (using ctypes)",
     long_description=open("README.md", "r").read(),
     license="BSD",
     author="Bryan Bishop",
