@@ -24,7 +24,7 @@ nosetests
 
 ## usage
 
-haha, nope
+not yet
 
 ## license
 
