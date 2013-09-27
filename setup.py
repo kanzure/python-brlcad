@@ -2,52 +2,66 @@ from setuptools import setup
 from setuptools.command.install import install as InstallCommand
 from setuptools.command.develop import develop as DevelopCommand
 
-def pre_install():
-    print "PRE_INSTALL"
+import sys
+import os
+import subprocess
 
-def post_install():
-    print "POST_INSTALL"
+def run_before(self):
+    print "PRE_INSTALL run_before"
 
-def setuptoolcommandify(command_subclass):
+def run_after(self):
+    print "POST_INSTALL run_after"
+
+    package_name = "thing_postinstall"
+    script_name = "setup_after.py"
+
+    package_path = os.path.join(self.install_lib, package_name)
+    script_path = os.path.join(package_path, script_name)
+
+    print "cwd: ", package_path
+    print "scriptpath: ", script_path
+
+    #subprocess.call([sys.executable, script_path], cwd=package_path)
+
+    import ctypesgencore
+
+    print "ctypesgencore.__version__: ", ctypesgencore.__version__
+
+def hookify(command_subclass):
     """
-    A decorator for subclasses of setuptool commands that calls a pre_run hook
-    and a post_run hook.
+    A decorator for subclasses of setuptools commands that calls a before_run
+    hook and an after_run hook.
     """
     original_run = command_subclass.run
 
     def modified_run(self):
         """
-        Call the original run implementation, but wrap it with pre-run and
-        post-run hooks.
+        Call the original run implementation, but surround it with before_run
+        and after_run calls.
         """
-        self.pre_run()
+        self.run_before()
         original_run(self)
-        self.post_run()
+        self.run_after()
 
     # attach the new implementation
     command_subclass.run = modified_run
 
+    # set the same run_before everywhere
+    if "run_before" not in command_subclass.__dict__:
+        command_subclass.run_before = run_before
+
+    # set the same run_after everywhere
+    if "run_after" not in command_subclass.__dict__:
+        command_subclass.run_after = run_after
+
     return command_subclass
 
-class CustomCommandMixin(object):
-    """
-    Just a way to get the hooks into the subclasses in a DRY manner. Override
-    these defaults if something more specific has to happen in a particular
-    command.
-    """
-
-    def pre_run(self):
-        return pre_install()
-
-    def post_run(self):
-        return post_install()
-
-@setuptoolcommandify
-class CustomDevelopCommand(DevelopCommand, CustomCommandMixin):
+@hookify
+class CustomDevelopCommand(DevelopCommand):
     pass
 
-@setuptoolcommandify
-class CustomInstallCommand(InstallCommand, CustomCommandMixin):
+@hookify
+class CustomInstallCommand(InstallCommand):
     pass
 
 setup(
@@ -58,6 +72,13 @@ setup(
     author_email="kanzure@gmail.com",
     url="https://github.com/kanzure/python-brlcad",
     packages=["thing_postinstall"],
+    setup_requires=[
+        "ctypesgen",
+        "pbs",
+    ],
+    dependency_links=[
+        "https://github.com/kanzure/ctypesgen/tarball/master#egg=ctypesgen",
+    ],
     cmdclass={
         "install": CustomInstallCommand,
         "develop": CustomDevelopCommand,
