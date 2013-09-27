@@ -1,0 +1,1 @@
+-e git://github.com/kanzure/ctypesgen.git@develop#egg=ctypesgen
