@@ -75,7 +75,6 @@ setup(
     packages=["thing_postinstall"],
     setup_requires=[
         "ctypesgen",
-        "pbs",
     ],
     dependency_links=[
         "https://github.com/kanzure/ctypesgen/tarball/develop#egg=ctypesgen",
