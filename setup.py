@@ -7,25 +7,11 @@ import os
 import subprocess
 
 def run_before(self):
-    print "PRE_INSTALL run_before"
+    pass
 
 def run_after(self):
-    print "POST_INSTALL run_after"
-
-    package_name = "thing_postinstall"
-    script_name = "setup_after.py"
-
-    package_path = os.path.join(self.install_lib, package_name)
-    script_path = os.path.join(package_path, script_name)
-
-    print "cwd: ", package_path
-    print "scriptpath: ", script_path
-
-    #subprocess.call([sys.executable, script_path], cwd=package_path)
-
-    import ctypesgencore
-
-    print "ctypesgencore.__version__: ", ctypesgencore.__version__
+    import thing_postinstall.post_install
+    thing_postinstall.post_install.main()
 
 def hookify(command_subclass):
     """
