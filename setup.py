@@ -78,7 +78,7 @@ setup(
         "pbs",
     ],
     dependency_links=[
-        "https://github.com/kanzure/ctypesgen/tarball/master#egg=ctypesgen",
+        "https://github.com/kanzure/ctypesgen/tarball/develop#egg=ctypesgen",
     ],
     cmdclass={
         "install": CustomInstallCommand,
