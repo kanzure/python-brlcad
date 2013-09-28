@@ -7,9 +7,15 @@ import os
 import subprocess
 
 def run_before(self):
+    """
+    Default pre-install script.
+    """
     pass
 
 def run_after(self):
+    """
+    Default post-install script.
+    """
     import thing_postinstall.post_install
     thing_postinstall.post_install.main()
 
@@ -44,10 +50,16 @@ def hookify(command_subclass):
 
 @hookify
 class CustomDevelopCommand(DevelopCommand):
+    """
+    Override the "develop" command to have the hooks.
+    """
     pass
 
 @hookify
 class CustomInstallCommand(InstallCommand):
+    """
+    Override the "install" command to have the hooks.
+    """
     pass
 
 setup(
