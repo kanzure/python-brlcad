@@ -4,7 +4,6 @@ from setuptools.command.develop import develop as DevelopCommand
 
 import sys
 import os
-import subprocess
 
 def run_before(self):
     """
