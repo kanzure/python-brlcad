@@ -2,19 +2,23 @@ from setuptools import setup
 from setuptools.command.install import install as InstallCommand
 from setuptools.command.develop import develop as DevelopCommand
 
-import sys
-import os
-
-def run_before(self):
+def run_before(command):
     """
     Default pre-install script.
+
+    @param command: setuptools command instance, either an InstallCommand or
+    DevelopCommand.
     """
     pass
 
-def run_after(self):
+def run_after(command):
     """
     Default post-install script.
+
+    @param command: setuptools command instance, either an InstallCommand or
+    DevelopCommand.
     """
+    # the actual post install script is elsewhere, sorry :)
     import thing_postinstall.post_install
     thing_postinstall.post_install.main()
 
