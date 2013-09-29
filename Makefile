@@ -1,4 +1,4 @@
-install:
+install: clean
 	python setup.py install
 
 clean:
@@ -7,3 +7,5 @@ clean:
 	rm -fr ctypesgen-0.0.1-py2.7.egg/
 	rm -fr thing_postinstall.egg-info/
 	pip uninstall -y ctypesgen
+
+all: clean install
