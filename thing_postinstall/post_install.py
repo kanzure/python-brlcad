@@ -280,17 +280,6 @@ def main(library_path, logger=None):
         # TODO: ctypesgen needs to support "other_known_names" being passed in
         # through options (right now it just overrides this value).
 
-    ## Attempt to load libbu during the install process. This is necessary
-    ## because ctypesgen needs the reference to the module so that it knows
-    ## which types have already been defined and can be reused.
-    #
-    #logger.debug("Attempting to import thing_postinstall._bindings.libbu during the setup process.")
-    #import imp
-    #_bindings = imp.load_source("_bindings", bindings_path)
-    #_libbu = imp.load_source("libbu", os.path.join(bindings_path, "libbu.py"))
-    #
-    ##logger.debug("Okay, loaded libbu just fine. The vars are: " + str(dir(_libbu)))
-
 def generate_init_file(bindings_path, generated_library_names, lib_prefix_already_prepended=False, logger=None):
     """
     Generates the __init__.py file based on the current list of generated
