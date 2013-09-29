@@ -114,7 +114,7 @@ setup(
         "ctypesgen-dev",
     ],
     dependency_links=[
-        "https://github.com/kanzure/ctypesgen/tarball/short-preamble-setuptools#egg=ctypesgen-dev",
+        "https://github.com/kanzure/ctypesgen/tarball/short-preamble-setuptools#egg=ctypesgen-dev-0.0.1",
     ],
     cmdclass={
         "install": CustomInstallCommand,
