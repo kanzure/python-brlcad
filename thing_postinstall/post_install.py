@@ -110,7 +110,7 @@ def cleanup_bindings_dir(bindings_path, logger):
     # also remove _bindings from the local directory
     try:
         logger.debug("Deleting another _bindings/")
-        shutil.rmtree(os.path.join(os.path.dirname(__file__), "_bindings/"))
+        shutil.rmtree(os.path.join(os.path.dirname(__file__), "_bindings"))
     except Exception as exception:
         logger.debug("Wasn't there, is okay.")
 
@@ -220,7 +220,7 @@ def main(library_path, logger=None):
     # system, I think.
 
     # this is where the generated files are placed
-    bindings_path = os.path.join(library_path, "_bindings/")
+    bindings_path = os.path.join(library_path, "_bindings")
     logger.debug("bindings_path is {0}".format(bindings_path))
 
     cleanup_bindings_dir(bindings_path, logger=logger)
