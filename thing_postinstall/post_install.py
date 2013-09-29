@@ -13,8 +13,10 @@ a part of the setuptools install process.
 import os
 import json
 import logging
-import ctypesgencore
 import imp
+import shutil
+
+import ctypesgencore
 
 def setup_logging(level=logging.DEBUG):
     """
@@ -91,6 +93,26 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
     # print
     logger.debug("printing")
     ctypesgencore.printer_python.WrapperPrinter(options.output, options, descriptions)
+
+def cleanup_bindings_dir(bindings_path, logger):
+    """
+    Remove any leftover directories from a previous install.
+    """
+
+    try:
+        # make the _bindings folder
+        os.makedirs(bindings_path)
+    except OSError as error:
+        logger.debug("_bindings path already exists, deleting it")
+
+        shutil.rmtree(bindings_path)
+
+    # also remove _bindings from the local directory
+    try:
+        logger.debug("Deleting another _bindings/")
+        shutil.rmtree(os.path.join(os.path.dirname(__file__), "_bindings/"))
+    except Exception as exception:
+        logger.debug("Wasn't there, is okay.")
 
 def main(library_path, logger=None):
     if not logger:
@@ -201,12 +223,7 @@ def main(library_path, logger=None):
     bindings_path = os.path.join(library_path, "_bindings/")
     logger.debug("bindings_path is {0}".format(bindings_path))
 
-    try:
-        # make the _bindings folder
-        os.makedirs(bindings_path)
-    except OSError as error:
-        # _bindings already exists, should be okay
-        logger.debug("_bindings path already exists, should be okay")
+    cleanup_bindings_dir(bindings_path, logger=logger)
 
     # Holds the name of a module and the names that the module defines.
     symbol_map = {}
