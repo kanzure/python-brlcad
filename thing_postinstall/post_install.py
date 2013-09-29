@@ -101,15 +101,55 @@ def main(library_path, logger=None):
     # generated. This is then used to assemble the __init__.py file.
     library_names = []
 
-    # plan of action for generating all the bindings and wrappers
-    brlcad_libraries = [
-        {
-            "name": "bu",
-            "library_name": "libbu",
-            "shared_library": "/usr/brlcad/lib/libbu.so",
-            "header": "/home/kanzure/local/brlcad/brlcad/include/bu.h",
-        },
+    # The actual list of brlcad libraries that are supported.
+    brlcad_library_names = [
+        "bu",
+        "rt",
+        "analyze",
+        "base",
+        "bn",
+        "brep",
+        "clipper",
+        "cursor",
+        "dm",
+        "exppp",
+        "express",
+        "fb",
+        "fft",
+        "gcv",
+        "ged",
+        "icv",
+        "multispectral",
+        "openNURBS",
+        "optical",
+        "orle",
+        "p2t",
+        "pc",
+        "pkg",
+        "render",
+        "stepcore",
+        "stepdai",
+        "stepeditor",
+        "steputils",
+        "termio",
+        "termlib",
+        "utahrle",
+        "vds",
+        "wdb",
     ]
+
+    brlcad_libraries = []
+
+    # Make the plan of action for generating all the bindings and wrappers.
+    for brlcad_library_name in brlcad_library_names:
+        brlcad_library = {
+            "name": brlcad_library_name,
+            "library_name": "lib{0}".format(brlcad_library_name),
+            "shared_library": "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name),
+            "header": "/home/kanzure/local/brlcad/brlcad/include/{0}.h".format(brlcad_library_name),
+        }
+
+        brlcad_libraries.append(brlcad_library)
 
     # this is where the generated files are placed
     bindings_path = os.path.join(library_path, "_bindings/")
