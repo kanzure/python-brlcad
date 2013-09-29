@@ -2,6 +2,7 @@ from setuptools import setup
 from setuptools.command.install import install as InstallCommand
 from setuptools.command.develop import develop as DevelopCommand
 
+import glob
 import os
 import sys
 
@@ -21,10 +22,15 @@ def run_after(command):
     @param command: setuptools command instance, either an InstallCommand or
     DevelopCommand.
     """
-    library_path = os.path.join(command.install_lib, "thing_postinstall")
-
     # the actual post install script is elsewhere, sorry :)
+    import thing_postinstall
     import thing_postinstall.post_install
+
+    #library_path = os.path.join(command.install_lib, "thing_postinstall")
+    #library_path = os.path.abspath(os.path.dirname(thing_postinstall.__file__))
+    egg_path = glob.glob(os.path.join(command.install_lib, "thing_postinstall*.egg/"))[0]
+    library_path = os.path.join(egg_path, "thing_postinstall")
+
     thing_postinstall.post_install.main(library_path=library_path)
 
 def hookify(command_subclass):
@@ -58,7 +64,7 @@ def hookify(command_subclass):
             # We weren't called from the command line or setup(), so we
             # should run in backward-compatibility mode to support bdist_*
             # commands.
-           output =  _install.run(self)
+           output =  original_run(self)
         else:
             output = self.do_egg_install()
 
@@ -100,14 +106,15 @@ setup(
     author_email="kanzure@gmail.com",
     url="https://github.com/kanzure/python-brlcad",
     packages=["thing_postinstall"],
+    zip_safe=False,
     setup_requires=[
-        "ctypesgen",
+        "ctypesgen-dev",
     ],
     install_requires=[
-        "ctypesgen",
+        "ctypesgen-dev",
     ],
     dependency_links=[
-        "https://github.com/kanzure/ctypesgen/tarball/short-preamble-setuptools#egg=ctypesgen",
+        "https://github.com/kanzure/ctypesgen/tarball/short-preamble-setuptools#egg=ctypesgen-dev",
     ],
     cmdclass={
         "install": CustomInstallCommand,
