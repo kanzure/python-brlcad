@@ -2,6 +2,9 @@ from setuptools import setup
 from setuptools.command.install import install as InstallCommand
 from setuptools.command.develop import develop as DevelopCommand
 
+import os
+import sys
+
 def run_before(command):
     """
     Default pre-install script.
@@ -18,9 +21,11 @@ def run_after(command):
     @param command: setuptools command instance, either an InstallCommand or
     DevelopCommand.
     """
+    library_path = os.path.join(command.install_lib, "thing_postinstall")
+
     # the actual post install script is elsewhere, sorry :)
     import thing_postinstall.post_install
-    thing_postinstall.post_install.main()
+    thing_postinstall.post_install.main(library_path=library_path)
 
 def hookify(command_subclass):
     """
@@ -35,8 +40,30 @@ def hookify(command_subclass):
         and after_run calls.
         """
         self.run_before()
-        original_run(self)
+
+        # from setuptools/command/install.py
+        #
+        # Attempt to detect whether we were called from setup() or by another
+        # command.  If we were called by setup(), our caller will be the
+        # 'run_command' method in 'distutils.dist', and *its* caller will be
+        # the 'run_commands' method.  If we were called any other way, our
+        # immediate caller *might* be 'run_command', but it won't have been
+        # called by 'run_commands'.  This is slightly kludgy, but seems to
+        # work.
+        caller = sys._getframe(2)
+        caller_module = caller.f_globals.get('__name__','')
+        caller_name = caller.f_code.co_name
+
+        if caller_module != 'distutils.dist' or caller_name!='run_commands':
+            # We weren't called from the command line or setup(), so we
+            # should run in backward-compatibility mode to support bdist_*
+            # commands.
+           output =  _install.run(self)
+        else:
+            output = self.do_egg_install()
+
         self.run_after()
+        return output
 
     # attach the new implementation
     command_subclass.run = modified_run
@@ -76,8 +103,11 @@ setup(
     setup_requires=[
         "ctypesgen",
     ],
+    install_requires=[
+        "ctypesgen",
+    ],
     dependency_links=[
-        "https://github.com/kanzure/ctypesgen/tarball/develop#egg=ctypesgen",
+        "https://github.com/kanzure/ctypesgen/tarball/short-preamble-setuptools#egg=ctypesgen",
     ],
     cmdclass={
         "install": CustomInstallCommand,
