@@ -170,11 +170,19 @@ def main(library_path, logger=None):
 
     # Make the plan of action for generating all the bindings and wrappers.
     for brlcad_library_name in brlcad_library_names:
+        if sys.platform == "win32":
+            shared_library = "C:\\Program Files (x86)\\BRLCAD 7.24.0\\bin\\lib{0}.dll".format(brlcad_library_name)
+            header = "C:\\Program Files (x86)\\BRLCAD 7.24.0\\include\\brlcad\\{0}.h".format(brlcad_library_name)
+        else:
+            # hardcoding these paths for now
+            shared_library = "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name)
+            header = "/home/kanzure/local/brlcad/brlcad/include/{0}.h".format(brlcad_library_name)
+
         brlcad_library = {
             "name": brlcad_library_name,
             "library_name": "lib{0}".format(brlcad_library_name),
-            "shared_library": "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name),
-            "header": "/home/kanzure/local/brlcad/brlcad/include/{0}.h".format(brlcad_library_name),
+            "shared_library": shared_library,
+            "header": header,
             "dependencies": [],
         }
 
