@@ -283,7 +283,7 @@ def main(library_path, logger=None):
         logger.debug("Okay, __init__.py has been updated.")
 
         # 2) load the latest generated module
-        logger.debug("Loading the __init__.py module.")
+        logger.debug("Loading the __init__.py module from {0}".format(bindings_path))
         init_module = imp.load_source("_bindings", bindings_path)
 
         module_path = os.path.join(bindings_path, "{0}.py".format(library_name))
