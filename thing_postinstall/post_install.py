@@ -284,7 +284,7 @@ def main(library_path, logger=None):
 
         # 2) load the latest generated module
         logger.debug("Loading the __init__.py module from {0}".format(bindings_path))
-        init_module = imp.load_source("_bindings", bindings_path)
+        init_module = imp.load_source("_bindings", os.path.join(bindings_path, "__init__.py"))
 
         module_path = os.path.join(bindings_path, "{0}.py".format(library_name))
         logger.debug("Loading the {0} module from {1}.".format(library_name, module_path))
