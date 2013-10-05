@@ -5,6 +5,7 @@ from setuptools.command.develop import develop as DevelopCommand
 import glob
 import os
 import sys
+import traceback
 
 def run_before(command):
     """
@@ -31,7 +32,10 @@ def run_after(command):
     egg_path = glob.glob(os.path.join(command.install_lib, "thing_postinstall*.egg/"))[0]
     library_path = os.path.join(egg_path, "thing_postinstall")
 
-    thing_postinstall.post_install.main(library_path=library_path)
+    try:
+        thing_postinstall.post_install.main(library_path=library_path)
+    except Exception as exception:
+        traceback.print_exc()
 
 def hookify(command_subclass):
     """
