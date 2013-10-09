@@ -38,6 +38,13 @@ def setup_logging(level=logging.DEBUG):
     logger.addHandler(ch)
     return logger
 
+def is_py32():
+    """
+    Tries really hard to determine if the current running version of python is
+    32-bit python.
+    """
+    return sys.maxsize > 2**32
+
 def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=[], other_known_names=[], debug=False):
     """
     Generate a ctypes wrapper around the library.
@@ -178,10 +185,15 @@ def main(library_path, logger=None):
             # the dll files can be imported through ctypes, then that dll file
             # can be used, and if not, then default to trying to find 32-bit
             # BRLCAD dlls.
-            if py32:
+            if is_py32():
                 arch = " (x86)"
             else:
                 arch = ""
+
+            # if 64-bit BRLCAD doesn't exist then assume 32-bit BRLCAD (64-bit
+            # BRLCAD might be installed there)
+            if len(glob.glob("C:\\Program Files\\BRLCAD*\\*")) == 0:
+                arch = " (x86)"
 
             shared_library = "C:\\Program Files{0}\\BRLCAD*\\bin\\lib{1}.dll".format(arch, brlcad_library_name)
             shared_library = glob.glob(shared_library)[0]
