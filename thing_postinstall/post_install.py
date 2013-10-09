@@ -10,11 +10,13 @@ can't insert generated files into the installed location. So that's why this is
 a part of the setuptools install process.
 """
 
+import sys
 import os
 import json
 import logging
 import imp
 import shutil
+import glob
 
 import ctypesgencore
 
@@ -171,12 +173,24 @@ def main(library_path, logger=None):
     # Make the plan of action for generating all the bindings and wrappers.
     for brlcad_library_name in brlcad_library_names:
         if sys.platform == "win32":
-            shared_library = "C:\\Program Files (x86)\\BRLCAD 7.24.0\\bin\\lib{0}.dll".format(brlcad_library_name)
-            header = "C:\\Program Files (x86)\\BRLCAD 7.24.0\\include\\brlcad\\{0}.h".format(brlcad_library_name)
+            # BRLCAD users might install 64-bit BRLCAD to "Program Files
+            # (x86)". This will need to be fixed in the future. Basically, if
+            # the dll files can be imported through ctypes, then that dll file
+            # can be used, and if not, then default to trying to find 32-bit
+            # BRLCAD dlls.
+            if py32:
+                arch = " (x86)"
+            else:
+                arch = ""
+
+            shared_library = "C:\\Program Files{0}\\BRLCAD*\\bin\\lib{1}.dll".format(arch, brlcad_library_name)
+            shared_library = glob.glob(shared_library)[0]
+            header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
+            header = glob.glob(header)[0]
         else:
             # hardcoding these paths for now
             shared_library = "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name)
-            header = "/home/kanzure/local/brlcad/brlcad/include/{0}.h".format(brlcad_library_name)
+            header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_name)
 
         brlcad_library = {
             "name": brlcad_library_name,
