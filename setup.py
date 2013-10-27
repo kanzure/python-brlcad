@@ -24,16 +24,16 @@ def run_after(command):
     DevelopCommand.
     """
     # the actual post install script is elsewhere, sorry :)
-    import thing_postinstall
-    import thing_postinstall.post_install
+    import brlcad
+    import brlcad.post_install
 
-    #library_path = os.path.join(command.install_lib, "thing_postinstall")
-    #library_path = os.path.abspath(os.path.dirname(thing_postinstall.__file__))
-    egg_path = glob.glob(os.path.join(command.install_lib, "thing_postinstall*.egg/"))[0]
-    library_path = os.path.join(egg_path, "thing_postinstall")
+    #library_path = os.path.join(command.install_lib, "brlcad")
+    #library_path = os.path.abspath(os.path.dirname(brlcad.__file__))
+    egg_path = glob.glob(os.path.join(command.install_lib, "brlcad*.egg/"))[0]
+    library_path = os.path.join(egg_path, "brlcad")
 
     try:
-        thing_postinstall.post_install.main(library_path=library_path)
+        brlcad.post_install.main(library_path=library_path)
     except Exception as exception:
         traceback.print_exc()
 
@@ -103,13 +103,13 @@ class CustomInstallCommand(InstallCommand):
     pass
 
 setup(
-    name="thing_postinstall",
+    name="brlcad",
     version="0.0.1",
     description="An attempt at a post-install script.",
     author="Bryan Bishop",
     author_email="kanzure@gmail.com",
     url="https://github.com/kanzure/python-brlcad",
-    packages=["thing_postinstall"],
+    packages=["brlcad"],
     zip_safe=False,
     setup_requires=[
         "ctypesgen-dev",
