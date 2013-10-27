@@ -25,7 +25,7 @@ def run_after(command):
     """
     # the actual post install script is elsewhere, sorry :)
     import brlcad
-    import brlcad.post_install
+    import brlcad.install.post_install
 
     #library_path = os.path.join(command.install_lib, "brlcad")
     #library_path = os.path.abspath(os.path.dirname(brlcad.__file__))
@@ -33,7 +33,7 @@ def run_after(command):
     library_path = os.path.join(egg_path, "brlcad")
 
     try:
-        brlcad.post_install.main(library_path=library_path)
+        brlcad.install.post_install.main(library_path=library_path)
     except Exception as exception:
         traceback.print_exc()
 
