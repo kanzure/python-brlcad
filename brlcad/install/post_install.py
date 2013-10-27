@@ -222,8 +222,8 @@ def main(library_path, logger=None):
             "dependencies": [],
         }
 
-        print "brlcad_library_name is: " + str(brlcad_library_name)
-        print "brlcad_library_name type: " + str(type(brlcad_library_name))
+        logger.debug("brlcad_library_name is: {0}".format(str(brlcad_library_name)))
+        logger.debug("brlcad_library_name type: {0}".format(str(type(brlcad_library_name))))
         brlcad_libraries[brlcad_library_name] = brlcad_library
 
     def setup_dependencies(brlcad_libraries):
