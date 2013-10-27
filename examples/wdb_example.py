@@ -26,7 +26,6 @@ import ctypes
 
 # TODO: make better bindings and pick better names
 import wdb
-import rtgeom
 
 def main(argv):
     """
