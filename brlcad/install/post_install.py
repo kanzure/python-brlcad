@@ -48,6 +48,12 @@ def is_py32():
     """
     return sys.maxsize > 2**32
 
+def is_win32():
+    """
+    Check if the system is Windows.
+    """
+    return sys.platform == "win32"
+
 def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=[], other_known_names=[], debug=False):
     """
     Generate a ctypes wrapper around the library.
@@ -183,7 +189,7 @@ def main(library_path, logger=None):
 
     # Make the plan of action for generating all the bindings and wrappers.
     for brlcad_library_name in brlcad_library_names:
-        if sys.platform == "win32":
+        if is_win32():
             # BRLCAD users might install 64-bit BRLCAD to "Program Files
             # (x86)". This will need to be fixed in the future. Basically, if
             # the dll files can be imported through ctypes, then that dll file
