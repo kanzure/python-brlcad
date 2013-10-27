@@ -18,6 +18,9 @@ import imp
 import shutil
 import glob
 
+# used for configuraing ctypesgen options
+import argparse
+
 import ctypesgencore
 
 def setup_logging(level=logging.DEBUG):
@@ -56,8 +59,7 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
     @param debug: toggle additional ctypesgen error/warning output
     """
     # setup an object on which i can store some attributes
-    # TODO: switch to argparse.Namespace or AttrDict
-    options = lambda: 0;
+    options = argparse.Namespace()
 
     options.output = outputfile
     options.libraries = [libpath]
