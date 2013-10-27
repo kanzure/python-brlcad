@@ -333,6 +333,8 @@ def main(library_path, logger=None):
         # 3) store the list of defined names from that module by running dir(loaded_module)
         symbol_map[library_name] = symbols
 
+        # TODO: confirm the following TODO statement. It looks like this should
+        # be working now?
         # TODO: ctypesgen needs to support "other_known_names" being passed in
         # through options (right now it just overrides this value).
 
