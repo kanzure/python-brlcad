@@ -1,2 +1,6 @@
 # precompiled python
 *.pyc
+
+# setuptools/pip stuff
+./build/
+./dist/
