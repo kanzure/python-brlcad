@@ -2,8 +2,10 @@
 *.pyc
 
 # setuptools/pip stuff
-./build/
-./dist/
+build/
+dist/
+*.egg-info/
+*.egg/
 
 # brlcad output file
 *.g
