@@ -205,8 +205,20 @@ def main(library_path, logger=None):
             if len(glob.glob("C:\\Program Files\\BRLCAD*\\*")) == 0:
                 arch = " (x86)"
 
-            shared_library = "C:\\Program Files{0}\\BRLCAD*\\bin\\lib{1}.dll".format(arch, brlcad_library_name)
-            shared_library = glob.glob(shared_library)[0]
+            # TODO: ctypesgen will generate libbu.py but the path to the dll
+            # file (in the .py file) will be "C:\whatever\etc" which is
+            # problematic because of escape characters. Consequently, the dll
+            # wont be able to be loaded in this situation. The temporary
+            # solution is to assume that brlcad has been installed
+            # "system-wide" and that the DLL files will be discoverable just by
+            # filename. This problem doesn't happen with the header files
+            # because the header file paths are never inserted into the final
+            # .py file (the header file paths are just consumed by ctypesgen
+            # itself).
+            shared_library = "lib{1}.dll".format(arch, brlcad_library_name)
+            #shared_library = "C:\\Program Files{0}\\BRLCAD*\\bin\\lib{1}.dll".format(arch, brlcad_library_name)
+            #shared_library = glob.glob(shared_library)[0]
+
             header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
             header = glob.glob(header)[0]
         else:
