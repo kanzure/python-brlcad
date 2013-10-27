@@ -88,9 +88,12 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
 
     options.other_headers = []
     options.modules = modules
-    options.include_search_paths = ["/usr/brlcad/include"] # TODO
     options.compile_libdirs = []
     options.runtime_libdirs = []
+
+    # At first glance this might seem like something that would cause
+    # cross-platform compatibility issues. Somehow it doesn't.
+    options.include_search_paths = ["/usr/brlcad/include"]
 
     options.header_template = None
     options.strip_build_path = None
