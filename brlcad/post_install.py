@@ -241,7 +241,7 @@ def main(library_path, logger=None):
         for brlcad_library in brlcad_libraries.values():
             modules = []
             for module_name in set(brlcad_library["dependencies"]):
-                #dependency_module = "thing_postinstall._bindings.lib{0}".format(module_name)
+                #dependency_module = "brlcad._bindings.lib{0}".format(module_name)
                 dependency_module = "lib{0}".format(module_name)
                 modules.append(dependency_module)
             brlcad_library["dependency_modules"] = modules
@@ -251,7 +251,7 @@ def main(library_path, logger=None):
     #brlcad_libraries = setup_dependency_modules(brlcad_libraries)
 
     # TODO: verify that __import__ can import
-    # "thing_postinstall._bindings.libbu" during the setup process. This relies
+    # "brlcad._bindings.libbu" during the setup process. This relies
     # on whether or not the .pth file has already been created/installed to the
     # system, I think.
 
