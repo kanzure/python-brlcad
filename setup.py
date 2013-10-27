@@ -109,7 +109,10 @@ setup(
     author="Bryan Bishop",
     author_email="kanzure@gmail.com",
     url="https://github.com/kanzure/python-brlcad",
-    packages=["brlcad"],
+    packages=[
+        "brlcad",
+        "brlcad.install",
+    ],
     zip_safe=False,
     setup_requires=[
         "ctypesgen-dev",
