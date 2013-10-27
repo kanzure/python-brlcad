@@ -218,6 +218,10 @@ def main(library_path, logger=None):
             shared_library = "lib{1}.dll".format(arch, brlcad_library_name)
             #shared_library = "C:\\Program Files{0}\\BRLCAD*\\bin\\lib{1}.dll".format(arch, brlcad_library_name)
             #shared_library = glob.glob(shared_library)[0]
+            # TODO: the above problem might be solvable by checking the output
+            # of that last glob() call. Maybe replace "\" with "\\" and that
+            # will fix the ctypesgen problem? This is a problematic solution
+            # because what if "\" is genuinely in the name of a Windos file?
 
             header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
             header = glob.glob(header)[0]
