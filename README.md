@@ -31,6 +31,9 @@ Install a Windows build of gcc (probably by installing mingw and adding
 C:\Python27\Scripts\pip.exe install --upgrade brlcad
 ```
 
+TODO: there may be a way to run this installation process while under `msys`
+without updating the system PATH.
+
 #### cygwin
 
 Another option is to install cygwin and use cygwin gcc. However, it is
