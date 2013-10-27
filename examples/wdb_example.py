@@ -38,7 +38,8 @@ def main(argv):
     rgb = (ctypes.c_double * 3)()
 
     # TODO: wdb_fopen wasn't in wdb.h
-    db_fp = wdb.wdb_fopen(argv[1])
+    db_fp = wdb._libs[wdb._libs.keys()[0]].wdb_fopen(argv[1])
+    #db_fp = wdb.wdb_fopen(argv[1])
 
     # create the database header record
     wdb.mk_id(db_fp, "My Database")
@@ -105,8 +106,8 @@ def main(argv):
 
     wdb.make_hole(db_fp, p1, p2, 0.75, 0, 0)
 
-    # TDOO: fix this one, wdb_close wasn't in wdb.h
-    wdb._libs["/usr/brlcad/lib/libwdb.so"].wdb_close(db_fp)
+    # TODO fix this one, wdb_close wasn't in wdb.h
+    wdb._libs[wdb._libs.keys()[0]].wdb_close(db_fp)
 
 if __name__ == "__main__":
     main(sys.argv)
