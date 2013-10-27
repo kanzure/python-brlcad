@@ -4,3 +4,6 @@
 # setuptools/pip stuff
 ./build/
 ./dist/
+
+# brlcad output file
+*.g
