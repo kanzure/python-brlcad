@@ -55,6 +55,8 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
     @param outputfile: location at which to dump python source code
     @param debug: toggle additional ctypesgen error/warning output
     """
+    # setup an object on which i can store some attributes
+    # TODO: switch to argparse.Namespace or AttrDict
     options = lambda: 0;
 
     options.output = outputfile
