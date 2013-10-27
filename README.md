@@ -1,6 +1,6 @@
 # python-brlcad
 
-Here are some python bindings to brlcad using cython.
+Here are some python bindings to brlcad using ctypes.
 
 ## installing
 
