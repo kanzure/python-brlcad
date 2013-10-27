@@ -78,7 +78,7 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
 
     options.other_headers = []
     options.modules = modules
-    options.include_search_paths = [] # TODO
+    options.include_search_paths = ["/usr/brlcad/include"] # TODO
     options.compile_libdirs = []
     options.runtime_libdirs = []
 
