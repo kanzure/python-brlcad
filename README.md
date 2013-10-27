@@ -4,6 +4,14 @@ The **python-brlcad** module provides a way to use brlcad from inside python
 based on ctypes bindings. These ctypes bindings are generated during
 install-time using ctypesgen.
 
+Operating systems known to work:
+
+* linux distros
+* windows
+
+Although support on Mac OS X is planned, it's currently not implemented and not
+tested.
+
 ## installing
 
 ```
@@ -20,7 +28,9 @@ python setup.py install
 
 ### installing on windows
 
-Use either mingw or cygwin to provide gcc during installation.
+Use either mingw or cygwin to provide gcc during installation. There is a bug
+in pip that causes a WindowsError to occur when installing this package, see
+[the bug report](https://github.com/pypa/pip/pull/1263) for more details.
 
 #### mingw
 
