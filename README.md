@@ -20,11 +20,18 @@ python setup.py install
 
 ### installing on windows
 
-Install a Windows build of gcc (probably by installing mingw) and then run:
+Use either mingw or cygwin to provide gcc during installation.
+
+#### mingw
+
+Install a Windows build of gcc (probably by installing mingw and adding
+`C:\MingW\bin` to the PATH environment variable) and then run:
 
 ```
 C:\Python27\Scripts\pip.exe install --upgrade brlcad
 ```
+
+#### cygwin
 
 Another option is to install cygwin and use cygwin gcc. However, it is
 important to clarify that there is no cygwin brlcad build. Using cygwin gcc is
@@ -40,6 +47,8 @@ To use cygwin gcc, start the python-brlcad install process in cygwin bash:
 
 During the installation, ctypesgen will make use of cygwin gcc because of the
 cygwin $PATH environment variable.
+
+There is no brlcad build that targets cygwin.
 
 ## testing
 
