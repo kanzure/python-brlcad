@@ -9,3 +9,6 @@ dist/
 
 # brlcad output file
 *.g
+
+# editor swap files
+.*.sw*
