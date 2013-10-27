@@ -13,4 +13,7 @@ clean:
 	rm -fr $(VIRTUAL_ENV)/lib/python2.7/site-packages/thing_postinstall-0.0.1-py2.7.egg
 	rm -fr $(VIRTUAL_ENV)/lib/python2.7/site-packages/thing_postinstall
 
+sdist: clean
+	python setup.py sdist
+
 all: clean install
