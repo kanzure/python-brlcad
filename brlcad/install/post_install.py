@@ -258,11 +258,6 @@ def main(library_path, logger=None):
     brlcad_libraries = setup_dependencies(brlcad_libraries)
     #brlcad_libraries = setup_dependency_modules(brlcad_libraries)
 
-    # TODO: verify that __import__ can import
-    # "brlcad._bindings.libbu" during the setup process. This relies
-    # on whether or not the .pth file has already been created/installed to the
-    # system, I think.
-
     # this is where the generated files are placed
     bindings_path = os.path.join(library_path, "_bindings")
     logger.debug("bindings_path is {0}".format(bindings_path))
