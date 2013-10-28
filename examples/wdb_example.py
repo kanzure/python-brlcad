@@ -24,6 +24,7 @@ import sys
 import ctypes
 
 import brlcad._bindings.libwdb as wdb
+import brlcad._bindings.librt as rt
 
 def main(argv):
     """
@@ -35,9 +36,9 @@ def main(argv):
     p2 = (ctypes.c_double * 3)()
     rgb = (ctypes.c_double * 3)()
 
-    # TODO: wdb_fopen wasn't in wdb.h
-    db_fp = wdb._libs[wdb._libs.keys()[0]].wdb_fopen(argv[1])
-    #db_fp = wdb.wdb_fopen(argv[1])
+    # wdb_fopen isn't in libwdb. It's actually exported in "raytrace.h" which
+    # is made available through librt.
+    db_fp = rt.wdb_fopen(argv[1])
 
     # create the database header record
     wdb.mk_id(db_fp, "My Database")
@@ -109,8 +110,7 @@ def main(argv):
 
     wdb.make_hole(db_fp, p1, p2, 0.75, 0, 0)
 
-    # TODO fix this one, wdb_close wasn't in wdb.h
-    wdb._libs[wdb._libs.keys()[0]].wdb_close(db_fp)
+    rt.wdb_close(db_fp)
 
 if __name__ == "__main__":
     main(sys.argv)
