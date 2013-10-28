@@ -16,4 +16,7 @@ clean:
 sdist: clean
 	python setup.py sdist
 
+upload: clean
+	python setup.py sdist upload
+
 all: clean install
