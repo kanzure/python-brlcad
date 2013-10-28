@@ -134,7 +134,10 @@ def cleanup_bindings_dir(bindings_path, logger):
         logger.debug("Deleting another _bindings/")
         shutil.rmtree(os.path.join(os.path.dirname(__file__), "_bindings"))
     except Exception as exception:
-        logger.debug("Wasn't there, is okay.")
+        logger.debug(
+            "_bindings wasn't previously created, so it doesn't need to be "
+            "removed."
+        )
 
 def main(library_path, logger=None):
     if not logger:
