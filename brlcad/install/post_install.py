@@ -260,7 +260,6 @@ def main(library_path, logger=None):
         to import the relevant structures from each module.
         """
         brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn"]
-        #brlcad_libraries["rtgeom"]["dependencies"] += ["bu", "brep"]
         brlcad_libraries["rt"]["dependencies"] += ["bu", "bn", "wdb"]
 
         # not sure about the capitalization on this one
