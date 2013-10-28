@@ -186,6 +186,7 @@ def main(library_path, logger=None):
     brlcad_library_names = [
     #"bu", "bn", "db5", "nmg", "pc", "rtgeom", "brep", "raytrace", "wdb", "brep",
     "bu", "bn", "brep", "wdb",
+    "rt",
     ] # wow, this extra character caused lots of problems: ,
 
     brlcad_libraries = {}
@@ -226,12 +227,20 @@ def main(library_path, logger=None):
             # will fix the ctypesgen problem? This is a problematic solution
             # because what if "\" is genuinely in the name of a Windos file?
 
-            header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
+            # TODO: support for this raytrace.h / librt.so discrepancy.
+            if brlcad_library_name == "rt":
+                header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\raytrace.h".format(arch)
+            else:
+                header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
             header = glob.glob(header)[0]
         else:
             # hardcoding these paths for now
             shared_library = "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name)
-            header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_name)
+
+            if brlcad_library_name == "rt":
+                header = "/usr/brlcad/include/brlcad/raytrace.h"
+            else:
+                header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_name)
 
         brlcad_library = {
             "name": brlcad_library_name,
