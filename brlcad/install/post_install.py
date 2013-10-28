@@ -142,52 +142,13 @@ def main(library_path, logger=None):
 
     logger.debug("ctypesgencore version is {0}".format(ctypesgencore.__version__))
 
-    # The actual list of brlcad libraries that are supported.
-    argh_brlcad_library_names = list(set([
+    brlcad_library_names = [
         "bu",
-        "raytrace",
-        "rt",
-        "db5",
-        "rtgeom",
-        "analyze",
-        "base",
         "bn",
         "brep",
         "wdb",
-        "clipper",
-        "cursor",
-        "dm",
-        "exppp",
-        "express",
-        "fb",
-        "fft",
-        "gcv",
-        "nmg",
-        "ged",
-        "icv",
-        "multispectral",
-        "openNURBS",
-        "optical",
-        "orle",
-        "p2t",
-        "pc",
-        "pkg",
-        "render",
-        "stepcore",
-        "stepdai",
-        "stepeditor",
-        "steputils",
-        "termio",
-        "termlib",
-        "utahrle",
-        "vds",
-    ]))
-
-    brlcad_library_names = [
-    #"bu", "bn", "db5", "nmg", "pc", "rtgeom", "brep", "raytrace", "wdb", "brep",
-    "bu", "bn", "brep", "wdb",
-    "rt",
-    ] # wow, this extra character caused lots of problems: ,
+        "rt",
+    ]
 
     brlcad_libraries = {}
 
