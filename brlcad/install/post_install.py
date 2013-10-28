@@ -193,6 +193,14 @@ def main(library_path, logger=None):
 
     # Make the plan of action for generating all the bindings and wrappers.
     for brlcad_library_name in brlcad_library_names:
+        brlcad_library_header_name = brlcad_library_name
+
+        # TODO: figure out a better way to support this silly edge case. The
+        # library "librt.so" is exporting symbols defined in "raytrace.h" which
+        # isn't something I originally expected when writing this function.
+        if brlcad_library_name == "rt":
+            brlcad_library_header_name = "raytrace"
+
         if is_win32():
             # BRLCAD users might install 64-bit BRLCAD to "Program Files
             # (x86)". This will need to be fixed in the future. Basically, if
@@ -227,20 +235,12 @@ def main(library_path, logger=None):
             # will fix the ctypesgen problem? This is a problematic solution
             # because what if "\" is genuinely in the name of a Windos file?
 
-            # TODO: support for this raytrace.h / librt.so discrepancy.
-            if brlcad_library_name == "rt":
-                header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\raytrace.h".format(arch)
-            else:
-                header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_name)
+            header = "C:\\Program Files{0}\\BRLCAD*\\include\\brlcad\\{1}.h".format(arch, brlcad_library_header_name)
             header = glob.glob(header)[0]
         else:
             # hardcoding these paths for now
             shared_library = "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name)
-
-            if brlcad_library_name == "rt":
-                header = "/usr/brlcad/include/brlcad/raytrace.h"
-            else:
-                header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_name)
+            header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_header_name)
 
         brlcad_library = {
             "name": brlcad_library_name,
