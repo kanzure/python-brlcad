@@ -1,6 +1,14 @@
 """
 This is the python version of wdb_example.c using the python-brlcad module.
 
+usage:
+
+    python wdb_example.py output.g
+
+    # want to render to file?
+    rtedge -s 1024 -F output.pix output.g box_n_ball.r
+    pix-png -s 1024 < output.pix > output.png
+
 wdb_example.c header text:
 
     Create a BRL-CAD geometry database from C code.
