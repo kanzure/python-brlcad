@@ -1,16 +1,9 @@
-# python-brlcad
+# python-brlcad: Open-source solid modeling in python.
 
-The **python-brlcad** module provides a way to use brlcad from inside python
-based on ctypes bindings. These ctypes bindings are generated during
-install-time using ctypesgen.
-
-Operating systems known to work:
-
-* linux distros
-* windows
-
-Although support on Mac OS X is planned, it's currently not implemented and not
-tested.
+The **python-brlcad** module provides a way to use [brlcad](http://brlcad.org/)
+from inside python based on ctypes bindings. These ctypes bindings are
+generated during install-time using
+[ctypesgen](https://github.com/kanzure/ctypesgen).
 
 ## installing
 
@@ -71,7 +64,16 @@ nosetests
 
 ## usage
 
-not yet
+Sorry, not yet. Check the `examples/` folder.
+
+# Known to work with..
+
+Operating systems known to work:
+
+* linux distros
+* windows
+
+Support for Mac OS X is planned but not yet implemented or tested.
 
 ## license
 
