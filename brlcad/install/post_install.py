@@ -261,7 +261,7 @@ def main(library_path, logger=None):
         """
         brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn"]
         #brlcad_libraries["rtgeom"]["dependencies"] += ["bu", "brep"]
-        #brlcad_libraries["raytrace"]["dependencies"] += ["bu", "bn", "db5", "nmg", "pc", "rtgeom"]
+        brlcad_libraries["rt"]["dependencies"] += ["bu", "bn", "wdb"]
 
         # not sure about the capitalization on this one
         #brlcad_libraries["brep"]["dependencies"].append("openNURBS")
