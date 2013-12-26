@@ -149,8 +149,8 @@ def main(library_path, logger=None):
         "bu",
         "bn",
         "brep",
-        "wdb",
         "rt",
+        "wdb",
         "ged",
     ]
 
