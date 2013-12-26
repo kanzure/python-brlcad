@@ -224,9 +224,9 @@ def main(library_path, logger=None):
         Make up the dependencies to each library so that ctypesgen will be able
         to import the relevant structures from each module.
         """
-        brlcad_libraries["rt"]["dependencies"]  += ["bu", "bn", ]
-        brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn", "rt" ]
-        brlcad_libraries["ged"]["dependencies"] += ["bu", "bn", "rt", "wdb", ]
+        brlcad_libraries["rt"]["dependencies"]  += ["bu", "bn"]
+        brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn", "rt"]
+        brlcad_libraries["ged"]["dependencies"] += ["bu", "bn", "rt"]
 
         # not sure about the capitalization on this one
         #brlcad_libraries["brep"]["dependencies"].append("openNURBS")
