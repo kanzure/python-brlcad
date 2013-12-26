@@ -151,7 +151,7 @@ def main(library_path, logger=None):
         "brep",
         "wdb",
         "rt",
-	 "ged",
+        "ged",
     ]
 
     brlcad_libraries = {}
