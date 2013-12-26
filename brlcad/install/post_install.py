@@ -54,7 +54,7 @@ def is_win32():
     """
     return sys.platform == "win32"
 
-def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=[], other_known_names=[], debug=False):
+def generate_wrapper(libname, libpath, header_path, outputfile, brlcad_install_path, logger, modules=[], other_known_names=[], debug=False):
     """
     Generate a ctypes wrapper around the library.
 
@@ -93,7 +93,7 @@ def generate_wrapper(libname, libpath, header_path, outputfile, logger, modules=
 
     # At first glance this might seem like something that would cause
     # cross-platform compatibility issues. Somehow it doesn't.
-    options.include_search_paths = ["/usr/brlcad/include"]
+    options.include_search_paths = ["{0}/include".format(brlcad_install_path)]
 
     options.header_template = None
     options.strip_build_path = None
@@ -139,7 +139,7 @@ def cleanup_bindings_dir(bindings_path, logger):
             "removed."
         )
 
-def main(library_path, logger=None):
+def main(library_path, logger=None, brlcad_install_path=os.getenv("BRLCAD_HOME", "/usr/brlcad")):
     if not logger:
         logger = setup_logging()
 
@@ -203,8 +203,8 @@ def main(library_path, logger=None):
             header = glob.glob(header)[0]
         else:
             # hardcoding these paths for now
-            shared_library = "/usr/brlcad/lib/lib{0}.so".format(brlcad_library_name)
-            header = "/usr/brlcad/include/brlcad/{0}.h".format(brlcad_library_header_name)
+            shared_library = "{1}/lib/lib{0}.so".format(brlcad_library_name, brlcad_install_path)
+            header = "{1}/include/brlcad/{0}.h".format(brlcad_library_header_name, brlcad_install_path)
 
         brlcad_library = {
             "name": brlcad_library_name,
@@ -297,7 +297,7 @@ def main(library_path, logger=None):
         # types are already cached, so it's probably okay for the moment.
 
         # generate the wrapper bindings (woot)
-        generate_wrapper(library_name, shared_library, header_path, output_file_path, modules=["lib{0}".format(nm) for nm in modules], other_known_names=other_known_names, logger=logger)
+        generate_wrapper(library_name, shared_library, header_path, output_file_path, brlcad_install_path, modules=["lib{0}".format(nm) for nm in modules], other_known_names=other_known_names, logger=logger)
         generated_libraries.append(library_name)
         logger.debug("Done generating the wrapper file for {0}".format(library_name))
 

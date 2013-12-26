@@ -16,6 +16,7 @@ or
 ```
 git clone git@github.com:kanzure/python-brlcad.git
 cd python-brlcad/
+export BRLCAD_PATH=/usr/brlcad
 python setup.py install
 ```
 
@@ -59,6 +60,14 @@ C:\Python27\Scripts\pip.exe install --upgrade brlcad
 
 TODO: there may be a way to run this installation process while under `msys`
 without updating the system PATH.
+
+### non-standard brlcad installation path
+
+You can set the BRLCAD_HOME environment variable to the installation path of
+your brlcad distribution before running the setup.py script, and the brlcad
+libraries found there will be used.
+You could use this to install multiple versions of brl-cad, possibly using
+virtualenv to isolate the resulting python packages.
 
 ## testing
 
