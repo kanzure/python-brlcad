@@ -149,8 +149,8 @@ def main(library_path, logger=None, brlcad_install_path=os.getenv("BRLCAD_HOME",
         "bu",
         "bn",
         "brep",
-        "wdb",
         "rt",
+        "wdb",
         "ged",
     ]
 
