@@ -4,10 +4,12 @@ and the configured library options.
 Separated to make the integration to the existing code easier.
 """
 
+import sys
 import os
 import copy
 import re
 import subprocess
+import ctypesgencore
 
 from distutils.version import StrictVersion
 from ConfigParser import ConfigParser
@@ -151,14 +153,14 @@ def expand_libraries(options):
     return alias_map
 
 
-def load_brlcad_config(config, logger):
+def load_brlcad_config(config):
     if not config.has_section('brlcad'):
         raise SetupException("Configuration has no [brlcad] section !")
     version_list = []
     defaults = dict(config.items("brlcad"))
     options = copy.deepcopy(defaults)
     options["section"] = "brlcad"
-    expand_libraries(options, logger)
+    expand_libraries(options)
     version_list.append(options)
     brlcad_pattern = re.compile("brlcad.+")
     for section in config.sections():
@@ -166,7 +168,7 @@ def load_brlcad_config(config, logger):
             options = copy.deepcopy(defaults)
             options.update(config.items(section))
             options["section"] = section
-            expand_libraries(options, logger)
+            expand_libraries(options)
             version_list.append(options)
     return version_list
 
@@ -174,7 +176,7 @@ def load_brlcad_config(config, logger):
 def load_ctypesgen_options(config, brlcad_install_path):
     options = ctypesgencore.options.get_default_options()
     if config.has_section('ctypes-gen'):
-        options.__dict__.update(cfg.items('ctypes-gen'))
+        options.__dict__.update(config.items('ctypes-gen'))
     options.include_symbols = None
     options.exclude_symbols = None
     options.output_language = "python"
