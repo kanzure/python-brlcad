@@ -23,6 +23,17 @@ def is_win():
     """
     return sys.platform.startswith("win")
 
+def check_gcc(logger):
+    for path in os.getenv("PATH").split(os.pathsep):
+        gcc_bin = os.path.join(path, "gcc")
+        if os.access(gcc_bin, os.X_OK):
+            try:
+                version = subprocess.check_output(["gcc", "-dumpversion"])
+                return StrictVersion(version.strip())
+            except (OSError, subprocess.CalledProcessError) as e:
+                logger.debug("Error checking gcc executable {0}: {1}".format(gcc_bin, e))
+    return None
+
 def get_brlcad_param(brlcad_config, param_name):
     """
     Executes brlcad-config with the given param name and returns the result as a string.
@@ -74,36 +85,35 @@ def get_brlcad_config(brlcad_prefix, logger):
     * result["version"] -> brlcad version (distutils.version.StrictVersion instance);
     """
     iswin = is_win()
-    bin_subdir = 'bin'
+    bin_subdir = "bin"
     if not brlcad_prefix:
         valid_paths = [
             path for path in os.getenv("PATH").split(os.pathsep)
-            if os.access(os.path.join(path,'brlcad-config'),os.R_OK)
+            if os.access(os.path.join(path,"brlcad-config"),os.R_OK)
                and (not iswin
-                    or os.path.basename(path.rstrip('/')).lower() == 'bin')
+                    or os.path.basename(path.rstrip("/")).lower() == "bin")
         ]
         if not valid_paths:
             logger.debug("No brlcad found on PATH: {0}".format(os.getenv("PATH")))
             return None
-        (brlcad_prefix, bin_subdir) = os.path.split(os.path.abspath(valid_paths[0].rstrip('/')))
-    brlcad_config = os.path.join(brlcad_prefix, bin_subdir, 'brlcad-config')
+        (brlcad_prefix, bin_subdir) = os.path.split(os.path.abspath(valid_paths[0].rstrip("/")))
+    brlcad_config = os.path.join(brlcad_prefix, bin_subdir, "brlcad-config")
     result = None
     if not iswin and os.access(brlcad_config, os.X_OK):
         try:
             result = {
-                "prefix": get_brlcad_param(brlcad_config, 'prefix'),
-                "includedir": get_brlcad_param(brlcad_config, 'includedir'),
-                "libdir": get_brlcad_param(brlcad_config, 'libdir'),
-                "version": get_brlcad_param(brlcad_config, 'version'),
+                "prefix": get_brlcad_param(brlcad_config, "prefix"),
+                "includedir": get_brlcad_param(brlcad_config, "includedir"),
+                "libdir": get_brlcad_param(brlcad_config, "libdir"),
+                "version": get_brlcad_param(brlcad_config, "version"),
             }
         except SetupException:
             # we only log this, it is not yet critical
-            print "Failed running brlcad-config: {0}".format(repr(brlcad_config))
             logger.debug("Failed running brlcad-config: {0}".format(repr(brlcad_config)))
     if not result:
         # brlcad-config based setup failed, try standard directories
-        include_dir = os.path.join(brlcad_prefix, 'include')
-        lib_dir = os.path.join(brlcad_prefix, 'lib')
+        include_dir = os.path.join(brlcad_prefix, "include")
+        lib_dir = os.path.join(brlcad_prefix, "lib")
         version = read_version(include_dir)
         if version and os.path.isdir(include_dir) and os.path.isdir(lib_dir):
             result = {
@@ -116,8 +126,8 @@ def get_brlcad_config(brlcad_prefix, logger):
 
 def load_config():
     config = ConfigParser()
-    config.readfp(open('python-brlcad.cfg'))
-    config.read(os.path.expanduser('~/.python-brlcad.cfg'))
+    config.readfp(open("python-brlcad.cfg"))
+    config.read(os.path.expanduser("~/.python-brlcad.cfg"))
     return config
 
 def parse_csv_list(list_str):
@@ -129,16 +139,14 @@ def expand_libraries(options):
     """
     alias_map = dict()
     options["alias-map"] = alias_map
-    if not options.has_key("libraries"):
-        return alias_map
-    aliases = parse_csv_list(options["libraries"])
+    aliases = parse_csv_list(options.get("libraries", ""))
     options["alias-list"] = aliases
     alias_set = set(aliases)
     for alias in aliases:
         lib_name = options.get("{0}-lib-name".format(alias), "lib{0}".format(alias))
         module_name = options.get("{0}-module-name".format(alias), "brlcad._bindings.{0}".format(lib_name))
         lib_header = options.get("{0}-lib-header".format(alias), "{0}.h".format(alias))
-        dependencies = parse_csv_list(options.get("{0}-dependencies".format(alias),''))
+        dependencies = parse_csv_list(options.get("{0}-dependencies".format(alias),""))
         dependency_set = set(dependencies)
         if not dependency_set <= alias_set:
             raise SetupException("Missing dependencies: {0} -> {1}".format(alias, dependency_set - alias_set))
@@ -154,7 +162,7 @@ def expand_libraries(options):
 
 
 def load_brlcad_config(config):
-    if not config.has_section('brlcad'):
+    if not config.has_section("brlcad"):
         raise SetupException("Configuration has no [brlcad] section !")
     version_list = []
     defaults = dict(config.items("brlcad"))
@@ -175,8 +183,8 @@ def load_brlcad_config(config):
 
 def load_ctypesgen_options(config, brlcad_install_path):
     options = ctypesgencore.options.get_default_options()
-    if config.has_section('ctypes-gen'):
-        options.__dict__.update(config.items('ctypes-gen'))
+    if config.has_section("ctypes-gen"):
+        options.__dict__.update(config.items("ctypes-gen"))
     options.include_symbols = None
     options.exclude_symbols = None
     options.output_language = "python"
