@@ -12,3 +12,6 @@ dist/
 
 # editor swap files
 .*.sw*
+
+# intellij pycharm project directory:
+.idea
