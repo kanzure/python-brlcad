@@ -31,13 +31,9 @@ def run_after(command):
     #library_path = os.path.abspath(os.path.dirname(brlcad.__file__))
     egg_path = glob.glob(os.path.join(command.install_lib, "brlcad*.egg/"))[0]
     library_path = os.path.join(egg_path, "brlcad")
-    brlcad_home = os.getenv('BRLCAD_HOME', '/usr/brlcad')
 
     try:
-       brlcad.install.post_install.main(
-           library_path=library_path,
-	    brlcad_install_path = brlcad_home
-	)
+       brlcad.install.post_install.main(library_path)
     except Exception as exception:
         traceback.print_exc()
 

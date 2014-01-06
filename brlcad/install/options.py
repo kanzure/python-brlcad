@@ -175,6 +175,14 @@ def load_config():
 def parse_csv_list(list_str):
     return [value.strip() for value in list_str.split(",") if value.strip()]
 
+def resolve_booleans(options):
+    for key in options:
+        value = options[key]
+        if value == "True":
+            options[key] = True
+        elif value == "False":
+            options[key] = False
+
 def load_brlcad_options(config):
     if not config.has_section("brlcad"):
         raise SetupException("Configuration has no [brlcad] section !")
@@ -212,7 +220,9 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     default_options.save_preprocessed_headers = None
     default_options.cpp = None
     if config.has_section("ctypes-gen"):
-        default_options.__dict__.update(config.items("ctypes-gen"))
+        config_options = dict(config.items("ctypes-gen"))
+        resolve_booleans(config_options)
+        default_options.__dict__.update(config_options)
     default_options.inserted_files = []
     default_options.other_headers = []
     default_options.compile_libdirs = []
@@ -223,7 +233,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     lib_dir = brlcad_info["libdir"]
     include_dir = brlcad_info["includedir"]
     default_options.include_search_paths = [include_dir]
-    libname_map = {}
+    options_map = {}
     options_list = []
     aliases = parse_csv_list(settings.get("libraries", ""))
     alias_set = set(aliases)
@@ -232,14 +242,16 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options = copy.deepcopy(default_options)
         options_list.append(options)
         lib_name = settings.get("{0}-lib-name".format(alias), "lib{0}".format(alias))
-        libname_map[alias] = lib_name
+        options.brlcad_lib_alias = alias
+        options.brlcad_lib_name = lib_name
+        options_map[alias] = options
         module_name = settings.get("{0}-module-name".format(alias), "brlcad._bindings.{0}".format(lib_name))
         lib_header = settings.get("{0}-lib-header".format(alias), "{0}.h".format(alias))
         dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias),""))
         dependency_set = set(dependencies)
         if not dependency_set <= alias_set:
             raise SetupException("Missing dependencies: {0} -> {1}".format(alias, dependency_set - alias_set))
-        options.modules = [libname_map[ln] for ln in dependencies]
+        options.modules = [options_map[ln].brlcad_lib_name for ln in dependencies]
         options.output = os.path.join(bindings_path, "{0}.py".format(lib_name))
         lib_path = find_shared_lib_file(os.path.join(lib_dir, lib_name))
         options.libraries = [lib_path]
@@ -247,7 +259,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         if not os.access(header_path, os.R_OK):
             raise SetupException("Missing header file: {0}".format(header_path))
         options.headers = [header_path]
-    return options_list
+    return options_list, options_map
 
 def match_brlcad_version(brlcad_options, brlcad_installations, logger):
     """
