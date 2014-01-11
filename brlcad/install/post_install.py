@@ -139,6 +139,35 @@ def cleanup_bindings_dir(bindings_path, logger):
             "removed."
         )
 
+def setup_dependencies(brlcad_libraries):
+    """
+    Make up the dependencies to each library so that ctypesgen will be able
+    to import the relevant structures from each module.
+    """
+    brlcad_libraries["rt"]["dependencies"]  += ["bu", "bn"]
+    brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn", "rt"]
+    brlcad_libraries["ged"]["dependencies"] += ["bu", "bn", "rt"]
+
+    # not sure about the capitalization on this one
+    #brlcad_libraries["brep"]["dependencies"].append("openNURBS")
+
+    return brlcad_libraries
+
+def setup_dependency_modules(brlcad_libraries):
+    """
+    This converts from library names to the absolute module import name so
+    that ctypesgen can access previous modules instead of re-creating the
+    same symbols multiple times.
+    """
+    for brlcad_library in brlcad_libraries.values():
+        modules = []
+        for module_name in set(brlcad_library["dependencies"]):
+            #dependency_module = "brlcad._bindings.lib{0}".format(module_name)
+            dependency_module = "lib{0}".format(module_name)
+            modules.append(dependency_module)
+        brlcad_library["dependency_modules"] = modules
+    return brlcad_libraries
+
 def main(library_path, logger=None, brlcad_install_path=os.getenv("BRLCAD_HOME", "/usr/brlcad")):
     if not logger:
         logger = setup_logging()
@@ -218,35 +247,6 @@ def main(library_path, logger=None, brlcad_install_path=os.getenv("BRLCAD_HOME",
         logger.debug("brlcad_library_name is: {0}".format(str(brlcad_library_name)))
         logger.debug("brlcad_library_name type: {0}".format(str(type(brlcad_library_name))))
         brlcad_libraries[brlcad_library_name] = brlcad_library
-
-    def setup_dependencies(brlcad_libraries):
-        """
-        Make up the dependencies to each library so that ctypesgen will be able
-        to import the relevant structures from each module.
-        """
-        brlcad_libraries["rt"]["dependencies"]  += ["bu", "bn"]
-        brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn", "rt"]
-        brlcad_libraries["ged"]["dependencies"] += ["bu", "bn", "rt"]
-
-        # not sure about the capitalization on this one
-        #brlcad_libraries["brep"]["dependencies"].append("openNURBS")
-
-        return brlcad_libraries
-
-    def setup_dependency_modules(brlcad_libraries):
-        """
-        This converts from library names to the absolute module import name so
-        that ctypesgen can access previous modules instead of re-creating the
-        same symbols multiple times.
-        """
-        for brlcad_library in brlcad_libraries.values():
-            modules = []
-            for module_name in set(brlcad_library["dependencies"]):
-                #dependency_module = "brlcad._bindings.lib{0}".format(module_name)
-                dependency_module = "lib{0}".format(module_name)
-                modules.append(dependency_module)
-            brlcad_library["dependency_modules"] = modules
-        return brlcad_libraries
 
     brlcad_libraries = setup_dependencies(brlcad_libraries)
     #brlcad_libraries = setup_dependency_modules(brlcad_libraries)
