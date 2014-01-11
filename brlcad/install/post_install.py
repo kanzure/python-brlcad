@@ -18,9 +18,6 @@ import imp
 import shutil
 import glob
 
-# used for configuraing ctypesgen options
-import argparse
-
 import ctypesgencore
 
 def setup_logging(level=logging.DEBUG):
@@ -50,7 +47,7 @@ def is_py32():
 
 def is_win32():
     """
-    Check if the system is Windows.
+    Check if the system is 32 bits Windows.
     """
     return sys.platform == "win32"
 
@@ -64,8 +61,8 @@ def generate_wrapper(libname, libpath, header_path, outputfile, brlcad_install_p
     @param outputfile: location at which to dump python source code
     @param debug: toggle additional ctypesgen error/warning output
     """
-    # setup an object on which i can store some attributes
-    options = argparse.Namespace()
+    # get default options from ctypesgencore and modify what interests us
+    options = ctypesgencore.options.get_default_options()
 
     options.output = outputfile
     options.libraries = [libpath]
@@ -144,6 +141,8 @@ def setup_dependencies(brlcad_libraries):
     Make up the dependencies to each library so that ctypesgen will be able
     to import the relevant structures from each module.
     """
+    brlcad_libraries["bn"]["dependencies"]  += ["bu"]
+    brlcad_libraries["brep"]["dependencies"]  += ["bu"]
     brlcad_libraries["rt"]["dependencies"]  += ["bu", "bn"]
     brlcad_libraries["wdb"]["dependencies"] += ["bu", "bn", "rt"]
     brlcad_libraries["ged"]["dependencies"] += ["bu", "bn", "rt"]
