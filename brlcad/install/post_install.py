@@ -45,7 +45,6 @@ def generate_wrapper(options, logger, other_known_names=[]):
 
     @param options: the ctypesgencore options
     """
-
     # parse
     logger.debug("parsing")
     descriptions = ctypesgencore.parser.parse(options.headers, options)
