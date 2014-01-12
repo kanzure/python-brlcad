@@ -16,11 +16,11 @@ from ConfigParser import ConfigParser
 class SetupException(Exception):
     pass
 
-def is_win():
+def is_win(platform=sys.platform):
     """
     Check if the system is Windows.
     """
-    return sys.platform.startswith("win")
+    return platform.startswith("win")
 
 def check_gcc(config, logger):
     paths = os.getenv("PATH").split(os.pathsep)
