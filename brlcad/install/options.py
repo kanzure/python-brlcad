@@ -291,7 +291,7 @@ def load_ctypesgen_options(bindings_path, logger):
     * installed brlcad version(s) which could be found;
     * the OS you run on;
     In any case this method will try hard to find a working combination of
-    ctypesgen options. In particular it will check wach library for existence
+    ctypesgen options. In particular it will check each library for existence
     of headers and object files. It will also check for a working gcc.
     """
     config = load_config()
