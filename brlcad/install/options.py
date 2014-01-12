@@ -305,5 +305,3 @@ def load_ctypesgen_options(bindings_path, logger):
         except Exception as e:
             logger.debug("Failed checking brlcad installation: {0}".format(e))
     raise SetupException("Couldn't find a matching brlcad installation !")
-
-

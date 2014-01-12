@@ -180,5 +180,3 @@ def generate_init_file(bindings_path, library_names, logger):
     init_file.close()
 
     return True
-
-
