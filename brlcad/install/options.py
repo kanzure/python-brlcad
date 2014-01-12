@@ -1,7 +1,6 @@
 """
-Utilities to look up the installed brlcad version(s)
-and the configured library options.
-Separated to make the integration to the existing code easier.
+Utilities to look up the installed brlcad version(s) and the configured library
+options.
 """
 
 import sys
