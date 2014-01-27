@@ -1,0 +1,3 @@
+
+class BRLCADException(Exception):
+    pass
