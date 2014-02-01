@@ -115,6 +115,7 @@ setup(
     url="https://github.com/kanzure/python-brlcad",
     packages=[
         "brlcad",
+        "brlcad.vmath",
         "brlcad.install",
     ],
     zip_safe=False,

@@ -1,4 +1,4 @@
-
+from brlcad.vmath import Transform
 from brlcad.wdb import *
 
 if __name__ == "__main__":
@@ -69,7 +69,7 @@ if __name__ == "__main__":
                 ("ehy.s", "u"),
                 ("hyperboloid.s", "u"),
                 ("eto.s", "u"),
-                ("arbn.s", "u"),
+                ("arbn.s", "u", Transform.translation(1, 0, 0)),
                 ("particle.s", "u"),
                 ("pipe.s", "u"),
             ),

@@ -136,7 +136,8 @@ class WDB:
             return
         member_list = wdb.bu_list_new()
         for member in members:
-            wdb.mk_addmember(member[0], member_list, None, ord(member[1]))
+            matrix = ct_transform(member[2]) if len(member) > 2 else None
+            wdb.mk_addmember(member[0], member_list, matrix, ord(member[1]))
         wdb.mk_comb(self.db_fp, name, member_list, region_kind, shader_name, shader_params,
                     ct_rgb(rgb_color), region_id, air_code,
                     material, line_of_sight, ct_bool(inherit), ct_bool(append_ok), ct_bool(gift_semantics))
