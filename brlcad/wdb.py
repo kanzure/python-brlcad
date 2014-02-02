@@ -135,9 +135,17 @@ class WDB:
         if not members:
             return
         member_list = wdb.bu_list_new()
+        if isinstance(members, str):
+            members = [members]
         for member in members:
-            matrix = ct_transform(member[2]) if len(member) > 2 else None
-            wdb.mk_addmember(member[0], member_list, matrix, ord(member[1]))
+            if isinstance(member, str):
+                operation = ord('u')
+                matrix = None
+            else:
+                operation = ord(member[1])
+                matrix = ct_transform(member[2]) if len(member) > 2 else None
+                member = member[0]
+            wdb.mk_addmember(member, member_list, matrix, operation)
         wdb.mk_comb(self.db_fp, name, member_list, region_kind, shader_name, shader_params,
                     ct_rgb(rgb_color), region_id, air_code,
                     material, line_of_sight, ct_bool(inherit), ct_bool(append_ok), ct_bool(gift_semantics))
