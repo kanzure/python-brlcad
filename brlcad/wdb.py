@@ -1,25 +1,3 @@
-#  pyjbrlcad -- javampire python extensions for BRL-CAD
-#
-#  Copyright (c) 2013  Csaba Nagy  <ncsaba@javampire.com>
-#
-#  Permission is hereby granted, free of charge, to any person obtaining a copy
-#  of this software and associated documentation files (the "Software"), to
-#  deal in the Software without restriction, including without limitation the
-#  rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-#  sell copies of the Software, and to permit persons to whom the Software is
-#  furnished to do so, subject to the following conditions:
-#
-#  The above copyright notice and this permission notice shall be included in
-#  all copies or substantial portions of the Software.
-#
-#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-#  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-#  IN THE SOFTWARE.
-
 """
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
@@ -158,7 +136,8 @@ class WDB:
             return
         member_list = wdb.bu_list_new()
         for member in members:
-            wdb.mk_addmember(member[0], member_list, None, ord(member[1]))
+            matrix = ct_transform(member[2]) if len(member) > 2 else None
+            wdb.mk_addmember(member[0], member_list, matrix, ord(member[1]))
         wdb.mk_comb(self.db_fp, name, member_list, region_kind, shader_name, shader_params,
                     ct_rgb(rgb_color), region_id, air_code,
                     material, line_of_sight, ct_bool(inherit), ct_bool(append_ok), ct_bool(gift_semantics))
