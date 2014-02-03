@@ -1,8 +1,8 @@
-from brlcad.vmath import Transform
+from brlcad.vmath import Vector, Transform
 from brlcad.wdb import *
 
 if __name__ == "__main__":
-    with WDB("test.g", "Test BRLCAD DB file") as brl_db:
+    with WDB("test_wdb.g", "Test BRLCAD DB file") as brl_db:
         brl_db.sphere("sph1.s", (1, 2, 3), 0.75)
         brl_db.rpp("box1.s", (0, 0, 0), (2, 4, 2.5))
         brl_db.wedge("wedge1.s", (0, 0, 3.5), (0, 1, 0), (0, 0, 1), 4, 2, 1, 3)
@@ -76,3 +76,10 @@ if __name__ == "__main__":
             "plastic", "di=.8 sp=.2", (64, 180, 96),
             1
         )
+
+    with WDB("test_wdb.g") as brl_db:
+        ip, dp = brl_db.lookup_internal("arb8.s")
+        arb_res = libwdb.struct_rt_arb_internal.from_address(ip.idb_ptr)
+        points = np.ctypeslib.as_array(arb_res.pt)
+        vectors = [Vector(row, copy=False) for row in points]
+        print vectors
