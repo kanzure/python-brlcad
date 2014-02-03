@@ -102,6 +102,7 @@ class WDB:
 
     def arbn(self, name, planes):
         # mk_arbn will free the passed array, so we need to alloc the memory in brlcad code:
+        # TODO: this was fixed in the latest BRL-CAD code, need to do it conditionally on version ?
         planes_arg = brlcad_copy(ct_planes(planes), "mk_arbn")
         wdb.mk_arbn(self.db_fp, name, len(planes), planes_arg)
 
