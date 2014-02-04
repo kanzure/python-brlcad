@@ -54,7 +54,7 @@ def get_brlcad_param(brlcad_config, param_name):
     if param_name == "libs":
         # the libs are a special format, extract a list of library names:
         result = result.rsplit(None, 1).pop().split(";")
-    elif param_name in ["libdir","includedir","prefix"]:
+    elif param_name in ["libdir", "includedir", "prefix"]:
         # these are dirs: check if they exist, raise exception if not
         if not os.access(result, os.R_OK):
             raise SetupException("Directory for <{0}> not found: {1}".format(param_name, result))
@@ -143,7 +143,7 @@ def find_brlcad_installations(config, logger):
     iswin = is_win()
     valid_paths = [
         path for path in os.getenv("PATH").split(os.pathsep)
-        if os.access(os.path.join(path,"brlcad-config"),os.R_OK)
+        if os.access(os.path.join(path, "brlcad-config"), os.R_OK)
            and (not iswin
                 or os.path.basename(path.rstrip("/")).lower() == "bin")
     ]
@@ -178,7 +178,7 @@ def find_brlcad_installations(config, logger):
 def load_config():
     config = ConfigParser()
     config.readfp(open("python-brlcad.cfg"))
-    config.read(os.path.join(os.path.expanduser("~"),".python-brlcad.cfg"))
+    config.read(os.path.join(os.path.expanduser("~"), ".python-brlcad.cfg"))
     return config
 
 def parse_csv_list(list_str):
@@ -212,7 +212,7 @@ def load_brlcad_options(config):
 def find_shared_lib_file(base_dirs, lib_name):
     for base_dir in base_dirs:
         base_path = os.path.join(base_dir, lib_name)
-        for ext in [".so",".dll"]:
+        for ext in [".so", ".dll"]:
             lib_path = base_path + ext
             if os.access(lib_path, os.R_OK):
                 return lib_path
@@ -260,7 +260,6 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     options_list = []
     aliases = parse_csv_list(settings.get("libraries", ""))
     alias_set = set(aliases)
-    dll_extension = ".dll" if is_win() else ".so"
     for alias in aliases:
         options = copy.deepcopy(default_options)
         options_list.append(options)
@@ -269,7 +268,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options.brlcad_lib_name = lib_name
         options_map[alias] = options
         lib_header = settings.get("{0}-lib-header".format(alias), "{0}.h".format(alias))
-        dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias),""))
+        dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias), ""))
         dependency_set = set(dependencies)
         if not dependency_set <= alias_set:
             raise SetupException("Missing dependencies: {0} -> {1}".format(alias, dependency_set - alias_set))
@@ -327,5 +326,3 @@ def load_ctypesgen_options(bindings_path, logger):
         except Exception as e:
             logger.debug("Failed checking brlcad installation: {0}".format(e))
     raise SetupException("Couldn't find a matching brlcad installation !")
-
-
