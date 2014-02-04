@@ -28,16 +28,22 @@ def check_gcc(config, logger):
     gcc_exe = "gcc"
     if is_win() and config.has_section("gcc"):
         paths += [path.strip() for path in config.get("gcc", "win-path").split(os.pathsep)]
+        os.environ["PATH"] += os.pathsep.join(paths)
         gcc_exe = "gcc.exe"
+    if not "" in paths:
+        paths.append("")
+    errors = []
     for path in paths:
         gcc_bin = os.path.join(path, gcc_exe)
-        if os.access(gcc_bin, os.X_OK):
-            try:
-                version = subprocess.check_output(["gcc", "-dumpversion"])
-                return (gcc_bin, StrictVersion(version.strip()))
-            except (OSError, subprocess.CalledProcessError) as e:
-                logger.debug("Error checking gcc executable {0}: {1}".format(gcc_bin, e))
-    return None
+        try:
+            version = subprocess.check_output([gcc_bin, "-dumpversion"])
+            logger.debug("Found gcc: {0} -> {1}".format(gcc_bin, version))
+            return gcc_bin, StrictVersion(version.strip())
+        except (OSError, subprocess.CalledProcessError) as e:
+            errors.append("Error checking gcc executable {0}: {1}".format(gcc_bin, e))
+    for error in errors:
+        logger.debug(error)
+    raise SetupException("Couldn't find working gcc !")
 
 def get_brlcad_param(brlcad_config, param_name):
     """
