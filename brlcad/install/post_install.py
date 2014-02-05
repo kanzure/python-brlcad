@@ -10,7 +10,6 @@ can't insert generated files into the installed location. So that's why this is
 a part of the setuptools install process.
 """
 
-import sys
 import os
 import json
 import logging
@@ -39,7 +38,7 @@ def setup_logging(level=logging.DEBUG):
     logger.addHandler(ch)
     return logger
 
-def generate_wrapper(options, logger, other_known_names=[]):
+def generate_wrapper(options, logger):
     """
     Generate a ctypes wrapper around the library.
 
@@ -67,7 +66,7 @@ def cleanup_bindings_dir(bindings_path, logger):
     try:
         # make the _bindings folder
         os.makedirs(bindings_path)
-    except OSError as error:
+    except OSError:
         logger.debug("_bindings path already exists, deleting it")
 
         shutil.rmtree(bindings_path)
@@ -76,7 +75,7 @@ def cleanup_bindings_dir(bindings_path, logger):
     try:
         logger.debug("Deleting another _bindings/")
         shutil.rmtree(os.path.join(os.path.dirname(__file__), "_bindings"))
-    except Exception as exception:
+    except Exception:
         logger.debug(
             "_bindings wasn't previously created, so it doesn't need to be "
             "removed."
@@ -149,7 +148,7 @@ def main(library_path, logger=None):
 
         # 2) load the latest generated module
         logger.debug("Loading the __init__.py module from {0}".format(bindings_path))
-        init_module = imp.load_source("_bindings", os.path.join(bindings_path, "__init__.py"))
+        imp.load_source("_bindings", os.path.join(bindings_path, "__init__.py"))
 
         logger.debug("Loading the {0} module from {1}.".format(lib_name, options.output))
         latest_module = imp.load_source(lib_name, options.output)
@@ -181,5 +180,3 @@ def generate_init_file(bindings_path, library_names, logger):
     init_file.close()
 
     return True
-
-

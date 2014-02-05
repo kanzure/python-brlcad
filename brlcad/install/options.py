@@ -21,23 +21,29 @@ def is_win():
     """
     Check if the system is Windows.
     """
-    return sys.platform.startswith("win")
+    return os.name == "nt" or sys.platform.startswith("win") or sys.platform == "cygwin"
 
 def check_gcc(config, logger):
     paths = os.getenv("PATH").split(os.pathsep)
     gcc_exe = "gcc"
     if is_win() and config.has_section("gcc"):
         paths += [path.strip() for path in config.get("gcc", "win-path").split(os.pathsep)]
+        os.environ["PATH"] += os.pathsep.join(paths)
         gcc_exe = "gcc.exe"
+    if not "" in paths:
+        paths.append("")
+    errors = []
     for path in paths:
         gcc_bin = os.path.join(path, gcc_exe)
-        if os.access(gcc_bin, os.X_OK):
-            try:
-                version = subprocess.check_output(["gcc", "-dumpversion"])
-                return (gcc_bin, StrictVersion(version.strip()))
-            except (OSError, subprocess.CalledProcessError) as e:
-                logger.debug("Error checking gcc executable {0}: {1}".format(gcc_bin, e))
-    return None
+        try:
+            version = subprocess.check_output([gcc_bin, "-dumpversion"])
+            logger.debug("Found gcc: {0} -> {1}".format(gcc_bin, version))
+            return gcc_bin, StrictVersion(version.strip())
+        except (OSError, subprocess.CalledProcessError) as e:
+            errors.append("Error checking gcc executable {0}: {1}".format(gcc_bin, e))
+    for error in errors:
+        logger.debug(error)
+    raise SetupException("Couldn't find working gcc !")
 
 def get_brlcad_param(brlcad_config, param_name):
     """
@@ -48,7 +54,7 @@ def get_brlcad_param(brlcad_config, param_name):
     if param_name == "libs":
         # the libs are a special format, extract a list of library names:
         result = result.rsplit(None, 1).pop().split(";")
-    elif param_name in ["libdir","includedir","prefix"]:
+    elif param_name in ["libdir", "includedir", "prefix"]:
         # these are dirs: check if they exist, raise exception if not
         if not os.access(result, os.R_OK):
             raise SetupException("Directory for <{0}> not found: {1}".format(param_name, result))
@@ -87,7 +93,8 @@ def check_brlcad_installation(brlcad_prefix, bin_subdir, logger):
     * result["libdir"] -> brlcad libraries install directory;
     * result["version"] -> brlcad version (distutils.version.StrictVersion instance);
     """
-    brlcad_config = os.path.join(brlcad_prefix, bin_subdir, "brlcad-config")
+    bin_dir = os.path.join(brlcad_prefix, bin_subdir)
+    brlcad_config = os.path.join(bin_dir, "brlcad-config")
     result = None
     if not is_win() and os.access(brlcad_config, os.X_OK):
         try:
@@ -95,6 +102,7 @@ def check_brlcad_installation(brlcad_prefix, bin_subdir, logger):
                 "prefix": get_brlcad_param(brlcad_config, "prefix"),
                 "includedir": get_brlcad_param(brlcad_config, "includedir"),
                 "libdir": get_brlcad_param(brlcad_config, "libdir"),
+                "bindir": bin_dir,
                 "version": get_brlcad_param(brlcad_config, "version"),
             }
         except SetupException:
@@ -110,6 +118,7 @@ def check_brlcad_installation(brlcad_prefix, bin_subdir, logger):
                 "prefix": brlcad_prefix,
                 "includedir": include_dir,
                 "libdir": lib_dir,
+                "bindir": bin_dir,
                 "version": version,
             }
     return result
@@ -128,13 +137,13 @@ def find_brlcad_installations(config, logger):
     # checking for BRLCAD_PREFIX
     prefix = os.getenv("BRLCAD_PREFIX", None)
     if prefix:
-        brlcad_info = check_brlcad_installation(brlcad_prefix, "bin", logger)
+        brlcad_info = check_brlcad_installation(prefix, "bin", logger)
         return [brlcad_info] if brlcad_info else None
     # checking for brlcad installations on the PATH
     iswin = is_win()
     valid_paths = [
         path for path in os.getenv("PATH").split(os.pathsep)
-        if os.access(os.path.join(path,"brlcad-config"),os.R_OK)
+        if os.access(os.path.join(path, "brlcad-config"), os.R_OK)
            and (not iswin
                 or os.path.basename(path.rstrip("/")).lower() == "bin")
     ]
@@ -169,7 +178,7 @@ def find_brlcad_installations(config, logger):
 def load_config():
     config = ConfigParser()
     config.readfp(open("python-brlcad.cfg"))
-    config.read(os.path.join(os.path.expanduser("~"),".python-brlcad.cfg"))
+    config.read(os.path.join(os.path.expanduser("~"), ".python-brlcad.cfg"))
     return config
 
 def parse_csv_list(list_str):
@@ -200,12 +209,25 @@ def load_brlcad_options(config):
             version_list.insert(0, options)
     return version_list
 
-def find_shared_lib_file(base_path):
-    for ext in [".so",".dll",".lib",".a",""]:
-        lib_path = base_path + ext
-        if os.access(lib_path, os.R_OK):
-            return lib_path
-    raise SetupException("Missing shared library file: {0}".format(base_path))
+def find_shared_lib_file(base_dirs, lib_name):
+    for base_dir in base_dirs:
+        base_path = os.path.join(base_dir, lib_name)
+        for ext in [".so", ".dll"]:
+            lib_path = base_path + ext
+            if os.access(lib_path, os.R_OK):
+                return lib_path
+    raise SetupException("Missing shared library file: {0}".format(lib_name))
+
+def norm_win_path(path, escape_spaces=False):
+    """
+    On windows we need to replace backslashes with forward slashes,
+    otherwise ctypesgen will not work properly.
+    """
+    if is_win():
+        path = re.sub(r"\\+", "/", path)
+        if escape_spaces:
+            path = '"' + path + '"'
+    return path
 
 def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     """
@@ -231,13 +253,13 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         gcc_bin, gcc_version = check_gcc(config, logger)
         default_options.cpp = gcc_bin + " -E"
     lib_dir = brlcad_info["libdir"]
+    bin_dir = brlcad_info["bindir"]
     include_dir = brlcad_info["includedir"]
-    default_options.include_search_paths = [include_dir]
+    default_options.include_search_paths = [norm_win_path(include_dir, escape_spaces=True)]
     options_map = {}
     options_list = []
     aliases = parse_csv_list(settings.get("libraries", ""))
     alias_set = set(aliases)
-    dll_extension = ".dll" if is_win() else ".so"
     for alias in aliases:
         options = copy.deepcopy(default_options)
         options_list.append(options)
@@ -245,16 +267,15 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options.brlcad_lib_alias = alias
         options.brlcad_lib_name = lib_name
         options_map[alias] = options
-        module_name = settings.get("{0}-module-name".format(alias), "brlcad._bindings.{0}".format(lib_name))
         lib_header = settings.get("{0}-lib-header".format(alias), "{0}.h".format(alias))
-        dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias),""))
+        dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias), ""))
         dependency_set = set(dependencies)
         if not dependency_set <= alias_set:
             raise SetupException("Missing dependencies: {0} -> {1}".format(alias, dependency_set - alias_set))
         options.modules = [options_map[ln].brlcad_lib_name for ln in dependencies]
         options.output = os.path.join(bindings_path, "{0}.py".format(lib_name))
-        lib_path = find_shared_lib_file(os.path.join(lib_dir, lib_name))
-        options.libraries = [lib_path]
+        lib_path = find_shared_lib_file([bin_dir, lib_dir], lib_name)
+        options.libraries = [norm_win_path(lib_path)]
         header_path = os.path.join(include_dir, "brlcad", lib_header)
         if not os.access(header_path, os.R_OK):
             raise SetupException("Missing header file: {0}".format(header_path))
@@ -305,5 +326,3 @@ def load_ctypesgen_options(bindings_path, logger):
         except Exception as e:
             logger.debug("Failed checking brlcad installation: {0}".format(e))
     raise SetupException("Couldn't find a matching brlcad installation !")
-
-
