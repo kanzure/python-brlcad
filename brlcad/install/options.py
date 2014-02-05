@@ -1,7 +1,6 @@
 """
-Utilities to look up the installed brlcad version(s)
-and the configured library options.
-Separated to make the integration to the existing code easier.
+Utilities to look up the installed brlcad version(s) and the configured library
+options.
 """
 
 import sys
@@ -14,14 +13,17 @@ import ctypesgencore
 from distutils.version import StrictVersion
 from ConfigParser import ConfigParser
 
+
 class SetupException(Exception):
     pass
 
-def is_win():
+
+def is_win(platform=sys.platform):
     """
     Check if the system is Windows.
     """
-    return os.name == "nt" or sys.platform.startswith("win") or sys.platform == "cygwin"
+    return platform.startswith("win")
+
 
 def check_gcc(config, logger):
     paths = os.getenv("PATH").split(os.pathsep)
@@ -45,6 +47,7 @@ def check_gcc(config, logger):
         logger.debug(error)
     raise SetupException("Couldn't find working gcc !")
 
+
 def get_brlcad_param(brlcad_config, param_name):
     """
     Executes brlcad-config with the given param name and returns the result as a string.
@@ -62,6 +65,7 @@ def get_brlcad_param(brlcad_config, param_name):
         result = StrictVersion(result)
     return result
 
+
 def read_version(include_dir):
     """
     Reads the brlcad version out of the brlcad_config.h file
@@ -78,6 +82,7 @@ def read_version(include_dir):
             if match:
                 return StrictVersion(match.group(1))
     return None
+
 
 def check_brlcad_installation(brlcad_prefix, bin_subdir, logger):
     """
@@ -122,6 +127,7 @@ def check_brlcad_installation(brlcad_prefix, bin_subdir, logger):
                 "version": version,
             }
     return result
+
 
 def find_brlcad_installations(config, logger):
     """
@@ -175,14 +181,17 @@ def find_brlcad_installations(config, logger):
                     logger.debug("No valid brlcad installation found at prefix: {0}".format(prefix))
     return result
 
+
 def load_config():
     config = ConfigParser()
     config.readfp(open("python-brlcad.cfg"))
     config.read(os.path.join(os.path.expanduser("~"), ".python-brlcad.cfg"))
     return config
 
+
 def parse_csv_list(list_str):
     return [value.strip() for value in list_str.split(",") if value.strip()]
+
 
 def resolve_booleans(options):
     for key in options:
@@ -191,6 +200,7 @@ def resolve_booleans(options):
             options[key] = True
         elif value == "False":
             options[key] = False
+
 
 def load_brlcad_options(config):
     if not config.has_section("brlcad"):
@@ -209,6 +219,7 @@ def load_brlcad_options(config):
             version_list.insert(0, options)
     return version_list
 
+
 def find_shared_lib_file(base_dirs, lib_name):
     for base_dir in base_dirs:
         base_path = os.path.join(base_dir, lib_name)
@@ -217,6 +228,7 @@ def find_shared_lib_file(base_dirs, lib_name):
             if os.access(lib_path, os.R_OK):
                 return lib_path
     raise SetupException("Missing shared library file: {0}".format(lib_name))
+
 
 def norm_win_path(path, escape_spaces=False):
     """
@@ -228,6 +240,7 @@ def norm_win_path(path, escape_spaces=False):
         if escape_spaces:
             path = '"' + path + '"'
     return path
+
 
 def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     """
@@ -282,6 +295,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options.headers = [header_path]
     return options_list, options_map
 
+
 def match_brlcad_version(brlcad_options, brlcad_installations, logger):
     """
     Iterate the brlcad installations in the order found, and try to match it
@@ -303,6 +317,7 @@ def match_brlcad_version(brlcad_options, brlcad_installations, logger):
             logger.debug("Found matching brlcad installation: {0}".format(brlcad_info["prefix"]))
             yield version, brlcad_info
 
+
 def load_ctypesgen_options(bindings_path, logger):
     """
     Looks up the ctypesgen options based on the available brlcad version(s) and
@@ -313,7 +328,7 @@ def load_ctypesgen_options(bindings_path, logger):
     * installed brlcad version(s) which could be found;
     * the OS you run on;
     In any case this method will try hard to find a working combination of
-    ctypesgen options. In particular it will check wach library for existence
+    ctypesgen options. In particular it will check each library for existence
     of headers and object files. It will also check for a working gcc.
     """
     config = load_config()

@@ -1,5 +1,5 @@
 from brlcad.vmath import Vector, Transform
-from brlcad.wdb import *
+from brlcad.wdb import WDB, libwdb, np
 
 if __name__ == "__main__":
     with WDB("test_wdb.g", "Test BRLCAD DB file") as brl_db:
