@@ -31,14 +31,10 @@ def run_after(command):
     #library_path = os.path.abspath(os.path.dirname(brlcad.__file__))
     egg_path = glob.glob(os.path.join(command.install_lib, "brlcad*.egg/"))[0]
     library_path = os.path.join(egg_path, "brlcad")
-    brlcad_home = os.getenv('BRLCAD_HOME', '/usr/brlcad')
 
     try:
-       brlcad.install.post_install.main(
-           library_path=library_path,
-	    brlcad_install_path = brlcad_home
-	)
-    except Exception as exception:
+        brlcad.install.post_install.main(library_path)
+    except Exception:
         traceback.print_exc()
 
 def hookify(command_subclass):
@@ -65,14 +61,14 @@ def hookify(command_subclass):
         # called by 'run_commands'.  This is slightly kludgy, but seems to
         # work.
         caller = sys._getframe(2)
-        caller_module = caller.f_globals.get('__name__','')
+        caller_module = caller.f_globals.get('__name__', '')
         caller_name = caller.f_code.co_name
 
-        if caller_module != 'distutils.dist' or caller_name!='run_commands':
+        if caller_module != 'distutils.dist' or caller_name != 'run_commands':
             # We weren't called from the command line or setup(), so we
             # should run in backward-compatibility mode to support bdist_*
             # commands.
-           output =  original_run(self)
+            output = original_run(self)
         else:
             output = self.do_egg_install()
 

@@ -22,44 +22,8 @@ python setup.py install
 
 ### installing on windows
 
-Use either mingw or cygwin to provide gcc during installation. There is a bug
-in pip that causes a WindowsError to occur when installing this package, see
-[the bug report](https://github.com/pypa/pip/pull/1263) for more details.
-
-There is a bug in ctypesgen that prevents the mingw gcc method from working on
-Windows, so start with the cygwin method and then try mingw if that doesn't
-work.
-
-#### cygwin
-
-Another option is to install cygwin and use cygwin gcc. However, it is
-important to clarify that there is no cygwin brlcad build. Using cygwin gcc is
-just a cheap shortcut for the Windows python installation process of
-python-brlcad. Mainly this trick is useful for Windows users that already have
-cygwin gcc.
-
-To use cygwin gcc, start the python-brlcad install process in cygwin bash:
-
-```
-/cygdrive/c/Python27/Scripts/pip.exe install --upgrade brlcad
-```
-
-During the installation, ctypesgen will make use of cygwin gcc because of the
-cygwin $PATH environment variable.
-
-There is no brlcad build that targets cygwin.
-
-#### mingw
-
-Install a Windows build of gcc (probably by installing mingw and adding
-`C:\MingW\bin` to the PATH environment variable) and then run:
-
-```
-C:\Python27\Scripts\pip.exe install --upgrade brlcad
-```
-
-TODO: there may be a way to run this installation process while under `msys`
-without updating the system PATH.
+Use either mingw or cygwin to provide gcc during installation. For details
+please consult the README_WIN.md file.
 
 ### non-standard brlcad installation path
 

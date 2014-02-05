@@ -1,0 +1,32 @@
+Failure scenario: if X depends on Y, and Y depends on X, then what can happen is:
+ * X sets "can_include" to true;
+ * X will find Y as a requirement;
+ * Y sets "can_include" to true;
+ * Y will find X as a requirement -> but X has it's "can_include" True already, and won't be checked anymore;
+ * Y leaves "can_include" at True and be included;
+ * X continues to check dependencies, and finds one which fails;
+ * X sets "can_include" to False and won't be included
+The net result: X is set to not included (correctly), but Y is set to be included ! At the end both will be
+included, plus the invalid dependency of X which then makes the result fail (because syntax error for
+example if the invalid dependency was a "long long" field).
+
+For a quick-hack fix, add at the end of ctypesgencore.processor.pipeline#process:
+
+    def deny_include_desc(desc, processed):
+        if desc in processed:
+            return
+        if desc.included:
+            error_message("Skipping selected: {0}".format(desc))
+        desc.included=False
+        processed.add(desc)
+        for dep in desc.dependents:
+            deny_include_desc(dep, processed)
+    processed = set()
+    for desc in data.all:
+        if desc.include_rule=="never":
+            deny_include_desc(desc, processed)
+
+This will avoid librt failing - but it has to be said that a good part of the library is not wrapped !
+
+The real fix will be to make ctypesgen properly handle "typedef long long ..." !
+
