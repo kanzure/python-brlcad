@@ -2,22 +2,15 @@
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
 
-from ctypes_adaptors import *
 import brlcad._bindings.libwdb as libwdb
 import os
+from ctypes_adaptors import ct_points, ct_direction, ct_planes, ct_transform, ct_rgb, ct_bool
+from exceptions import BRLCADException
+from primitives.table import create_primitive
 
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
 libwdb.mk_addmember.argtypes = [libwdb.String, libwdb.POINTER(libwdb.struct_bu_list), libwdb.POINTER(libwdb.c_double), libwdb.c_int]
-
-# Macros are not done by ctypesgen, we add them manually for now:
-RT_WDB_TYPE_DB_DISK = 2
-RT_WDB_TYPE_DB_DISK_APPEND_ONLY = 3
-RT_WDB_TYPE_DB_INMEM = 4
-RT_WDB_TYPE_DB_INMEM_APPEND_ONLY = 5
-
-LOOKUP_NOISY = 1
-LOOKUP_QUIET = 0
 
 def brlcad_copy(obj, debug_msg):
     """
@@ -40,7 +33,7 @@ class WDB:
             if os.path.isfile(db_file):
                 self.db_ip = libwdb.db_open(db_file, "r+w")
                 if self.db_ip:
-                    self.db_fp = libwdb.wdb_dbopen(self.db_ip, RT_WDB_TYPE_DB_DISK)
+                    self.db_fp = libwdb.wdb_dbopen(self.db_ip, libwdb.RT_WDB_TYPE_DB_DISK)
                     if libwdb.db_dirbuild(self.db_ip) < 0:
                         raise BRLCADException("Can't read existing DB file: <{0}>".format(db_file))
             if not self.db_fp:
@@ -51,19 +44,30 @@ class WDB:
         except Exception as e:
             raise BRLCADException("Can't create DB file <{0}>: {1}".format(db_file, e))
 
+    def __iter__(self):
+        for i in range(0, libwdb.RT_DBNHASH):
+            dp = self.db_ip.contents.dbi_Head[i]
+            while dp:
+                crt_dir = dp.contents
+                yield crt_dir
+                dp = crt_dir.d_forw
+
+    def ls(self):
+        return [str(x.d_namep) for x in self if not(x.d_flags & libwdb.RT_DIR_HIDDEN)]
+
     def lookup_internal(self, name):
-        ip = libwdb.rt_db_internal()
-        dp = libwdb.directory()
+        db_internal = libwdb.rt_db_internal()
+        dpp = libwdb.pointer(libwdb.POINTER(libwdb.directory)())
         idb_type = libwdb.rt_db_lookup_internal(
             self.db_ip, name,
-            libwdb.byref(libwdb.pointer(dp)),
-            libwdb.byref(ip),
-            LOOKUP_NOISY,
+            dpp,
+            libwdb.byref(db_internal),
+            libwdb.LOOKUP_NOISY,
             libwdb.byref(libwdb.rt_uniresource)
         )
         if not idb_type:
             return None
-        return ip, dp
+        return create_primitive(idb_type, db_internal, dpp.contents.contents)
 
     def close(self):
         libwdb.wdb_close(self.db_fp)
