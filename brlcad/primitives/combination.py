@@ -1,7 +1,7 @@
 """
 Python wrapper for BRL-CAD combinations.
 """
-import brlcad._bindings.librt as librt
+from brlcad import librt
 
 from brlcad.ctypes_adaptors import ct_transform_from_pointer
 from brlcad.exceptions import BRLCADException

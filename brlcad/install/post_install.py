@@ -20,6 +20,7 @@ import ctypesgencore
 
 from options import load_ctypesgen_options
 
+
 def setup_logging(level=logging.DEBUG):
     """
     Dump everything to stdout by default.
@@ -37,6 +38,7 @@ def setup_logging(level=logging.DEBUG):
 
     logger.addHandler(ch)
     return logger
+
 
 def generate_wrapper(ctypesgen_options, logger):
     """
@@ -79,6 +81,7 @@ def cleanup_bindings_dir(bindings_path, logger):
             "_bindings wasn't previously created, so it doesn't need to be "
             "removed."
         )
+
 
 def main(library_path, logger=None):
     if not logger:
@@ -142,7 +145,7 @@ def main(library_path, logger=None):
 
         # 1) generate the appropriate __init__.py file (__all__ will need to be constructed)
         logger.debug("About to write the __init__.py file")
-        generate_init_file(bindings_path, generated_libraries, logger)
+        update_init_files(library_path, bindings_path, generated_libraries, lib_name, logger)
         logger.debug("Okay, __init__.py has been updated.")
 
         # 2) load the latest generated module
@@ -161,21 +164,28 @@ def main(library_path, logger=None):
         # TODO: ctypesgen needs to support "other_known_names" being passed in
         # through options (right now it just overrides this value).
 
-def generate_init_file(bindings_path, library_names, logger):
+
+def update_init_files(library_path, bindings_path, library_names, crt_library, logger):
     """
     Generates the __init__.py file based on the current list of generated
     wrappers.
     """
     # absolute path to where the __init__.py file should be placed
-    init_path = os.path.join(bindings_path, "__init__.py")
-    logger.debug("Writing __init__.py to: {0}".format(init_path))
+    bindings_init_path = os.path.join(bindings_path, "__init__.py")
+    library_init_path = os.path.join(library_path, "__init__.py")
 
     # build the __init__.py file contents
-    init_contents = "__all__ = " + json.dumps(library_names)
+    library_init_contents = "\nimport _bindings.{0} as {0}\n__all__.append('{0}')".format(crt_library)
+    bindings_init_contents = "__all__ = {0}".format(json.dumps(library_names))
 
-    # save the init file
-    init_file = open(init_path, "w")
-    init_file.write(init_contents)
-    init_file.close()
+    # save the bindings init file
+    logger.debug("Writing bindings __init__.py to: {0}".format(bindings_init_path))
+    init_path = os.path.join(bindings_path, "__init__.py")
+    with open(init_path, "w") as init_file:
+        init_file.write(bindings_init_contents)
 
-    return True
+    # save the library init file
+    logger.debug("Writing library __init__.py to: {0}".format(bindings_init_path))
+    init_path = os.path.join(library_path, "__init__.py")
+    with open(init_path, "a") as init_file:
+        init_file.write(library_init_contents)

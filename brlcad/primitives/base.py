@@ -1,3 +1,7 @@
+"""
+Holds the base class for all primitives so we can have some common operations.
+"""
+
 
 class Primitive(object):
 

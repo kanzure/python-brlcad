@@ -1,9 +1,9 @@
 """
-Holds the base class for all primitives so we can have some common operations.
+Maps the BRL-CAD primitive type codes to the python wrapper classes.
 """
 import warnings
 
-import brlcad._bindings.librt as librt
+from brlcad import librt
 from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
