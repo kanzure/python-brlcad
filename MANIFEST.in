@@ -1,4 +1,6 @@
 include README.md
+include README_WIN.md
+include python-brlcad.cfg
 
 global-exclude *.pyc
 global-exclude .gitignore

@@ -1,5 +1,5 @@
-from brlcad.vmath import Vector, Transform
-from brlcad.wdb import WDB, libwdb, np
+from brlcad.vmath import Transform
+from brlcad.wdb import WDB
 
 if __name__ == "__main__":
     with WDB("test_wdb.g", "Test BRLCAD DB file") as brl_db:
@@ -78,8 +78,8 @@ if __name__ == "__main__":
         )
 
     with WDB("test_wdb.g") as brl_db:
-        ip, dp = brl_db.lookup_internal("arb8.s")
-        arb_res = libwdb.struct_rt_arb_internal.from_address(ip.idb_ptr)
-        points = np.ctypeslib.as_array(arb_res.pt)
-        vectors = [Vector(row, copy=False) for row in points]
-        print vectors
+        print brl_db.lookup_internal("arb8.s")
+        print brl_db.lookup_internal("all.r")
+        print brl_db.lookup_internal("box1.s")
+        print brl_db.lookup_internal("arb4.s")
+        print brl_db.lookup_internal("sph1.s")
