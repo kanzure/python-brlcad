@@ -119,8 +119,7 @@ def ct_str_to_vls(value):
     """
     Creates a VLS string with memory allocated by BRL-CAD code, must be also freed by BRL-CAD code.
     """
-    if value is None:
-        return libbn.bu_vls_vlsinit().contents
     result = libbn.bu_vls_vlsinit()
-    libbn.bu_vls_strcat(result, libbn.String(value))
+    if value is not None:
+        libbn.bu_vls_strcat(result, libbn.String(value))
     return result.contents
