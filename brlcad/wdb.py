@@ -199,8 +199,8 @@ class WDB:
 
     @mk_wrap_primitive(primitives.Combination)
     def combination(self, name, is_region=False, tree=None, inherit=False,
-                    shader=None, material=None, rgb_color=None, temperature=0,
-                    region_id=None, air_code=0, gift_material=0, line_of_sight=0):
+                    shader=None, material=None, rgb_color=(128, 128, 128), temperature=0,
+                    region_id=0, air_code=0, gift_material=0, line_of_sight=0):
         if not tree:
             raise ValueError("Empty tree for combination: {0}".format(name))
         tree = primitives.wrap_tree(tree)
