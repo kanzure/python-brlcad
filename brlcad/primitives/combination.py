@@ -1,11 +1,62 @@
 """
 Python wrapper for BRL-CAD combinations.
 """
-from brlcad import librt
+import brlcad._bindings.librt as librt
 
-from brlcad.ctypes_adaptors import ct_transform_from_pointer
+from brlcad.ctypes_adaptors import ct_transform_from_pointer, ct_transform, brlcad_new
 from brlcad.exceptions import BRLCADException
 from base import Primitive
+from brlcad.vmath import Transform
+
+
+def wrap_tree(*args):
+    if len(args) == 1:
+        args = args[0]
+    if isinstance(args, (list, tuple)):
+        if len(args) == 1 or (len(args) == 2 and isinstance(args[1], Transform)):
+            return leaf(args)
+        else:
+            return union(*args)
+    else:
+        return leaf(args)
+
+
+def leaf(*args):
+    return LeafNode(args[0]) if len(args) == 1 and not isinstance(args, str) else LeafNode(args)
+
+
+def union(*args):
+    return UnionNode(args)
+
+
+def intersect(*args):
+    return IntersectNode(args)
+
+
+def negate(child):
+    return NotNode(child)
+
+
+def subtract(left, right):
+    return SubtractNode(left, right)
+
+
+def rsub(left, right):
+    return SubtractNode(right, left)
+
+
+def xor(*args):
+    return XorNode(args)
+
+#Primitive.__or__ = lambda self, other: union(self, other)
+Primitive.__or__ = union
+Primitive.__ror__ = union
+Primitive.__and__ = intersect
+Primitive.__rand__ = intersect
+Primitive.__sub__ = subtract
+Primitive.__rsub__ = rsub
+Primitive.__xor__ = xor
+Primitive.__rxor__ = xor
 
 
 class TreeNode(object):
@@ -16,6 +67,15 @@ class TreeNode(object):
         if not op_class:
             raise BRLCADException("Invalid operation code: {0}".format(node.tr_a.tu_op))
         return op_class(node)
+
+    __or__ = union
+    __ror__ = union
+    __and__ = intersect
+    __rand__ = intersect
+    __sub__ = subtract
+    __rsub__ = rsub
+    __xor__ = xor
+    __rxor__ = xor
 
 
 class LeafNode(TreeNode):
@@ -51,13 +111,21 @@ class LeafNode(TreeNode):
         else:
             return None
 
+    def build_tree(self):
+        node = brlcad_new(librt.struct_tree_db_leaf)
+        node.magic = librt.RT_TREE_MAGIC
+        node.tl_op = librt.OP_DB_LEAF
+        node.tl_mat = None if self.matrix is None else ct_transform(self.matrix, use_brlcad_malloc=True)
+        node.tl_name = librt.bu_strdupm(self.name, "tree_db_leaf.tl_name")
+        return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
+
 
 class NotNode(TreeNode):
     def __new__(cls, arg):
         if isinstance(arg, librt.union_tree):
             child = TreeNode(arg.tr_b.tb_left.contents)
         else:
-            child = LeafNode(arg)
+            child = wrap_tree(arg)
         if isinstance(child, NotNode):
             return child.child
         result = object.__new__(cls)
@@ -66,6 +134,14 @@ class NotNode(TreeNode):
 
     def __repr__(self):
         return "not({0})".format(self.child)
+
+    def build_tree(self):
+        node = brlcad_new(librt.struct_tree_node)
+        node.magic = librt.RT_TREE_MAGIC
+        node.tb_op = librt.OP_NOT
+        node.tb_regionp = None
+        node.tb_left = self.left.build_tree()
+        return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
 
 
 class SymmetricNode(TreeNode):
@@ -76,9 +152,9 @@ class SymmetricNode(TreeNode):
             arg = [left, right]
         else:
             if isinstance(arg, str):
-                arg = [LeafNode(arg)]
+                arg = [leaf(arg)]
             else:
-                arg = [LeafNode(x) for x in arg]
+                arg = [leaf(x) for x in arg]
         # if any of the children is of the same class, it will accumulate the new nodes:
         for i in range(0, len(arg)):
             if isinstance(arg[i], cls):
@@ -97,8 +173,22 @@ class SymmetricNode(TreeNode):
         if isinstance(child, type(self)):
             self.children.extend(child.children)
         else:
-            self.children.append(LeafNode(child))
+            self.children.append(wrap_tree(child))
         return self
+
+    def build_tree(self, subset=None):
+        if subset and len(subset) == 1:
+            return subset[0].build_tree()
+        if not subset:
+            subset = self.children
+        node = brlcad_new(librt.struct_tree_node)
+        node.magic = librt.RT_TREE_MAGIC
+        node.tb_op = self.op_code
+        node.tb_regionp = None
+        index = len(subset) / 2
+        node.tb_left = self.build_tree(subset[:index])
+        node.tb_right = self.build_tree(subset[index:])
+        return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
 
 
 class PairNode(TreeNode):
@@ -108,33 +198,47 @@ class PairNode(TreeNode):
             left = TreeNode(node.tr_b.tb_left.contents)
             right = TreeNode(node.tr_b.tb_right.contents)
         elif len(args) == 2:
-            left = LeafNode(args[0])
-            right = LeafNode(args[1])
+            left = wrap_tree(args[0])
+            right = wrap_tree(args[1])
         else:
             raise BRLCADException("{0} needs 2 arguments !".format(cls))
         result = object.__new__(cls)
         result.left = left
         result.right = right
+        result.symbol = cls.symbol
         return result
 
     def __repr__(self):
         return "({0} {1} {2})".format(self.left, self.symbol, self.right)
 
+    def build_tree(self):
+        node = brlcad_new(librt.struct_tree_node)
+        node.magic = librt.RT_TREE_MAGIC
+        node.tb_op = self.op_code
+        node.tb_regionp = None
+        node.tb_left = self.left.build_tree()
+        node.tb_right = self.right.build_tree()
+        return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
+
 
 class UnionNode(SymmetricNode):
     symbol = "u"
+    op_code = librt.OP_UNION
 
 
 class IntersectNode(SymmetricNode):
     symbol = "n"
+    op_code = librt.OP_INTERSECT
 
 
 class XorNode(SymmetricNode):
     symbol = "^"
+    op_code = librt.OP_XOR
 
 
 class SubtractNode(PairNode):
     symbol = "-"
+    op_code = librt.OP_SUBTRACT
 
 
 OP_MAP = {
@@ -149,10 +253,14 @@ OP_MAP = {
 
 class Combination(Primitive):
 
-    def __init__(self, type_id, db_internal, directory, data):
-        Primitive.__init__(self, type_id, db_internal, directory, data)
-        self.tree = TreeNode(data.tree.contents)
-
+    def __init__(self, tree=None, is_region=False, type_id=None, db_internal=None, directory=None, data=None):
+        Primitive.__init__(self, type_id=type_id, db_internal=db_internal, name=None, directory=directory, data=data)
+        if tree:
+            self.tree = wrap_tree(tree)
+            self.is_region = is_region
+        else:
+            self.tree = TreeNode(data.tree.contents)
+            self.is_region = data.region_flag
 
     def __repr__(self):
         if self.data.region_flag:
@@ -175,22 +283,14 @@ class Combination(Primitive):
         else:
             return "Combination({0})".format(self.tree)
 
-
-def union(*args):
-    return UnionNode(args)
-
-
-def intersect(*args):
-    return IntersectNode(args)
-
-
-def negate(child):
-    return NotNode(child)
-
-
-def subtract(left, right):
-    return SubtractNode(left, right)
-
-
-def xor(*args):
-    return XorNode(args)
+    def update_params(self, params):
+        params.update({
+            "db_internal": self.db_internal,
+            "directory": self.directory,
+            "data": self.data,
+            "name": self.name
+        })
+        if self.is_region:
+            pass
+        else:
+            pass

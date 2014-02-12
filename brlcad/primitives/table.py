@@ -3,7 +3,7 @@ Maps the BRL-CAD primitive type codes to the python wrapper classes.
 """
 import warnings
 
-from brlcad import librt
+import brlcad._bindings.librt as librt
 from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
@@ -73,7 +73,7 @@ def create_primitive(type_id, db_internal, directory):
             else:
                 display_type_info = type_info
             warnings.warn("No magic for type: {0}, {1}, {2}".format(type_id, hex(data_magic), display_type_info))
-        return type_info[1](type_id, db_internal, directory, data)
+        return type_info[1](type_id=type_id, db_internal=db_internal, directory=directory, data=data)
     else:
-        return Primitive(type_id, db_internal, directory, "UNKNOWN")
+        return Primitive(type_id=type_id, db_internal=db_internal, directory=directory, data="UNKNOWN")
 

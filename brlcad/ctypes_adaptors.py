@@ -1,9 +1,33 @@
+from IPython import lib
 from collections import Iterable
 import ctypes
-from ctypes import c_double
 from numbers import Number
 from exceptions import BRLCADException
 import numpy as np
+import brlcad._bindings.libbn as libbn
+
+
+def brlcad_new(obj_type, debug_msg=None):
+    """
+    Returns a new obj of class <obj_type> using a buffer allocated via bu_malloc.
+    Needed for creating objects which will be freed by BRL-CAD code.
+    """
+    if not debug_msg:
+        debug_msg = obj_type.__class__.__name__
+    count = ctypes.sizeof(obj_type)
+    obj_buf = libbn.bu_malloc(count, debug_msg)
+    return obj_type.from_address(obj_buf)
+
+
+def brlcad_copy(obj, debug_msg):
+    """
+    Returns a copy of the obj using a buffer allocated via bu_malloc.
+    This is needed when BRLCAD frees the memory pointed to by the passed in pointer - yes that happens !
+    """
+    count = ctypes.sizeof(obj)
+    obj_copy = libbn.bu_malloc(count, debug_msg)
+    ctypes.memmove(obj_copy, ctypes.addressof(obj), count)
+    return type(obj).from_address(obj_copy)
 
 
 def iterate_doubles(container):
@@ -54,11 +78,14 @@ def ct_transform_from_pointer(t):
     return [t[x] for x in range(0, 16)]
 
 
-def ct_transform(t):
+def ct_transform(t, use_brlcad_malloc=False):
     fp = [x for x in iterate_doubles(t)]
     if len(fp) != 16:
         raise BRLCADException("Expected 16 doubles, got: {0}".format(len(fp)))
-    return (ctypes.c_double * 16)(*fp)
+    result = (ctypes.c_double * 16)(*fp)
+    if use_brlcad_malloc:
+        result = brlcad_copy(result, "transform")
+    return result
 
 
 def ct_planes(planes):
@@ -74,8 +101,26 @@ def ct_bool(value):
     return 1 if value else 0
 
 
+def ct_bool_to_char(value):
+    return '\1' if value else '\0'
+
+
+def ct_int_to_char(value):
+    return str(chr(value))
+
+
 def ct_rgb(values):
-    if values:
-        return chr(values[0]) + chr(values[1]) + chr(values[2])
-    else:
+    if values is None:
         return None
+    return chr(values[0]) + chr(values[1]) + chr(values[2])
+
+
+def ct_str_to_vls(value):
+    """
+    Creates a VLS string with memory allocated by BRL-CAD code, must be also freed by BRL-CAD code.
+    """
+    if value is None:
+        return libbn.bu_vls_vlsinit().contents
+    result = libbn.bu_vls_vlsinit()
+    libbn.bu_vls_strcat(result, libbn.String(value))
+    return result.contents
