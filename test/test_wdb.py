@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 "particle.s",
                 "pipe.s",
             ),
-            shader="plastic {di=.8 sp=.2}", rgb_color=(64, 180, 96),
+            shader="plastic {di .8 sp .2}", rgb_color=(64, 180, 96),
             region_id=1
         )
 
