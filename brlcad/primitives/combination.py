@@ -57,6 +57,8 @@ Primitive.__sub__ = subtract
 Primitive.__rsub__ = rsub
 Primitive.__xor__ = xor
 Primitive.__rxor__ = xor
+Primitive.__add__= intersect
+Primitive.__radd__ = intersect
 
 
 class TreeNode(object):
@@ -76,6 +78,8 @@ class TreeNode(object):
     __rsub__ = rsub
     __xor__ = xor
     __rxor__ = xor
+    __add__= intersect
+    __radd__ = intersect
 
 
 class LeafNode(TreeNode):
