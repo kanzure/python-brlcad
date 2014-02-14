@@ -257,44 +257,72 @@ OP_MAP = {
 
 class Combination(Primitive):
 
-    def __init__(self, tree=None, is_region=False, type_id=None, db_internal=None, directory=None, data=None):
-        Primitive.__init__(self, type_id=type_id, db_internal=db_internal, name=None, directory=directory, data=data)
-        if tree:
-            self.tree = wrap_tree(tree)
-            self.is_region = is_region
-        else:
-            self.tree = TreeNode(data.tree.contents)
-            self.is_region = data.region_flag
+    def __init__(self, name, tree, is_region=False, is_fastgen=0, inherit=False, shader=None,
+                 material=None, rgb_color=None, temperature=0,
+                 region_id=0, air_code=0, gift_material=0, line_of_sight=0):
+        Primitive.__init__(self, name=name, primitive_type="Combination")
+        self.tree = wrap_tree(tree)
+        self.is_region = is_region
+        self.is_fastgen = is_fastgen
+        self.inherit = inherit
+        self.shader = shader
+        self.material = material
+        self.rgb_color = rgb_color
+        self.temperature = temperature
+        self.region_id = region_id
+        self.air_code = air_code
+        self.gift_material = gift_material
+        self.line_of_sight = line_of_sight
 
     def __repr__(self):
-        if self.data.region_flag:
-            return ''.join([
-                "Region(",
-                "name=", self.name, ", ",
-                "fastgen=", str(ord(self.data.is_fastgen)), ", ",
-                "region_id=", str(self.data.region_id), ", ",
-                "aircode=", str(self.data.aircode), ", ",
-                "GIFTmater=", str(self.data.GIFTmater), ", ",
-                "los=", str(self.data.los), ", ",
-                "rgb_valid=", str(ord(self.data.rgb_valid)), ", ",
-                "rgb=(", ','.join([str(x) for x in self.data.rgb]), "), ",
-                "temperature=", str(self.data.temperature), ", ",
-                "shader=", str(self.data.shader.vls_str), ", ",
-                "material=", str(self.data.material.vls_str), ", ",
-                "inherit=", str(ord(self.data.inherit)), ", ",
-                str(self.tree)
-            ])
-        else:
-            return "Combination({0})".format(self.tree)
+        return ''.join([
+            "Combination(",
+            "name=", self.name, ", ",
+            "is_fastgen=", str(self.is_fastgen), ", ",
+            "region_id=", str(self.region_id), ", ",
+            "air_code=", str(self.air_code), ", ",
+            "gift_material=", str(self.gift_material), ", ",
+            "line_of_sight=", str(self.line_of_sight), ", ",
+            "rgb_color=(", ','.join([str(x) for x in self.rgb_color]) if self.rgb_color else "None", "), ",
+            "temperature=", str(self.temperature), ", ",
+            "shader=", self.shader, ", ",
+            "material=", self.material, ", ",
+            "inherit=", str(self.inherit), ", ",
+            str(self.tree), ")"
+        ])
 
     def update_params(self, params):
         params.update({
-            "db_internal": self.db_internal,
-            "directory": self.directory,
-            "data": self.data,
-            "name": self.name
+            "tree": self.tree,
+            "is_region": self.is_region,
+            "inherit": self.inherit,
+            "shader": self.shader,
+            "material": self.material,
+            "rgb_color": self.rgb_color,
+            "temperature": self.temperature,
+            "region_id": self.region_id,
+            "air_code": self.air_code,
+            "gift_material": self.gift_material,
+            "line_of_sight": self.line_of_sight,
+            "is_fastgen": self.is_fastgen
         })
-        if self.is_region:
-            pass
-        else:
-            pass
+
+
+    @staticmethod
+    def from_wdb(name, data):
+        return Combination(
+            name=name,
+            tree=TreeNode(data.tree.contents),
+            is_region=bool(data.region_flag),
+            is_fastgen=ord(data.is_fastgen),
+            region_id=data.region_id,
+            air_code=data.aircode,
+            gift_material=data.GIFTmater,
+            line_of_sight=data.los,
+            rgb_color=tuple(data.rgb) if data.rgb_valid else None,
+            temperature=data.temperature,
+            shader=str(data.shader.vls_str),
+            material=str(data.material.vls_str),
+            inherit=bool(data.inherit),
+        )
+

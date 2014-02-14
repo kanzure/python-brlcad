@@ -10,9 +10,9 @@ import numpy as np
 
 class ARB8(Primitive):
 
-    def __init__(self, type_id, db_internal, directory, data):
-        Primitive.__init__(self, type_id=type_id, db_internal=db_internal, directory=directory, data=data)
-        self.point_mat = np.ctypeslib.as_array(data.pt)
+    def __init__(self, name, points):
+        Primitive.__init__(self, name=name, primitive_type="ARB8")
+        self.point_mat = np.matrix(points, copy=False)
 
     def __repr__(self):
         return "ARB8({0}, {1})".format(self.name, self.point_mat)
@@ -27,3 +27,10 @@ class ARB8(Primitive):
         params.update({
             "points": self.points,
         })
+
+    @staticmethod
+    def from_wdb(name, data):
+        return ARB8(
+            name=name,
+            points=np.ctypeslib.as_array(data.pt)
+        )

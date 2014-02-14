@@ -11,6 +11,7 @@ from combination import Combination
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
+    # TODO: add proper wrappers for all primitives which have here "Primitive" as wrapper
     librt.ID_ARBN: ("ARBN", Primitive, librt.RT_ARBN_INTERNAL_MAGIC, None),
     librt.ID_ARB8: ("ARB", ARB8, librt.RT_ARB_INTERNAL_MAGIC, librt.struct_rt_arb_internal),
     librt.ID_ARS: ("ARS", Primitive, librt.RT_ARS_INTERNAL_MAGIC, None),
@@ -56,6 +57,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
 def create_primitive(type_id, db_internal, directory):
     # TODO: research if this method won't cause a memory leak
     # because python will not free the structures received here
+    name = str(directory.d_namep)
     type_info = MAGIC_TO_PRIMITIVE_TYPE.get(type_id)
     if type_info:
         magic = type_info[2]
@@ -73,7 +75,7 @@ def create_primitive(type_id, db_internal, directory):
             else:
                 display_type_info = type_info
             warnings.warn("No magic for type: {0}, {1}, {2}".format(type_id, hex(data_magic), display_type_info))
-        return type_info[1](type_id=type_id, db_internal=db_internal, directory=directory, data=data)
+        return type_info[1].from_wdb(name=name, data=data)
     else:
-        return Primitive(type_id=type_id, db_internal=db_internal, directory=directory, data="UNKNOWN")
+        return Primitive(name=name, primitive_type="UNKNOWN")
 

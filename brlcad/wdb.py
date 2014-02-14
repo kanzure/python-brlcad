@@ -199,8 +199,9 @@ class WDB:
 
     @mk_wrap_primitive(primitives.Combination)
     def combination(self, name, is_region=False, tree=None, inherit=False,
-                    shader=None, material=None, rgb_color=(128, 128, 128), temperature=0,
-                    region_id=0, air_code=0, gift_material=0, line_of_sight=0):
+                    shader=None, material=None, rgb_color=None, temperature=0,
+                    region_id=0, air_code=0, gift_material=0, line_of_sight=0,
+                    is_fastgen=libwdb.REGION_NON_FASTGEN):
         if not tree:
             raise ValueError("Empty tree for combination: {0}".format(name))
         tree = primitives.wrap_tree(tree)
@@ -208,13 +209,13 @@ class WDB:
         new_comb.magic = libwdb.RT_COMB_MAGIC
         new_comb.tree = tree.build_tree()
         new_comb.region_flag = ct_bool_to_char(is_region)
-        new_comb.is_fastgen = ct_int_to_char(libwdb.REGION_NON_FASTGEN)
+        new_comb.is_fastgen = ct_int_to_char(is_fastgen)
         new_comb.region_id = region_id
         new_comb.aircode = air_code
         new_comb.GIFTmater = gift_material
         new_comb.los = line_of_sight
         new_comb.rgb_valid = ct_bool_to_char(rgb_color)
-        new_comb.rgb = rgb_color
+        new_comb.rgb = rgb_color if rgb_color else (128, 128, 128)
         new_comb.temperature = temperature
         new_comb.shader = ct_str_to_vls(shader)
         new_comb.material = ct_str_to_vls(material)
@@ -224,27 +225,6 @@ class WDB:
     def region(self, *args, **kwargs):
         kwargs["is_region"] = True
         return self.combination(*args, **kwargs)
-
-    def _make_comb(self, name, members, region_kind, shader_name,
-                   shader_params, rgb_color, region_id, air_code,
-                   material, line_of_sight, inherit, append_ok, gift_semantics):
-        if not members:
-            return
-        member_list = libwdb.bu_list_new()
-        if isinstance(members, str):
-            members = [members]
-        for member in members:
-            if isinstance(member, str):
-                operation = ord('u')
-                matrix = None
-            else:
-                operation = ord(member[1])
-                matrix = ct_transform(member[2]) if len(member) > 2 else None
-                member = member[0]
-            libwdb.mk_addmember(member, member_list, matrix, operation)
-        libwdb.mk_comb(self.db_fp, name, member_list, region_kind, shader_name, shader_params,
-                       ct_rgb(rgb_color), region_id, air_code,
-                       material, line_of_sight, ct_bool(inherit), ct_bool(append_ok), ct_bool(gift_semantics))
 
     def save(self, shape):
         if isinstance(shape, primitives.ARB8):
