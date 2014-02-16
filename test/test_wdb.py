@@ -1,5 +1,6 @@
 from brlcad.vmath import Transform
 from brlcad.wdb import WDB
+from brlcad import primitives
 
 if __name__ == "__main__":
     with WDB("test_wdb.g", "Test BRLCAD DB file") as brl_db:
@@ -46,8 +47,8 @@ if __name__ == "__main__":
             ((0.55, 4, 6.05), 0.1, 0, 0.45),
         ])
         brl_db.region(
-            "all.r",
-            (
+            name="all.r",
+            tree=(
                 "sph1.s",
                 "box1.s",
                 "wedge1.s",
@@ -69,12 +70,11 @@ if __name__ == "__main__":
                 "ehy.s",
                 "hyperboloid.s",
                 "eto.s",
-                ("arbn.s", "u", Transform.translation(1, 0, 0)),
+                primitives.leaf("arbn.s", Transform.translation(1, 0, 0)),
                 "particle.s",
                 "pipe.s",
             ),
-            "plastic", "di=.8 sp=.2", (64, 180, 96),
-            1
+            shader="plastic {di .8 sp .2}", rgb_color=(64, 180, 96)
         )
 
     with WDB("test_wdb.g") as brl_db:

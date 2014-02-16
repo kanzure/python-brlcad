@@ -5,16 +5,32 @@ saved internally as ARB8.
 """
 
 from base import Primitive
-from brlcad.vmath import Vector
 import numpy as np
 
 
 class ARB8(Primitive):
 
-    def __init__(self, type_id, db_internal, directory, data):
-        Primitive.__init__(self, type_id, db_internal, directory, data)
-        self.point_mat = np.ctypeslib.as_array(data.pt)
-        self.points = [Vector(row, copy=False) for row in self.point_mat]
+    def __init__(self, name, points):
+        Primitive.__init__(self, name=name, primitive_type="ARB8")
+        self.point_mat = np.matrix(points, copy=False)
 
     def __repr__(self):
         return "ARB8({0}, {1})".format(self.name, self.point_mat)
+
+    def _get_points(self):
+        # returns tuple because it should be immutable
+        return tuple(self.point_mat.flat)
+
+    points = property(_get_points)
+
+    def update_params(self, params):
+        params.update({
+            "points": self.points,
+        })
+
+    @staticmethod
+    def from_wdb(name, data):
+        return ARB8(
+            name=name,
+            points=np.ctypeslib.as_array(data.pt)
+        )

@@ -145,7 +145,7 @@ def main(library_path, logger=None):
 
         # 1) generate the appropriate __init__.py file (__all__ will need to be constructed)
         logger.debug("About to write the __init__.py file")
-        update_init_files(library_path, bindings_path, generated_libraries, lib_name, logger)
+        generate_init_file(bindings_path, generated_libraries, logger)
         logger.debug("Okay, __init__.py has been updated.")
 
         # 2) load the latest generated module
@@ -165,27 +165,21 @@ def main(library_path, logger=None):
         # through options (right now it just overrides this value).
 
 
-def update_init_files(library_path, bindings_path, library_names, crt_library, logger):
+def generate_init_file(bindings_path, library_names, logger):
     """
     Generates the __init__.py file based on the current list of generated
     wrappers.
     """
     # absolute path to where the __init__.py file should be placed
-    bindings_init_path = os.path.join(bindings_path, "__init__.py")
-    library_init_path = os.path.join(library_path, "__init__.py")
+    init_path = os.path.join(bindings_path, "__init__.py")
+    logger.debug("Writing __init__.py to: {0}".format(init_path))
 
     # build the __init__.py file contents
-    library_init_contents = "\nimport _bindings.{0} as {0}\n__all__.append('{0}')".format(crt_library)
-    bindings_init_contents = "__all__ = {0}".format(json.dumps(library_names))
+    init_contents = "__all__ = " + json.dumps(library_names)
 
-    # save the bindings init file
-    logger.debug("Writing bindings __init__.py to: {0}".format(bindings_init_path))
-    init_path = os.path.join(bindings_path, "__init__.py")
-    with open(init_path, "w") as init_file:
-        init_file.write(bindings_init_contents)
+    # save the init file
+    init_file = open(init_path, "w")
+    init_file.write(init_contents)
+    init_file.close()
 
-    # save the library init file
-    logger.debug("Writing library __init__.py to: {0}".format(bindings_init_path))
-    init_path = os.path.join(library_path, "__init__.py")
-    with open(init_path, "a") as init_file:
-        init_file.write(library_init_contents)
+    return True

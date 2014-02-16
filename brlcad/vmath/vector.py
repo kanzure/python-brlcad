@@ -4,6 +4,7 @@ Vector math based on numpy but targeting geometry operations.
 import numpy as np
 import math
 
+
 class Vector(np.ndarray):
     """
     Represents a vector as used in geometry applications.
@@ -96,6 +97,12 @@ class Vector(np.ndarray):
         if self.ndim > 1:
             raise ValueError("Expected vector, got array with {0} dimensions".format(self.ndim))
 
+    def transpose(self):
+        """
+        This returns the transpose, which is _not_ a Vector !
+        """
+        return np.matrix(self).transpose()
+
     def norm(self):
         return math.sqrt(self.dot(self))
 
@@ -178,6 +185,19 @@ class Vector(np.ndarray):
         True
         """
         return np.allclose(self.dot(Vector(other)), 0)
+
+
+def X():
+    return Vector((1, 0, 0))
+
+
+def Y():
+    return Vector((0, 1, 0))
+
+
+def Z():
+    return Vector((0, 0, 1))
+
 
 if __name__ == "__main__":
     import doctest
