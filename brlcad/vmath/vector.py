@@ -123,6 +123,8 @@ class Vector(np.ndarray):
         return Vector(np.cross(self, other))
 
     def is_same(self, other, rtol=1.e-5, atol=1.e-8):
+        if not self.shape == other.shape:
+            return False
         return np.allclose(self, other, rtol=rtol, atol=atol)
 
     def normalize(self):
