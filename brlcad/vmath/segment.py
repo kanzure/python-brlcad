@@ -4,7 +4,7 @@ Segment-based geometry.
 import math
 from plane import Plane
 from vector import Vector
-import numpy as np
+
 
 class Segment(object):
     """
