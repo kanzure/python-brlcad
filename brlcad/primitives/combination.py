@@ -22,7 +22,10 @@ def wrap_tree(*args):
 
 
 def leaf(*args):
-    return LeafNode(args[0]) if len(args) == 1 and not isinstance(args, str) else LeafNode(args)
+    if len(args) == 1 and not isinstance(args, str):
+        return LeafNode(args[0])
+    else:
+        return LeafNode(args)
 
 
 def union(*args):
