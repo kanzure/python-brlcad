@@ -3,7 +3,7 @@ Python wrapper for BRL-CAD combinations.
 """
 import brlcad._bindings.librt as librt
 
-from brlcad.ctypes_adaptors import ct_transform_from_pointer, ct_transform, brlcad_new
+import brlcad.ctypes_adaptors as cta
 from brlcad.exceptions import BRLCADException
 from base import Primitive
 from brlcad.vmath import Transform
@@ -95,7 +95,7 @@ class LeafNode(TreeNode):
         if isinstance(arg, librt.union_tree):
             result.name = str(arg.tr_l.tl_name)
             if arg.tr_l.tl_mat:
-                result.matrix = ct_transform_from_pointer(arg.tr_l.tl_mat)
+                result.matrix = cta.transform_from_pointer(arg.tr_l.tl_mat)
         else:
             result.name = LeafNode.extract_name(arg)
             if not result.name:
@@ -119,10 +119,10 @@ class LeafNode(TreeNode):
             return None
 
     def build_tree(self):
-        node = brlcad_new(librt.struct_tree_db_leaf)
+        node = cta.brlcad_new(librt.struct_tree_db_leaf)
         node.magic = librt.RT_TREE_MAGIC
         node.tl_op = librt.OP_DB_LEAF
-        node.tl_mat = None if self.matrix is None else ct_transform(self.matrix, use_brlcad_malloc=True)
+        node.tl_mat = None if self.matrix is None else cta.transform(self.matrix, use_brlcad_malloc=True)
         node.tl_name = librt.bu_strdupm(self.name, "tree_db_leaf.tl_name")
         return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
 
@@ -143,7 +143,7 @@ class NotNode(TreeNode):
         return "not({0})".format(self.child)
 
     def build_tree(self):
-        node = brlcad_new(librt.struct_tree_node)
+        node = cta.brlcad_new(librt.struct_tree_node)
         node.magic = librt.RT_TREE_MAGIC
         node.tb_op = librt.OP_NOT
         node.tb_regionp = None
@@ -188,7 +188,7 @@ class SymmetricNode(TreeNode):
             return subset[0].build_tree()
         if not subset:
             subset = self.children
-        node = brlcad_new(librt.struct_tree_node)
+        node = cta.brlcad_new(librt.struct_tree_node)
         node.magic = librt.RT_TREE_MAGIC
         node.tb_op = self.op_code
         node.tb_regionp = None
@@ -219,7 +219,7 @@ class PairNode(TreeNode):
         return "({0} {1} {2})".format(self.left, self.symbol, self.right)
 
     def build_tree(self):
-        node = brlcad_new(librt.struct_tree_node)
+        node = cta.brlcad_new(librt.struct_tree_node)
         node.magic = librt.RT_TREE_MAGIC
         node.tb_op = self.op_code
         node.tb_regionp = None

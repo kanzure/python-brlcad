@@ -1,4 +1,3 @@
-from IPython import lib
 from collections import Iterable
 import ctypes
 from numbers import Number
@@ -47,7 +46,7 @@ def iterate_doubles(container):
             raise BRLCADException("Can't extract doubles from type: {0}".format(type(p)))
 
 
-def ct_points(p, point_count=1):
+def points(p, point_count=1):
     fp = [x for x in iterate_doubles(p)]
     expected_count = point_count * 3
     double_count = len(fp)
@@ -56,7 +55,7 @@ def ct_points(p, point_count=1):
     return (ctypes.c_double * double_count)(*fp)
 
 
-def ct_direction(d):
+def direction(d):
     fp = [x for x in iterate_doubles(d)]
     double_count = len(fp)
     if double_count == 3:
@@ -67,18 +66,18 @@ def ct_direction(d):
         raise BRLCADException("Expected 3 oder 6 doubles, got: {0}".format(double_count))
 
 
-def ct_plane(p):
+def plane(p):
     fp = [x for x in iterate_doubles(p)]
     if len(fp) != 4:
         raise BRLCADException("Expected 4 doubles, got: {0}".format(len(fp)))
     return (ctypes.c_double * 4)(*fp)
 
 
-def ct_transform_from_pointer(t):
+def transform_from_pointer(t):
     return [t[x] for x in range(0, 16)]
 
 
-def ct_transform(t, use_brlcad_malloc=False):
+def transform(t, use_brlcad_malloc=False):
     fp = [x for x in iterate_doubles(t)]
     if len(fp) != 16:
         raise BRLCADException("Expected 16 doubles, got: {0}".format(len(fp)))
@@ -88,34 +87,34 @@ def ct_transform(t, use_brlcad_malloc=False):
     return result
 
 
-def ct_planes(planes):
+def planes(planes):
     double_args = [x for x in iterate_doubles(planes)]
     return (ctypes.c_double * len(double_args))(*double_args)
 
 
-def ct_pointer(value):
+def pointer(value):
     return ctypes.byref(value)
 
 
-def ct_bool(value):
+def bool(value):
     return 1 if value else 0
 
 
-def ct_bool_to_char(value):
+def bool_to_char(value):
     return '\1' if value else '\0'
 
 
-def ct_int_to_char(value):
+def int_to_char(value):
     return str(chr(value))
 
 
-def ct_rgb(values):
+def rgb(values):
     if values is None:
         return None
     return chr(values[0]) + chr(values[1]) + chr(values[2])
 
 
-def ct_str_to_vls(value):
+def str_to_vls(value):
     """
     Creates a VLS string with memory allocated by BRL-CAD code, must be also freed by BRL-CAD code.
     """
