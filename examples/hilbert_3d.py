@@ -31,73 +31,86 @@ NEGATE = {
     ZN: ZP,
 }
 
+# The fields returned are what needs to be done in each step:
+# (connecting direction, recursion direction, mirroring params)
+VARIANTS = [
+    lambda args: (
+        (args.side1, args.side1, (args.om, -args.o1)),
+        (args.side2, args.side2, (-args.o2, -args.om)),
+        (args.side1_n, args.direction, (args.o1, args.o2)),
+        (args.direction, args.side2, (args.o2, args.om)),
+        (args.side1, args.side2_n, (args.o2, -args.om)),
+        (args.side2_n, args.direction, (args.o1, args.o2)),
+        (args.side1_n, args.side2_n, (-args.o2, args.om)),
+        (None, args.side1_n, (-args.om, -args.o1)),
+    ),
+    lambda args: (
+        (args.side1, args.side1, (args.om, -args.o1)),
+        (args.side2, args.side2, (-args.o2, -args.om)),
+        (args.side1_n, args.side2, (-args.o2, -args.om)),
+        (args.direction, args.direction, (-args.o1, -args.o2)),
+        (args.side1, args.direction, (-args.o1, -args.o2)),
+        (args.side2_n, args.side2_n, (-args.o2, args.om)),
+        (args.side1_n, args.side2_n, (-args.o2, args.om)),
+        (None, args.side1_n, (-args.om, -args.o1)),
+    ),
+]
 
-def generate_steps(level, direction=XP, order=(1, 1)):
+
+class ShapeArgs(object):
+    def __init__(self, direction, order):
+        self.direction = direction
+        self.o1, self.o2 = order
+        self.side1 = MAP[direction]
+        self.side2 = MAP[self.side1]
+        self.side1_n = NEGATE[self.side1]
+        self.side2_n = NEGATE[self.side2]
+        if self.o1 < 0:
+            self.side1, self.side1_n = self.side1_n, self.side1
+        if self.o2 < 0:
+            self.side2, self.side2_n = self.side2_n, self.side2
+        self.om = self.o1 * self.o2
+
+
+def generate_steps(level, direction=XP, order=(1, 1), variant=0):
     """
     Returns a generator for the direction of each step in a 3D Hilbert space filling curve.
-    This is only one of the many possible variants, others can be obtained by changing
-    the rules (in a consistent way).
+    There are many possible variants, others can be obtained by changing  the rules
+    (in a consistent way) in the VARIANTS map.
     """
     if level == 0:
         return
     level -= 1
-    o1 = order[0]
-    o2 = order[1]
-    side1 = MAP[direction]
-    side2 = MAP[side1]
-    side1_n = NEGATE[side1]
-    side2_n = NEGATE[side2]
-    if o1 < 0:
-        side1, side1_n = side1_n, side1
-    if o2 < 0:
-        side2, side2_n = side2_n, side2
-    op = o1 * o2
-    for x in generate_steps(level, side1, (op, -o1)):
-        yield x
-    yield side1
-    for x in generate_steps(level, side2, (-o2, -op)):
-        yield x
-    yield side2
-    for x in generate_steps(level, side2, (-o2, -op)):
-        yield x
-    yield side1_n
-    for x in generate_steps(level, direction, (-o1, -o2)):
-        yield x
-    yield direction
-    for x in generate_steps(level, direction, (-o1, -o2)):
-        yield x
-    yield side1
-    for x in generate_steps(level, side2_n, (-o2, op)):
-        yield x
-    yield side2_n
-    for x in generate_steps(level, side2_n, (-o2, op)):
-        yield x
-    yield side1_n
-    for x in generate_steps(level, side1_n, (-op, -o1)):
-        yield x
+    shape_args = ShapeArgs(direction, order)
+    steps = VARIANTS[variant](shape_args)
+    for i in range(0, len(steps)):
+        crt_step = steps[i]
+        for x in generate_steps(level, direction=crt_step[1], order=crt_step[2], variant=variant):
+            yield x
+        if crt_step[0]:
+            yield crt_step[0]
 
 
-
-def generate_points(iterations, direction=XP, order=(1, 1),
+def generate_points(iterations, direction=XP, order=(1, 1), variant=0,
                     start_point=(0, 0, 0), x_vec=(1, 0, 0), y_vec=(0, 1, 0), z_vec=(0, 0, 1)):
     crt_point = Vector(start_point, copy=True)
     x_vec = Vector(x_vec, copy=False)
     y_vec = Vector(y_vec, copy=False)
     z_vec = Vector(z_vec, copy=False)
     yield crt_point
-    for step in generate_steps(iterations, direction=direction, order=order):
+    for step in generate_steps(iterations, direction=direction, order=order, variant=variant):
         crt_point = crt_point + (step[0] * x_vec) + (step[1] * y_vec) + (step[2] * z_vec)
         yield crt_point
 
 
-def hilbert_pipe(file_name, size=10, recursions=4, dc=0.2, direction=XP,
+def hilbert_pipe(file_name, size=10, recursions=4, dc=0.2, direction=ZP, variant=0,
                  x_vec=(1, 0, 0), y_vec=(0, 1, 0), z_vec=(0, 0, 1)):
     l = float(size) / (2**recursions)
     d = dc * l
     r = d
     segments = [
         (x, d, 0, r) for x in
-        generate_points(recursions, direction=direction,
+        generate_points(recursions, direction=direction, variant=variant,
                         x_vec=Vector(x_vec)*l, y_vec=Vector(y_vec)*l, z_vec=Vector(z_vec)*l)
     ]
     with WDB(file_name, "3D Hilbert space filling curve with pipes") as brl_db:
@@ -121,7 +134,8 @@ def hilbert_3D():
     else:
         recursions = 2
 
-    hilbert_pipe(file_name, size, recursions, direction=XP, x_vec=(2, 0.3, 0.3), y_vec=(0.3, 1, 0.3), z_vec=(0.3, 0.3, 1))
+    # hilbert_pipe(file_name, size, recursions, direction=XP, x_vec=(2, 0.3, 0.3), y_vec=(0.3, 1, 0.3), z_vec=(0.3, 0.3, 1))
+    hilbert_pipe(file_name, size, recursions)
 
 
 def hilbert_3D_test():
