@@ -204,7 +204,7 @@ class WDB:
         if not tree:
             raise ValueError("Empty tree for combination: {0}".format(name))
         tree = primitives.wrap_tree(tree)
-        new_comb = cta.brlcad_new(libwdb.structa.rt_comb_internal)
+        new_comb = cta.brlcad_new(libwdb.struct_rt_comb_internal)
         new_comb.magic = libwdb.RT_COMB_MAGIC
         new_comb.tree = tree.build_tree()
         new_comb.region_flag = cta.bool_to_char(is_region)
