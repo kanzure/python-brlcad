@@ -5,6 +5,7 @@ import collections
 from vector import Vector
 import numpy as np
 
+
 class Plane(object):
     """
     A plane represented by a normal vector perpendicular to the
@@ -54,16 +55,15 @@ class Plane(object):
         """
         if isinstance(values, Plane):
             return values.copy() if copy else values
-        elif isinstance(values, collections.Iterable):
-            if not isinstance(values, collections.Sized):
-                values = tuple(values)
-            if isinstance(values, str):
-                values = Vector(values)
-            elif len(values) == 2:
-                return Plane(normal=values[0], distance=values[1], copy=copy)
-            # this is on purpose not "elif", to catch 4 floats passed in as a string:
-            if len(values) == 4:
-                return Plane(normal=values[:3], distance=values[3], copy=copy)
+        is_string = isinstance(values, str)
+        is_iterable = isinstance(values, collections.Iterable)
+        is_sized = isinstance(values, collections.Sized)
+        if is_string or not is_iterable or not is_sized:
+            values = Vector(values)
+        elif len(values) == 2:
+            return Plane(normal=values[0], distance=values[1], copy=copy)
+        if len(values) == 4:
+            return Plane(normal=values[:3], distance=values[3], copy=copy)
         raise ValueError("Can't parse a plane from: {0}".format(values))
 
     def __iter__(self):
