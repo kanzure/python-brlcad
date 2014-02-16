@@ -7,12 +7,13 @@ import brlcad._bindings.librt as librt
 from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
+from arbn import ARBN
 from combination import Combination
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
     # TODO: add proper wrappers for all primitives which have here "Primitive" as wrapper
-    librt.ID_ARBN: ("ARBN", Primitive, librt.RT_ARBN_INTERNAL_MAGIC, librt.struct_rt_arbn_internal),
+    librt.ID_ARBN: ("ARBN", ARBN, librt.RT_ARBN_INTERNAL_MAGIC, librt.struct_rt_arbn_internal),
     librt.ID_ARB8: ("ARB", ARB8, librt.RT_ARB_INTERNAL_MAGIC, librt.struct_rt_arb_internal),
     librt.ID_ARS: ("ARS", Primitive, librt.RT_ARS_INTERNAL_MAGIC, librt.struct_rt_ars_internal),
     librt.ID_BINUNIF: ("BINUNIF", Primitive, librt.RT_BINUNIF_INTERNAL_MAGIC, librt.struct_rt_binunif_internal),

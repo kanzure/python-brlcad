@@ -2,6 +2,7 @@ import unittest
 from brlcad.vmath import Vector
 
 import brlcad.wdb as wdb
+import brlcad.ctypes_adaptors as cta
 
 
 class WDBTestCase(unittest.TestCase):
@@ -51,6 +52,9 @@ class WDBTestCase(unittest.TestCase):
             check_arb("arb6.s", "1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0, 1, 0, 1, 1, 0, 1, -1, 0, 1, -1, 0, 1")
             check_arb("arb7.s", "1, 1, -1, 1, -1, -1, -3, -1, -1, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, 1, 1, 1, 1")
             check_arb("arb8.s", "1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1")
+            shape = brl_db.lookup_internal("arbn.s")
+            expected = Vector((1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, 0, 1, 1, 0, 0, -1, 1))
+            self.assertTrue(expected.is_same(cta.flatten_floats(shape.planes)))
 
 
 if __name__ == "__main__":
