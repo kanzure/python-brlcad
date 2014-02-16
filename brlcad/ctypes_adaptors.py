@@ -78,6 +78,10 @@ def transform_from_pointer(t):
 
 
 def transform(t, use_brlcad_malloc=False):
+    """
+    Serializes a Transform-like object 't' (can be anything which will provide 16 floats)
+    to the ctypes form of a transformation matrix as used by BRL-CAD code.
+    """
     fp = [x for x in iterate_doubles(t)]
     if len(fp) != 16:
         raise BRLCADException("Expected 16 doubles, got: {0}".format(len(fp)))
