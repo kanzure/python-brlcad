@@ -33,7 +33,7 @@ def generate_steps(level, direction=UP, order=1):
     x(o) -> o*lx(-o), o*lx, x(o), x, x(o), -o*lx, -o*lx(-o)
     where:
     x -> current direction
-    lx -> x turned to left (rotate) 90 degrees
+    lx -> x turned to left (rotated) 90 degrees
     o -> determines on which side of the direction the next step will happen
     """
     if level == 0:
