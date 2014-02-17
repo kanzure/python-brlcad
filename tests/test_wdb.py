@@ -3,26 +3,23 @@ from brlcad.vmath import Vector
 
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
+import functools
 
 
 class WDBTestCase(unittest.TestCase):
 
-    def get_arb_checker(self, brl_db):
-        def check_arb(name, expected_points):
-            shape = brl_db.lookup_internal(name)
-            expected = Vector(expected_points)
-            if not expected.is_same(shape.points):
-                self.fail("{0} != {1}".format(expected, shape.points))
-        return check_arb
+    def check_arb(self, brl_db, name, expected_points):
+        shape = brl_db.lookup_internal(name)
+        expected = Vector(expected_points)
+        if not expected.is_same(shape.points):
+            self.fail("{0} != {1}".format(expected, shape.points))
 
-    def get_tgc_checker(self, brl_db):
-        def check_tgc(name, expected_points):
-            shape = brl_db.lookup_internal(name)
-            expected = Vector(expected_points)
-            actual = cta.flatten_floats([shape.base, shape.height, shape.a, shape.b, shape.c, shape.d])
-            if not expected.is_same(actual):
-                self.fail("{0} != {1}".format(expected, actual))
-        return check_tgc
+    def check_tgc(self, brl_db, name, expected_points):
+        shape = brl_db.lookup_internal(name)
+        expected = Vector(expected_points)
+        actual = cta.flatten_floats([shape.base, shape.height, shape.a, shape.b, shape.c, shape.d])
+        if not expected.is_same(actual):
+            self.fail("{0} != {1}".format(expected, actual))
 
     def test_defaults(self):
         """
@@ -53,7 +50,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
         with wdb.WDB("test_defaults.g") as brl_db:
-            check_arb = self.get_arb_checker(brl_db)
+            check_arb = functools.partial(self.check_arb, brl_db)
             check_arb("wedge.s", "0, 0, 0, 1, 0, 0, 1, -1, 0, 0, -1, 0, 0, 0, 1, 0.5, 0, 1, 0.5, -1, 1, 0, -1, 1")
             check_arb("arb4.s", "0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1")
             check_arb("arb5.s", "1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1")
@@ -77,7 +74,7 @@ class WDBTestCase(unittest.TestCase):
             self.assertTrue(shape.height.is_same((-1, 0, 0)))
             self.assertTrue(shape.breadth.is_same((0, 0, 1)))
             self.assertEqual(0.5, shape.half_width)
-            check_tgc = self.get_tgc_checker(brl_db)
+            check_tgc = functools.partial(self.check_tgc, brl_db)
             check_tgc("rcc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -1, 0, -1, 0, 0")
             check_tgc("tgc.s", "0, 0, 0, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0, 0")
             check_tgc("cone.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 0, 0, -0.5, 0, 0.5, 0, 0")
