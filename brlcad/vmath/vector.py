@@ -189,6 +189,38 @@ class Vector(np.ndarray):
         """
         return np.allclose(self.dot(Vector(other)), 0)
 
+    def construct_normal(self):
+        """
+        Returns a normal vector perpendicular to this vector.
+        >>> x = Vector([1, 0, 0])
+        >>> y = x.construct_normal()
+        >>> x.is_normal_to(y)
+        True
+        >>> y.is_same([0, 0, -1])
+        True
+        >>> Vector([0, -1, 0]).construct_normal().is_same([0, 0, -1])
+        True
+        >>> Vector("1, 0").construct_normal().is_same([0, 1])
+        True
+        >>> Vector("3, -1, 2, -4").construct_normal().is_same([-0.8, 0, 0, -0.6])
+        True
+        """
+        length = len(self)
+        if length == 3:
+            # for 3D vectors we try to be compatible with bn_vec_ortho from libbn
+            indexes = (np.arange(length) + np.abs(self).argmin()) % length
+            result = [0, 0, 0]
+            result[indexes[1]] = -self[indexes[2]]
+            result[indexes[2]] = self[indexes[1]]
+        else:
+            # this one will work for any vector length but it's not compatible with bn_vec_ortho
+            i = np.abs(self).argmax()
+            j = (i + 1) % length
+            result = np.zeros(length)
+            result[i] = -self[j]
+            result[j] = self[i]
+        return Vector(result).normalize()
+
 
 def X():
     return Vector((1, 0, 0))
