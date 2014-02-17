@@ -55,6 +55,15 @@ class WDBTestCase(unittest.TestCase):
             shape = brl_db.lookup_internal("arbn.s")
             expected = Vector((1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, 0, 1, 1, 0, 0, -1, 1))
             self.assertTrue(expected.is_same(cta.flatten_floats(shape.planes)))
+            shape = brl_db.lookup_internal("sphere.s")
+            self.assertTrue(shape.center.is_same((0, 0, 0)))
+            self.assertEqual(1, shape.radius)
+            shape = brl_db.lookup_internal("ellipsoid.s")
+            self.assertTrue(shape.center.is_same((0, 0, 0)))
+            self.assertEqual(1, shape.radius)
+            self.assertTrue(shape.a.is_same((1, 0, 0)))
+            self.assertTrue(shape.b.is_same((0, 1, 0)))
+            self.assertTrue(shape.c.is_same((0, 0, 1)))
 
 
 if __name__ == "__main__":
