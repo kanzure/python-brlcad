@@ -8,6 +8,7 @@ from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
 from arbn import ARBN
+from ellipsoid import Ellipsoid, Sphere
 from combination import Combination
 
 
@@ -23,8 +24,8 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_DSP: ("DSP", Primitive, librt.RT_DSP_INTERNAL_MAGIC, librt.struct_rt_dsp_internal),
     librt.ID_EBM: ("EBM", Primitive, librt.RT_EBM_INTERNAL_MAGIC, librt.struct_rt_ebm_internal),
     librt.ID_EHY: ("EHY", Primitive, librt.RT_EHY_INTERNAL_MAGIC, librt.struct_rt_ehy_internal),
-    librt.ID_ELL: ("ELL", Primitive, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
-    librt.ID_SPH: ("ELL", Primitive, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
+    librt.ID_ELL: ("ELL", Ellipsoid, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
+    librt.ID_SPH: ("ELL", Sphere, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_EPA: ("EPA", Primitive, librt.RT_EPA_INTERNAL_MAGIC, librt.struct_rt_epa_internal),
     librt.ID_ETO: ("ETO", Primitive, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
     librt.ID_EXTRUDE: ("EXTRUDE", Primitive, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),

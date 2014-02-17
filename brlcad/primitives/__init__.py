@@ -6,5 +6,9 @@ from base import *
 from arb8 import *
 from arbn import *
 from combination import *
+from ellipsoid import *
 
-__all__ = [Primitive, ARB8, ARBN, Combination, negate, intersect, subtract, union, xor, wrap_tree]
+__all__ = [
+    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "Combination",
+    "negate", "intersect", "subtract", "union", "xor", "wrap_tree"
+]

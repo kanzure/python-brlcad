@@ -9,4 +9,4 @@ from segment import *
 from transform import *
 from vector import *
 
-__all__ = [Vector, Segment, Plane, Transform, X, Y, Z]
+__all__ = ["Vector", "Segment", "Plane", "Transform", "X", "Y", "Z"]

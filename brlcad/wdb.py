@@ -15,8 +15,24 @@ libwdb.mk_addmember.argtypes = [
 ]
 
 
+# This map holds the primitive type -> mk_... method mapping for saving each type of primitives.
+# It is populated by the mk_wrap_primitive decoration.
+SAVE_MAP = {}
+
+
 def mk_wrap_primitive(primitive_class):
     def wrapper_func(mk_func):
+        if primitive_class == primitives.Primitive:
+            pass
+        elif SAVE_MAP.has_key(primitive_class) and SAVE_MAP[primitive_class] != mk_func:
+            raise BRLCADException(
+                "Bad setup, multiple save functions ({}, {}) assigned to primitive: {}".format(
+                    mk_func, SAVE_MAP[primitive_class], primitive_class
+                )
+            )
+        else:
+            SAVE_MAP[primitive_class] = mk_func
+
         def wrapped_func(db_self, *args, **kwargs):
             if len(args) == 1 and isinstance(args[0], primitives.Primitive):
                 shape = args[0]
@@ -39,7 +55,7 @@ class WDB:
     """
     Object to open or create a BRLCad data base file and read/write/modify it.
     """
-    
+
     def __init__(self, db_file, title=None):
         try:
             self.db_fp = None
@@ -85,7 +101,7 @@ class WDB:
     def close(self):
         libwdb.wdb_close(self.db_fp)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Sphere)
     def sphere(self, name, center=(0, 0, 0), radius=1):
         libwdb.mk_sph(self.db_fp, name, cta.points(center), radius)
 
@@ -120,7 +136,7 @@ class WDB:
     def arb8(self, name, points=(1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1)):
         libwdb.mk_arb8(self.db_fp, name, cta.points(points, point_count=8))
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Ellipsoid)
     def ellipsoid(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1)):
         libwdb.mk_ell(self.db_fp, name, cta.points(center), cta.direction(a), cta.direction(b), cta.direction(c))
 
@@ -177,7 +193,7 @@ class WDB:
         libwdb.mk_eto(self.db_fp, name, cta.points(center), cta.direction(n),
                       cta.direction(s_major), r_revolution, r_minor)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.ARBN)
     def arbn(self, name, planes=(1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, 0, 1, 1, 0, 0, -1, 1)):
         # mk_arbn will free the passed array, so we need to alloc the memory in brlcad code:
         # TODO: this was fixed in the latest BRL-CAD code, need to do it conditionally on version ?
@@ -226,10 +242,8 @@ class WDB:
         return self.combination(*args, **kwargs)
 
     def save(self, shape):
-        if isinstance(shape, primitives.ARB8):
-            self.arb8(shape)
-        elif isinstance(shape, primitives.Combination):
-            self.combination(shape)
+        if SAVE_MAP.has_key(shape.__class__):
+            SAVE_MAP[shape.__class__](self, shape)
         else:
             raise NotImplementedError("Save not implemented for type: {0}".format(type(shape)))
 
