@@ -46,6 +46,13 @@ def iterate_doubles(container):
             raise BRLCADException("Can't extract doubles from type: {0}".format(type(p)))
 
 
+def flatten_floats(container):
+    """
+    Flattens nested hierarchies of geometry to plain list of doubles.
+    """
+    return [x for x in iterate_doubles(container)]
+
+
 def points(p, point_count=1):
     fp = [x for x in iterate_doubles(p)]
     expected_count = point_count * 3
@@ -91,9 +98,12 @@ def transform(t, use_brlcad_malloc=False):
     return result
 
 
-def planes(planes):
-    double_args = [x for x in iterate_doubles(planes)]
-    return (ctypes.c_double * len(double_args))(*double_args)
+def planes(values):
+    double_args = [x for x in iterate_doubles(values)]
+    count = len(double_args)
+    if count % 4 != 0:
+        raise ValueError("Invalid parameter count ({}) for planes !".format(count))
+    return (ctypes.c_double * count)(*double_args)
 
 
 def pointer(value):

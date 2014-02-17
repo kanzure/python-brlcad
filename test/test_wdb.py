@@ -23,7 +23,6 @@ if __name__ == "__main__":
         brl_db.tgc("tgc.s", (0, -5, 7), (0, 0, 1), (0.5, 0, 0), (0, 1, 0), (1, 0, 0), (0, 0.5, 0))
         brl_db.cone("cone.s", (0, -2, 7), (0, 0, 2), 0.5, 1.25, 0.75)
         brl_db.trc("trc.s", (0, -2, 7.5), (0, 0, 0.5), 0.75, 1.25)
-        brl_db.trc_top("trc_top.s", (0, -2, 8), (0, -2, 8.5), 1.25, 0.75)
         brl_db.rpc("rpc.s", (0, -2, 8.5), (0, 0, 0.5), (0.25, 0.25, 0), 0.75)
         brl_db.rhc("rhc.s", (0, -2, 9), (0, 0, 0.5), (0.25, 0.25, 0), 0.75, 0.1)
         brl_db.epa("epa.s", (1, 2, 7), (0, 0, -1), (1, 0, 0), 1, 0.5)
@@ -63,7 +62,6 @@ if __name__ == "__main__":
                 "tgc.s",
                 "cone.s",
                 "trc.s",
-                "trc_top.s",
                 "rpc.s",
                 "rhc.s",
                 "epa.s",
@@ -78,8 +76,5 @@ if __name__ == "__main__":
         )
 
     with WDB("test_wdb.g") as brl_db:
-        print brl_db.lookup_internal("arb8.s")
-        print brl_db.lookup_internal("all.r")
-        print brl_db.lookup_internal("box1.s")
-        print brl_db.lookup_internal("arb4.s")
-        print brl_db.lookup_internal("sph1.s")
+        for x in brl_db.ls():
+            print brl_db.lookup_internal(x)

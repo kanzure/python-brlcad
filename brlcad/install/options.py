@@ -282,6 +282,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options_map[alias] = options
         lib_headers = parse_csv_list(settings.get("{0}-lib-headers".format(alias), "{0}.h".format(alias)))
         dependencies = parse_csv_list(settings.get("{0}-dependencies".format(alias), ""))
+        options.include_symbols = settings.get("{0}-include-pattern".format(alias), options.include_symbols)
         dependency_set = set(dependencies)
         if not dependency_set <= alias_set:
             raise SetupException("Missing dependencies: {0} -> {1}".format(alias, dependency_set - alias_set))
