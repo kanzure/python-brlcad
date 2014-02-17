@@ -165,7 +165,7 @@ class WDB:
     def trc_top(self, name, base=(0, 0, 0), top=(0, 0, 1), r_base=1, r_top=0.5):
         libwdb.mk_trc_top(self.db_fp, name, cta.points(base), cta.direction(top), r_base, r_top)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(breadth), half_width)
 

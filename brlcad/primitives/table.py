@@ -9,6 +9,7 @@ from arb8 import ARB8
 from base import Primitive
 from arbn import ARBN
 from ellipsoid import Ellipsoid, Sphere
+from rpc import RPC
 from combination import Combination
 
 
@@ -40,7 +41,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_PARTICLE: ("PARTICLE", Primitive, librt.RT_PART_INTERNAL_MAGIC, librt.struct_rt_part_internal),
     librt.ID_REVOLVE: ("REVOLVE", Primitive, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
     librt.ID_RHC: ("RHC", Primitive, librt.RT_RHC_INTERNAL_MAGIC, librt.struct_rt_rhc_internal),
-    librt.ID_RPC: ("RPC", Primitive, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
+    librt.ID_RPC: ("RPC", RPC, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
     librt.ID_SKETCH: ("SKETCH", Primitive, librt.RT_SKETCH_INTERNAL_MAGIC, librt.struct_rt_sketch_internal),
     librt.ID_SUBMODEL: ("SUBMODEL", Primitive, librt.RT_SUBMODEL_INTERNAL_MAGIC, librt.struct_rt_submodel_internal),
     librt.ID_SUPERELL: ("SUPERELL", Primitive, librt.RT_SUPERELL_INTERNAL_MAGIC, librt.struct_rt_superell_internal),
