@@ -9,7 +9,7 @@ from brlcad.vmath import Vector
 class RPC(Primitive):
 
     def __init__(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5, copy=False):
-        Primitive.__init__(self, name=name, primitive_type="RPC")
+        Primitive.__init__(self, name=name)
         self.base = Vector(base, copy=copy)
         self.height = Vector(height, copy=copy)
         self.breadth = Vector(breadth, copy=copy)

@@ -1,16 +1,21 @@
 """
 Holds the base class for all primitives so we can have some common operations.
 """
+from brlcad.exceptions import BRLCADException
 
 
 class Primitive(object):
 
-    def __init__(self, name, primitive_type):
+    def __init__(self, name, primitive_type=None, data=None):
         self.name = name
-        self.primitive_type = primitive_type
+        if primitive_type:
+            self.primitive_type = primitive_type
+            self.data = data
 
     def __repr__(self):
-        return "{0}({1})".format(self.primitive_type, self.name)
+        return "{}(name={}, primitive_type={}, data={})".format(
+            self.__class__.__name__, self.name, self.primitive_type, self.data
+        )
 
     def update_params(self, params):
         """
@@ -22,4 +27,8 @@ class Primitive(object):
 
     @staticmethod
     def from_wdb(name, data):
-        return Primitive(name=name, primitive_type=data)
+        raise BRLCADException(
+            "Bad setup in primitives/table.py for name: {}, data: {}, the from_wdb method must be overridden !".format(
+                name, data
+            )
+        )

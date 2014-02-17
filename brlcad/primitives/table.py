@@ -47,7 +47,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_SUBMODEL: ("SUBMODEL", Primitive, librt.RT_SUBMODEL_INTERNAL_MAGIC, librt.struct_rt_submodel_internal),
     librt.ID_SUPERELL: ("SUPERELL", Primitive, librt.RT_SUPERELL_INTERNAL_MAGIC, librt.struct_rt_superell_internal),
     librt.ID_TGC: ("TGC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
-    librt.ID_REC: ("TGC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
+    librt.ID_REC: ("REC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
     librt.ID_TOR: ("TOR", Primitive, librt.RT_TOR_INTERNAL_MAGIC, librt.struct_rt_tor_internal),
     librt.ID_VOL: ("VOL", Primitive, librt.RT_VOL_INTERNAL_MAGIC, librt.struct_rt_vol_internal),
     librt.ID_PNTS: ("PNTS", Primitive, librt.RT_PNTS_INTERNAL_MAGIC, librt.struct_rt_pnts_internal),
@@ -66,7 +66,7 @@ def create_primitive(type_id, db_internal, directory):
     if type_info:
         magic = type_info[2]
         struct_type = type_info[3]
-        data = struct_type.from_address(db_internal.idb_ptr) if struct_type else type_info[0]
+        data = struct_type.from_address(db_internal.idb_ptr) if struct_type else None
         # the first int32 is always the magic:
         data_magic = librt.cast(db_internal.idb_ptr, librt.POINTER(librt.c_uint32)).contents.value
         if magic:
@@ -79,7 +79,10 @@ def create_primitive(type_id, db_internal, directory):
             else:
                 display_type_info = type_info
             warnings.warn("No magic for type: {0}, {1}, {2}".format(type_id, hex(data_magic), display_type_info))
-        return type_info[1].from_wdb(name=name, data=data)
+        if type_info[1] == Primitive:
+            return Primitive(name=name, primitive_type=type_info[0], data=data)
+        else:
+            return type_info[1].from_wdb(name=name, data=data)
     else:
         return Primitive(name=name, primitive_type="UNKNOWN")
 

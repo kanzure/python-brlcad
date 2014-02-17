@@ -76,8 +76,5 @@ if __name__ == "__main__":
         )
 
     with WDB("test_wdb.g") as brl_db:
-        print brl_db.lookup_internal("arb8.s")
-        print brl_db.lookup_internal("all.r")
-        print brl_db.lookup_internal("box1.s")
-        print brl_db.lookup_internal("arb4.s")
-        print brl_db.lookup_internal("sph1.s")
+        for x in brl_db.ls():
+            print brl_db.lookup_internal(x)

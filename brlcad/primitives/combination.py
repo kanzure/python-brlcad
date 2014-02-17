@@ -263,7 +263,7 @@ class Combination(Primitive):
     def __init__(self, name, tree, is_region=False, is_fastgen=0, inherit=False, shader=None,
                  material=None, rgb_color=None, temperature=0,
                  region_id=0, air_code=0, gift_material=0, line_of_sight=0):
-        Primitive.__init__(self, name=name, primitive_type="Combination")
+        Primitive.__init__(self, name=name)
         self.tree = wrap_tree(tree)
         self.is_region = is_region
         self.is_fastgen = is_fastgen

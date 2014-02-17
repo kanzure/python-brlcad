@@ -9,12 +9,12 @@ import numpy as np
 
 class Ellipsoid(Primitive):
 
-    def __init__(self, name, center, a, b, c, primitive_type="ELL", copy=False):
-        Primitive.__init__(self, name=name, primitive_type=primitive_type)
-        self.center = Vector(center, copy=False)
-        self.a = Vector(a, copy=False)
-        self.b = Vector(b, copy=False)
-        self.c = Vector(c, copy=False)
+    def __init__(self, name, center, a, b, c, copy=False):
+        Primitive.__init__(self, name=name)
+        self.center = Vector(center, copy=copy)
+        self.a = Vector(a, copy=copy)
+        self.b = Vector(b, copy=copy)
+        self.c = Vector(c, copy=copy)
 
     def __repr__(self):
         return "ELL(name={0}, center={1}, a={2}, b={3}, c={4})".format(
@@ -67,7 +67,6 @@ class Sphere(Ellipsoid):
         Ellipsoid.__init__(
             self, name=name, center=center,
             a=(radius, 0, 0), b=(0, radius, 0), c=(0, 0, radius),
-            primitive_type="SPH",
             copy=copy
         )
 

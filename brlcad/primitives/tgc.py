@@ -11,7 +11,7 @@ class TGC(Primitive):
     def __init__(self, name, base=(0, 0, 0), height=(0, 0, 1),
                  a=(0, 1, 0), b=(0.5, 0, 0), c=(0, 0.5, 0), d=(1, 0, 0),
                  copy=False):
-        Primitive.__init__(self, name=name, primitive_type="TGC")
+        Primitive.__init__(self, name=name)
         self.base = Vector(base, copy=copy)
         self.height = Vector(height, copy=copy)
         self.a = Vector(a, copy=copy)

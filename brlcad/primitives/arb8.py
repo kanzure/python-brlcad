@@ -11,7 +11,7 @@ import numpy as np
 class ARB8(Primitive):
 
     def __init__(self, name, points):
-        Primitive.__init__(self, name=name, primitive_type="ARB8")
+        Primitive.__init__(self, name=name)
         self.point_mat = np.matrix(points, copy=False)
 
     def __repr__(self):
