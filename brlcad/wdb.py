@@ -144,26 +144,22 @@ class WDB:
     def torus(self, name, center=(0, 0, 0), n=(0, 0, 1), r_revolution=1, r_cross=0.2):
         libwdb.mk_tor(self.db_fp, name, cta.points(center), cta.direction(n), r_revolution, r_cross)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.RCC)
     def rcc(self, name, base=(0, 0, 0), height=(0, 0, 1), radius=1):
         libwdb.mk_rcc(self.db_fp, name, cta.points(base), cta.direction(height), radius)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.TGC)
     def tgc(self, name, base=(0, 0, 0), height=(0, 0, 1), a=(0, 1, 0), b=(0.5, 0, 0), c=(0, 0.5, 0), d=(1, 0, 0)):
         libwdb.mk_tgc(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(a), cta.direction(b), cta.direction(c), cta.direction(d))
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Cone)
     def cone(self, name, base=(0, 0, 0), n=(0, 0, 1), h=1, r_base=1, r_top=0.5):
         libwdb.mk_cone(self.db_fp, name, cta.points(base), cta.direction(n), h, r_base, r_top)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.TRC)
     def trc(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=1, r_top=0.5):
         libwdb.mk_trc_h(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_top)
-
-    @mk_wrap_primitive(primitives.Primitive)
-    def trc_top(self, name, base=(0, 0, 0), top=(0, 0, 1), r_base=1, r_top=0.5):
-        libwdb.mk_trc_top(self.db_fp, name, cta.points(base), cta.direction(top), r_base, r_top)
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):

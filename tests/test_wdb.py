@@ -15,6 +15,15 @@ class WDBTestCase(unittest.TestCase):
                 self.fail("{0} != {1}".format(expected, shape.points))
         return check_arb
 
+    def get_tgc_checker(self, brl_db):
+        def check_tgc(name, expected_points):
+            shape = brl_db.lookup_internal(name)
+            expected = Vector(expected_points)
+            actual = cta.flatten_floats([shape.base, shape.height, shape.a, shape.b, shape.c, shape.d])
+            if not expected.is_same(actual):
+                self.fail("{0} != {1}".format(expected, actual))
+        return check_tgc
+
     def test_defaults(self):
         """
         Tests default values for primitive creation
@@ -34,7 +43,6 @@ class WDBTestCase(unittest.TestCase):
             brl_db.tgc("tgc.s")
             brl_db.cone("cone.s")
             brl_db.trc("trc.s")
-            brl_db.trc_top("trc_top.s")
             brl_db.rpc("rpc.s")
             brl_db.rhc("rhc.s")
             brl_db.epa("epa.s")
@@ -69,6 +77,11 @@ class WDBTestCase(unittest.TestCase):
             self.assertTrue(shape.height.is_same((-1, 0, 0)))
             self.assertTrue(shape.breadth.is_same((0, 0, 1)))
             self.assertEqual(0.5, shape.half_width)
+            check_tgc = self.get_tgc_checker(brl_db)
+            check_tgc("rcc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -1, 0, -1, 0, 0")
+            check_tgc("tgc.s", "0, 0, 0, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0, 0")
+            check_tgc("cone.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 0, 0, -0.5, 0, 0.5, 0, 0")
+            check_tgc("trc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -0.5, 0, -0.5, 0, 0")
 
 
 if __name__ == "__main__":
