@@ -116,6 +116,11 @@ class WDBTestCase(unittest.TestCase):
             self.assertTrue(shape.a_vec.is_same((0, 1, 0)))
             self.assertEqual(0.5, shape.b_mag)
             self.assertEqual(0.2, shape.base_neck_ratio)
+            shape = brl_db.lookup_internal("particle.s")
+            self.assertTrue(shape.base.is_same((0, 0, 0)))
+            self.assertTrue(shape.height.is_same((0, 0, 1)))
+            self.assertEqual(0.5, shape.r_base)
+            self.assertEqual(0.2, shape.r_end)
 
 
 if __name__ == "__main__":

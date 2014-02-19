@@ -196,9 +196,9 @@ class WDB:
         planes_arg = cta.brlcad_copy(cta.planes(planes), "mk_arbn")
         libwdb.mk_arbn(self.db_fp, name, len(planes_arg)/4, planes_arg)
 
-    @mk_wrap_primitive(primitives.Primitive)
-    def particle(self, name, base=(0, 0, 0), v_end=(0, 0, 1), r_base=0.5, r_end=0.2):
-        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(v_end), r_base, r_end)
+    @mk_wrap_primitive(primitives.Particle)
+    def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
+        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_end)
 
     @mk_wrap_primitive(primitives.Primitive)
     def pipe(self, name, segments=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):

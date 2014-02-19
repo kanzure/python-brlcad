@@ -12,9 +12,10 @@ from tgc import TGC, Cone, RCC, TRC
 from torus import Torus, ETO
 from epa import EPA, EHY
 from hyperboloid import Hyperboloid
+from particle import Particle
 
 __all__ = [
-    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC",
+    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle",
     "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

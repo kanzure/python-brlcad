@@ -15,6 +15,7 @@ from torus import Torus, ETO
 from epa import EPA, EHY
 from combination import Combination
 from hyperboloid import Hyperboloid
+from particle import Particle
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -42,7 +43,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_BSPLINE: ("NURB", Primitive, librt.RT_NURB_INTERNAL_MAGIC, librt.struct_rt_nurb_internal),
     librt.ID_POLY: ("PG", Primitive, librt.RT_PG_INTERNAL_MAGIC, librt.struct_rt_pg_internal),
     librt.ID_PIPE: ("PIPE", Primitive, librt.RT_PIPE_INTERNAL_MAGIC, librt.struct_rt_pipe_internal),
-    librt.ID_PARTICLE: ("PARTICLE", Primitive, librt.RT_PART_INTERNAL_MAGIC, librt.struct_rt_part_internal),
+    librt.ID_PARTICLE: ("PARTICLE", Particle, librt.RT_PART_INTERNAL_MAGIC, librt.struct_rt_part_internal),
     librt.ID_REVOLVE: ("REVOLVE", Primitive, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
     librt.ID_RHC: ("RHC", RHC, librt.RT_RHC_INTERNAL_MAGIC, librt.struct_rt_rhc_internal),
     librt.ID_RPC: ("RPC", RPC, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
