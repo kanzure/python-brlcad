@@ -14,6 +14,7 @@ from tgc import TGC
 from torus import Torus
 from epa import EPA, EHY
 from combination import Combination
+from hyperboloid import Hyperboloid
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -36,7 +37,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_GRIP: ("GRIP", Primitive, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
     librt.ID_HALF: ("HALF", Primitive, librt.RT_HALF_INTERNAL_MAGIC, librt.struct_rt_half_internal),
     librt.ID_HF: ("HF", Primitive, librt.RT_HF_INTERNAL_MAGIC, librt.struct_rt_hf_internal),
-    librt.ID_HYP: ("HYP", Primitive, librt.RT_HYP_INTERNAL_MAGIC, librt.struct_rt_hyp_internal),
+    librt.ID_HYP: ("HYP", Hyperboloid, librt.RT_HYP_INTERNAL_MAGIC, librt.struct_rt_hyp_internal),
     librt.ID_METABALL: ("METABALL", Primitive, librt.RT_METABALL_INTERNAL_MAGIC, librt.struct_rt_metaball_internal),
     librt.ID_BSPLINE: ("NURB", Primitive, librt.RT_NURB_INTERNAL_MAGIC, librt.struct_rt_nurb_internal),
     librt.ID_POLY: ("PG", Primitive, librt.RT_PG_INTERNAL_MAGIC, librt.struct_rt_pg_internal),

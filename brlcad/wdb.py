@@ -179,7 +179,7 @@ class WDB:
         libwdb.mk_ehy(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(n_major), r_major, r_minor, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Hyperboloid)
     def hyperboloid(self, name, base=(0, 0, 0), height=(0, 0, 1), a_vec=(0, 1, 0), b_mag=0.5, base_neck_ratio=0.2):
         libwdb.mk_hyp(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(a_vec), b_mag, base_neck_ratio)
