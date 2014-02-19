@@ -165,7 +165,7 @@ class WDB:
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(breadth), half_width)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.RHC)
     def rhc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5, asymptote=0.1):
             libwdb.mk_rhc(self.db_fp, name, cta.points(base), cta.direction(height),
                           cta.direction(breadth), half_width, asymptote)

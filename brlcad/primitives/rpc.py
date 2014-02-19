@@ -16,8 +16,9 @@ class RPC(Primitive):
         self.half_width = half_width
 
     def __repr__(self):
-        return "RPC({}, base={}, height={}, breadth={}, half_width={})".format(
-            self.name, repr(self.base), repr(self.height), repr(self.breadth), self.half_width
+        return "{}({}, base={}, height={}, breadth={}, half_width={})".format(
+            self.__class__.__name__, self.name, repr(self.base),
+            repr(self.height), repr(self.breadth), self.half_width
         )
 
     def update_params(self, params):
@@ -36,4 +37,38 @@ class RPC(Primitive):
             height=data.rpc_H,
             breadth=data.rpc_B,
             half_width=data.rpc_r,
+        )
+
+
+class RHC(RPC):
+
+    def __init__(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1),
+                 half_width=0.5, asymptote=0.1, copy=False):
+        RPC.__init__(
+            self, name=name, base=base, height=height,
+            breadth=breadth, half_width=half_width, copy=copy
+        )
+        self.asymptote = asymptote
+
+    def __repr__(self):
+        return "{}({}, base={}, height={}, breadth={}, half_width={}, asymptote={})".format(
+            self.__class__.__name__, self.name, repr(self.base),
+            repr(self.height), repr(self.breadth), self.half_width, self.asymptote
+        )
+
+    def update_params(self, params):
+        RPC.update_params(self, params)
+        params.update({
+            "asymptote": self.asymptote,
+        })
+
+    @staticmethod
+    def from_wdb(name, data):
+        return RHC(
+            name=name,
+            base=data.rhc_V,
+            height=data.rhc_H,
+            breadth=data.rhc_B,
+            half_width=data.rhc_r,
+            asymptote=data.rhc_c,
         )

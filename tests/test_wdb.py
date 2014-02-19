@@ -84,6 +84,12 @@ class WDBTestCase(unittest.TestCase):
             self.assertTrue(shape.n.is_same((0, 0, 1)))
             self.assertEqual(1, shape.r_revolution)
             self.assertEqual(0.2, shape.r_cross)
+            shape = brl_db.lookup_internal("rhc.s")
+            self.assertTrue(shape.base.is_same((0, 0, 0)))
+            self.assertTrue(shape.height.is_same((-1, 0, 0)))
+            self.assertTrue(shape.breadth.is_same((0, 0, 1)))
+            self.assertEqual(0.5, shape.half_width)
+            self.assertEqual(0.1, shape.asymptote)
 
 
 if __name__ == "__main__":
