@@ -140,7 +140,7 @@ class WDB:
     def ellipsoid(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1)):
         libwdb.mk_ell(self.db_fp, name, cta.points(center), cta.direction(a), cta.direction(b), cta.direction(c))
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Torus)
     def torus(self, name, center=(0, 0, 0), n=(0, 0, 1), r_revolution=1, r_cross=0.2):
         libwdb.mk_tor(self.db_fp, name, cta.points(center), cta.direction(n), r_revolution, r_cross)
 
@@ -165,26 +165,26 @@ class WDB:
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(breadth), half_width)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.RHC)
     def rhc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5, asymptote=0.1):
             libwdb.mk_rhc(self.db_fp, name, cta.points(base), cta.direction(height),
                           cta.direction(breadth), half_width, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EPA)
     def epa(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5):
         libwdb.mk_epa(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(n_major), r_major, r_minor)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EHY)
     def ehy(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5, asymptote=0.1):
         libwdb.mk_ehy(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(n_major), r_major, r_minor, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Hyperboloid)
     def hyperboloid(self, name, base=(0, 0, 0), height=(0, 0, 1), a_vec=(0, 1, 0), b_mag=0.5, base_neck_ratio=0.2):
         libwdb.mk_hyp(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(a_vec), b_mag, base_neck_ratio)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.ETO)
     def eto(self, name, center=(0, 0, 0), n=(0, 0, 1), s_major=(0, 0.5, 0.5), r_revolution=1, r_minor=0.2):
         libwdb.mk_eto(self.db_fp, name, cta.points(center), cta.direction(n),
                       cta.direction(s_major), r_revolution, r_minor)
@@ -196,9 +196,9 @@ class WDB:
         planes_arg = cta.brlcad_copy(cta.planes(planes), "mk_arbn")
         libwdb.mk_arbn(self.db_fp, name, len(planes_arg)/4, planes_arg)
 
-    @mk_wrap_primitive(primitives.Primitive)
-    def particle(self, name, base=(0, 0, 0), v_end=(0, 0, 1), r_base=0.5, r_end=0.2):
-        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(v_end), r_base, r_end)
+    @mk_wrap_primitive(primitives.Particle)
+    def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
+        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_end)
 
     @mk_wrap_primitive(primitives.Primitive)
     def pipe(self, name, segments=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
