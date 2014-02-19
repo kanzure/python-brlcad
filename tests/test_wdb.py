@@ -51,6 +51,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.pipe("pipe.s")
         with wdb.WDB("test_defaults.g") as brl_db:
             check_arb = functools.partial(self.check_arb, brl_db)
+            check_arb("rpp.s", "1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1")
             check_arb("wedge.s", "0, 0, 0, 1, 0, 0, 1, -1, 0, 0, -1, 0, 0, 0, 1, 0.5, 0, 1, 0.5, -1, 1, 0, -1, 1")
             check_arb("arb4.s", "0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1")
             check_arb("arb5.s", "1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1")
