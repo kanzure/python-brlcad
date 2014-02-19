@@ -170,11 +170,11 @@ class WDB:
             libwdb.mk_rhc(self.db_fp, name, cta.points(base), cta.direction(height),
                           cta.direction(breadth), half_width, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EPA)
     def epa(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5):
         libwdb.mk_epa(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(n_major), r_major, r_minor)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EHY)
     def ehy(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5, asymptote=0.1):
         libwdb.mk_ehy(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(n_major), r_major, r_minor, asymptote)
