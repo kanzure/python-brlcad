@@ -1,5 +1,5 @@
 """
-Python wrapper for the RPC primitive of BRL-CAD.
+Python wrappers for the RPC and RHC primitives of BRL-CAD.
 """
 
 from base import Primitive
