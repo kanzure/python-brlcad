@@ -79,6 +79,11 @@ class WDBTestCase(unittest.TestCase):
             check_tgc("tgc.s", "0, 0, 0, 0, 0, 1, 0, 1, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0, 0")
             check_tgc("cone.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, 1, 0, 0, 0, -0.5, 0, 0.5, 0, 0")
             check_tgc("trc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -0.5, 0, -0.5, 0, 0")
+            shape = brl_db.lookup_internal("torus.s")
+            self.assertTrue(shape.center.is_same((0, 0, 0)))
+            self.assertTrue(shape.n.is_same((0, 0, 1)))
+            self.assertEqual(1, shape.r_revolution)
+            self.assertEqual(0.2, shape.r_cross)
 
 
 if __name__ == "__main__":

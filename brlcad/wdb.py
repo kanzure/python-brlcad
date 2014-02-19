@@ -140,7 +140,7 @@ class WDB:
     def ellipsoid(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1)):
         libwdb.mk_ell(self.db_fp, name, cta.points(center), cta.direction(a), cta.direction(b), cta.direction(c))
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Torus)
     def torus(self, name, center=(0, 0, 0), n=(0, 0, 1), r_revolution=1, r_cross=0.2):
         libwdb.mk_tor(self.db_fp, name, cta.points(center), cta.direction(n), r_revolution, r_cross)
 
