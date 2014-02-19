@@ -184,7 +184,7 @@ class WDB:
         libwdb.mk_hyp(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(a_vec), b_mag, base_neck_ratio)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.ETO)
     def eto(self, name, center=(0, 0, 0), n=(0, 0, 1), s_major=(0, 0.5, 0.5), r_revolution=1, r_minor=0.2):
         libwdb.mk_eto(self.db_fp, name, cta.points(center), cta.direction(n),
                       cta.direction(s_major), r_revolution, r_minor)

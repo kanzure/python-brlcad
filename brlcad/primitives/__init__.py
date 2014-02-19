@@ -9,12 +9,12 @@ from combination import Combination, negate, intersect, subtract, union, xor, wr
 from ellipsoid import Ellipsoid, Sphere
 from rpc import RPC, RHC
 from tgc import TGC, Cone, RCC, TRC
-from torus import Torus
+from torus import Torus, ETO
 from epa import EPA, EHY
 from hyperboloid import Hyperboloid
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC",
-    "TGC", "Cone", "RCC", "TRC", "Torus", "EPA", "EHY", "Hyperboloid",
+    "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

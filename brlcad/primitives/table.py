@@ -11,7 +11,7 @@ from arbn import ARBN
 from ellipsoid import Ellipsoid, Sphere
 from rpc import RPC, RHC
 from tgc import TGC
-from torus import Torus
+from torus import Torus, ETO
 from epa import EPA, EHY
 from combination import Combination
 from hyperboloid import Hyperboloid
@@ -32,7 +32,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_ELL: ("ELL", Ellipsoid, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_SPH: ("ELL", Sphere, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_EPA: ("EPA", EPA, librt.RT_EPA_INTERNAL_MAGIC, librt.struct_rt_epa_internal),
-    librt.ID_ETO: ("ETO", Primitive, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
+    librt.ID_ETO: ("ETO", ETO, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
     librt.ID_EXTRUDE: ("EXTRUDE", Primitive, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
     librt.ID_GRIP: ("GRIP", Primitive, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
     librt.ID_HALF: ("HALF", Primitive, librt.RT_HALF_INTERNAL_MAGIC, librt.struct_rt_half_internal),
