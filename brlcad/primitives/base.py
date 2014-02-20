@@ -7,6 +7,8 @@ from brlcad.exceptions import BRLCADException
 class Primitive(object):
 
     def __init__(self, name, primitive_type=None, data=None):
+        if not isinstance(name, str):
+            raise ValueError("Primitive name must be a string, but got: {}".format(type(name)))
         self.name = name
         if primitive_type:
             self.primitive_type = primitive_type

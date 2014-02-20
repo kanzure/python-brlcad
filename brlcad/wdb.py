@@ -31,23 +31,21 @@ def mk_wrap_primitive(primitive_class):
                 )
             )
         else:
-            SAVE_MAP[primitive_class] = mk_func
-
-        def wrapped_func(db_self, *args, **kwargs):
-            if len(args) == 1 and isinstance(args[0], primitives.Primitive):
-                shape = args[0]
-                if not isinstance(shape, primitive_class):
-                    raise(
-                        "{0} expects primitive of type {1} but got {2}".format(
-                            mk_func.func_name, primitive_class, type(shape)
+            def wrapped_func(db_self, *args, **kwargs):
+                if len(args) == 1 and isinstance(args[0], primitives.Primitive):
+                    shape = args[0]
+                    if not isinstance(shape, primitive_class):
+                        raise(
+                            "{0} expects primitive of type {1} but got {2}".format(
+                                mk_func.func_name, primitive_class, type(shape)
+                            )
                         )
-                    )
-                kwargs["name"] = shape.name
-                shape.update_params(kwargs)
-                mk_func(db_self, **kwargs)
-            else:
-                mk_func(db_self, *args, **kwargs)
-        return wrapped_func
+                    shape.update_params(kwargs)
+                    mk_func(db_self, shape.name, **kwargs)
+                else:
+                    mk_func(db_self, *args, **kwargs)
+            SAVE_MAP[primitive_class] = wrapped_func
+        return mk_func
     return wrapper_func
 
 
@@ -200,12 +198,12 @@ class WDB:
     def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
         libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_end)
 
-    @mk_wrap_primitive(primitives.Primitive)
-    def pipe(self, name, segments=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
+    @mk_wrap_primitive(primitives.Pipe)
+    def pipe(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
         seg_list = libwdb.bu_list_new()
         libwdb.mk_pipe_init(seg_list)
-        for segment in segments:
-            libwdb.mk_add_pipe_pt(seg_list, cta.points(segment[0]), *segment[1:])
+        for pipe_point in points:
+            libwdb.mk_add_pipe_pt(seg_list, cta.points(pipe_point[0]), *pipe_point[1:])
         libwdb.mk_pipe(self.db_fp, name, seg_list)
 
     @mk_wrap_primitive(primitives.Combination)

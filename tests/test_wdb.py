@@ -4,6 +4,7 @@ import unittest
 from brlcad.vmath import Vector
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
+import brlcad.primitives as primitives
 
 
 class WDBTestCase(unittest.TestCase):
@@ -42,9 +43,11 @@ class WDBTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # close/delete the test DB
+        # close the test DB
         cls.brl_db.close()
-        os.remove("test_defaults.g")
+        # delete the test DB except the DEBUG_TESTS environment variable is set
+        if not os.environ.get("DEBUG_TESTS", False):
+            os.remove("test_defaults.g")
 
     def lookup_shape(self, name):
         return self.brl_db.lookup_internal(name)
@@ -177,6 +180,21 @@ class WDBTestCase(unittest.TestCase):
         self.assertTrue(shape.height.is_same((0, 0, 1)))
         self.assertEqual(0.5, shape.r_base)
         self.assertEqual(0.2, shape.r_end)
+
+    def test_pipe_defaults(self):
+        shape = self.lookup_shape("pipe.s")
+        expected = primitives.Pipe("pipe.s")
+        self.assertTrue(expected.is_same(shape))
+
+    def test_save_pipe(self):
+        shape = self.lookup_shape("pipe.s")
+        shape.append_point((0, 2, 2), 0.5, 0.3, 0.8)
+        for i in range(0, len(shape.points)):
+            shape.points[i].r_bend = 0.8
+        expected = shape.copy()
+        self.brl_db.save(shape)
+        shape = self.lookup_shape("pipe.s")
+        self.assertTrue(expected.is_same(shape))
 
 
 if __name__ == "__main__":
