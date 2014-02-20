@@ -20,6 +20,14 @@ class ARBN(Primitive):
             "planes": self.planes,
         })
 
+    def copy(self):
+        return ARBN(self.name, self.planes, copy=True)
+
+    def has_same_data(self, other):
+        # This will return False if the planes are in different order,
+        # but for the purposes this method is used for that's actually what we want
+        return all(map(Plane.is_same, self.planes, other.planes))
+
     @staticmethod
     def from_wdb(name, data):
         return ARBN(

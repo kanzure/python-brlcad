@@ -4,6 +4,7 @@ Python wrapper for the HYP primitive of BRL-CAD.
 
 from base import Primitive
 from brlcad.vmath import Vector
+import numpy as np
 
 
 class Hyperboloid(Primitive):
@@ -31,6 +32,14 @@ class Hyperboloid(Primitive):
             "b_mag": self.b_mag,
             "base_neck_ratio": self.base_neck_ratio,
         })
+
+    def copy(self):
+        return Hyperboloid(self.name, self.base, self.height, self.a_vec, self.b_mag, self.base_neck_ratio, copy=True)
+
+    def is_same(self, other):
+        if not np.allclose((self.b_mag, self.base_neck_ratio), (other.b_mag, other.base_neck_ratio)):
+            return False
+        return all(map(Vector.is_same, (self.base, self.height, self.a_vec), (other.base, other.height, other.a_vec)))
 
     @staticmethod
     def from_wdb(name, data):

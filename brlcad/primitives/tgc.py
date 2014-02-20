@@ -25,6 +25,14 @@ class TGC(Primitive):
             repr(self.a), repr(self.b), repr(self.c), repr(self.d),
         )
 
+    def __iter__(self):
+        yield self.base
+        yield self.height
+        yield self.a
+        yield self.b
+        yield self.c
+        yield self.d
+
     def update_params(self, params):
         params.update({
             "base": self.base,
@@ -34,6 +42,12 @@ class TGC(Primitive):
             "c": self.c,
             "d": self.d,
         })
+
+    def copy(self):
+        return TGC(self.name, base=self.base, height=self.height, a=self.a, b=self.b, c=self.c, d=self.d, copy=True)
+
+    def has_same_data(self, other):
+        return all(map(Vector.is_same, self, other))
 
     @staticmethod
     def from_wdb(name, data):

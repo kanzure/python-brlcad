@@ -73,3 +73,9 @@ class Plane(object):
 
     def __repr__(self):
         return "Plane({0}, {1})".format(repr(self.normal), self.distance)
+
+    def compare_for_sort(self, other):
+        result = self.distance - other.distance
+        if result:
+            return result
+        return self.normal.compare_for_sort(other.normal)

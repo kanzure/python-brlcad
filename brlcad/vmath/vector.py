@@ -221,6 +221,30 @@ class Vector(np.ndarray):
             result[j] = self[i]
         return Vector(result).normalize()
 
+    def compare_for_sort(self, other):
+        """
+        Compares 2 Vectors for sorting (used mostly when comparing 2 shapes).
+        >>> Vector("1, 2, 3").compare_for_sort(Vector("1, 2, 3")) == 0
+        True
+        >>> Vector("2, 2, 3").compare_for_sort(Vector("1, 2, 3")) == 1
+        True
+        >>> Vector("1, 2, 3").compare_for_sort(Vector("1, 2, 4")) == -1
+        True
+        >>> Vector("1, 2").compare_for_sort(Vector("1, 2, 4")) == -1
+        True
+        >>> Vector("1, 2, 3").compare_for_sort(Vector("1, 2")) == 1
+        True
+        """
+        length = len(self)
+        result = length - len(other)
+        if result:
+            return result
+        for i in range(0, length):
+            result = self[i] - other[i]
+            if result:
+                return result
+        return 0
+
 
 def X():
     return Vector((1, 0, 0))

@@ -110,10 +110,8 @@ class Pipe(Primitive):
     def copy(self):
         return Pipe(self.name, self.points, copy=True)
 
-    def is_same(self, other):
-        if not isinstance(other, Pipe):
-            raise ValueError("Can't compare Pipe with {}".format(type(other)))
-        return self.name == other.name and all(map(PipePoint.is_same, self.points, other.points))
+    def has_same_data(self, other):
+        return all(map(PipePoint.is_same, self.points, other.points))
 
     def append_point(self, point, *args, **kwargs):
         """

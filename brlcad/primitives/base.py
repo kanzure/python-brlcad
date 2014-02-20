@@ -27,6 +27,15 @@ class Primitive(object):
         """
         raise NotImplementedError("Class {0} does not implement 'update_params' !".format(type(self)))
 
+    def copy(self):
+        raise BRLCADException("Primitive subclass {} does not implement copy !".format(self.__class__))
+
+    def has_same_data(self, other):
+        raise BRLCADException("Primitive subclass {} does not implement has_same_data !".format(self.__class__))
+
+    def is_same(self, other):
+        return isinstance(other, self.__class__) and self.name == other.name and self.has_same_data(other)
+
     @staticmethod
     def from_wdb(name, data):
         raise BRLCADException(

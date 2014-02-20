@@ -10,9 +10,9 @@ import numpy as np
 
 class ARB8(Primitive):
 
-    def __init__(self, name, points):
+    def __init__(self, name, points, copy=False):
         Primitive.__init__(self, name=name)
-        self.point_mat = np.matrix(points, copy=False)
+        self.point_mat = np.matrix(points, copy=copy)
 
     def __repr__(self):
         return "ARB8({0}, {1})".format(self.name, self.point_mat)
@@ -22,6 +22,12 @@ class ARB8(Primitive):
         return tuple(self.point_mat.flat)
 
     points = property(_get_points)
+
+    def copy(self):
+        return ARB8(self.name, self.point_mat, copy=True)
+
+    def has_same_data(self, other):
+        return np.allclose(self.point_mat, other.point_mat)
 
     def update_params(self, params):
         params.update({

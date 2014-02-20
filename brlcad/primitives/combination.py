@@ -7,6 +7,7 @@ import brlcad.ctypes_adaptors as cta
 from brlcad.exceptions import BRLCADException
 from base import Primitive
 from brlcad.vmath import Transform
+import numpy as np
 
 
 def wrap_tree(*args):
@@ -118,6 +119,14 @@ class LeafNode(TreeNode):
         else:
             return None
 
+    def copy(self):
+        return LeafNode((self.name, list(self.matrix) if self.matrix else None))
+
+    def is_same(self, other):
+        if not isinstance(other, LeafNode) or self.name != other.name:
+            return False
+        return np.allclose(self.matrix, other.matrix)
+
     def build_tree(self):
         node = cta.brlcad_new(librt.struct_tree_db_leaf)
         node.magic = librt.RT_TREE_MAGIC
@@ -141,6 +150,12 @@ class NotNode(TreeNode):
 
     def __repr__(self):
         return "not({0})".format(self.child)
+
+    def copy(self):
+        return NotNode(self.child.copy())
+
+    def is_same(self, other):
+        return isinstance(other, NotNode) and self.child.is_same(other.child)
 
     def build_tree(self):
         node = cta.brlcad_new(librt.struct_tree_node)
@@ -183,6 +198,16 @@ class SymmetricNode(TreeNode):
             self.children.append(wrap_tree(child))
         return self
 
+    def copy(self):
+        return self.__class__([x.copy() for x in self.children])
+
+    def is_same(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        if len(self.children) != len(other.children):
+            return False
+        return all([self.children[i].is_same(other.children[i]) for i in range(0, len(self.children))])
+
     def build_tree(self, subset=None):
         if subset and len(subset) == 1:
             return subset[0].build_tree()
@@ -217,6 +242,14 @@ class PairNode(TreeNode):
 
     def __repr__(self):
         return "({0} {1} {2})".format(self.left, self.symbol, self.right)
+
+    def copy(self):
+        return self.__class__(self.left.copy(), self.right.copy())
+
+    def is_same(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return self.left.is_same(other.left) and self.right.is_same(other.right)
 
     def build_tree(self):
         node = cta.brlcad_new(librt.struct_tree_node)
@@ -293,6 +326,28 @@ class Combination(Primitive):
             "inherit=", str(self.inherit), ", ",
             str(self.tree), ")"
         ])
+
+    def copy(self):
+        return Combination(
+            self.name, self.tree.copy(),
+            is_region=self.is_region, is_fastgen=self.is_fastgen, inherit=self.inherit, shader=self.shader,
+            material=self.material, rgb_color=(list(self.rgb_color) if self.rgb_color else None),
+            temperature=self.temperature, region_id=self.region_id, air_code=self.air_code,
+            gift_material=self.gift_material,line_of_sight=self.line_of_sight
+        )
+
+    def has_same_data(self, other):
+        self_props = (
+            self.name, self.is_fastgen, self.region_id, self.air_code, self.gift_material,
+            self.line_of_sight, self.rgb_color, self.temperature, self.shader, self.material, self.inherit
+        )
+        other_props = (
+            other.name, other.is_fastgen, other.region_id, other.air_code, other.gift_material,
+            other.line_of_sight, self.rgb_color, other.temperature, other.shader, other.material, other.inherit
+        )
+        if self_props != other_props:
+            return False
+        return self.tree.is_same(other.tree)
 
     def update_params(self, params):
         params.update({

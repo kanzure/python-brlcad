@@ -186,6 +186,16 @@ class WDBTestCase(unittest.TestCase):
         expected = primitives.Pipe("pipe.s")
         self.assertTrue(expected.is_same(shape))
 
+    def test_save_primitives(self):
+        for shape_name in self.brl_db.ls():
+            shape = self.brl_db.lookup_internal(shape_name)
+            shape = shape.copy()
+            shape.name = "test_save.s"
+            expected = shape.copy()
+            self.brl_db.save(shape)
+            shape = self.brl_db.lookup_internal("test_save.s")
+            self.assertTrue(expected.is_same(shape))
+
     def test_save_pipe(self):
         shape = self.lookup_shape("pipe.s")
         shape.append_point((0, 2, 2), 0.5, 0.3, 0.8)
