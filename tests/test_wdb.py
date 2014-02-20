@@ -50,7 +50,7 @@ class WDBTestCase(unittest.TestCase):
             os.remove("test_defaults.g")
 
     def lookup_shape(self, name):
-        return self.brl_db.lookup_internal(name)
+        return self.brl_db.lookup(name)
 
     def check_arb(self, name, expected_points):
         shape = self.lookup_shape(name)
@@ -187,14 +187,16 @@ class WDBTestCase(unittest.TestCase):
         self.assertTrue(expected.is_same(shape))
 
     def test_save_primitives(self):
+        test_shape_name = "test_save.s"
         for shape_name in self.brl_db.ls():
-            shape = self.brl_db.lookup_internal(shape_name)
+            shape = self.lookup_shape(shape_name)
             shape = shape.copy()
-            shape.name = "test_save.s"
+            shape.name = test_shape_name
             expected = shape.copy()
             self.brl_db.save(shape)
-            shape = self.brl_db.lookup_internal("test_save.s")
+            shape = self.lookup_shape(test_shape_name)
             self.assertTrue(expected.is_same(shape))
+        self.brl_db.delete(test_shape_name)
 
     def test_save_pipe(self):
         shape = self.lookup_shape("pipe.s")
@@ -205,6 +207,19 @@ class WDBTestCase(unittest.TestCase):
         self.brl_db.save(shape)
         shape = self.lookup_shape("pipe.s")
         self.assertTrue(expected.is_same(shape))
+
+    def test_lookup_not_existing(self):
+        self.assertIsNone(self.lookup_shape("not_existing"))
+
+    def test_delete_not_existing(self):
+        self.assertFalse(self.brl_db.delete("not_existing"))
+
+    def test_delete_shape(self):
+        shape_name = "created_to_be_deleted.s"
+        self.brl_db.sphere(shape_name)
+        self.assertIsNotNone(self.lookup_shape(shape_name))
+        self.assertTrue(self.brl_db.delete(shape_name))
+        self.assertIsNone(self.lookup_shape(shape_name))
 
 
 if __name__ == "__main__":

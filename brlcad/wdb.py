@@ -82,19 +82,32 @@ class WDB:
     def ls(self):
         return [str(x.d_namep) for x in self if not(x.d_flags & libwdb.RT_DIR_HIDDEN)]
 
-    def lookup_internal(self, name):
+    def _lookup_internal(self, name):
         db_internal = libwdb.rt_db_internal()
         dpp = libwdb.pointer(libwdb.POINTER(libwdb.directory)())
         idb_type = libwdb.rt_db_lookup_internal(
             self.db_ip, name,
             dpp,
             libwdb.byref(db_internal),
-            libwdb.LOOKUP_NOISY,
+            libwdb.LOOKUP_QUIET,
             libwdb.byref(libwdb.rt_uniresource)
         )
+        # TODO: the "directory" structure is leaked here perhaps ?
+        return idb_type, db_internal, dpp
+
+    def lookup(self, name):
+        idb_type, db_internal, dpp = self._lookup_internal(name)
         if not idb_type:
             return None
         return p_table.create_primitive(idb_type, db_internal, dpp.contents.contents)
+
+    def delete(self, name):
+        idb_type, db_internal, dpp = self._lookup_internal(name)
+        if not idb_type:
+            return False
+        result1 = not libwdb.db_delete(self.db_ip, dpp.contents)
+        result2 = not libwdb.db_dirdelete(self.db_ip, dpp.contents)
+        return result1 and result2
 
     def close(self):
         libwdb.wdb_close(self.db_fp)
