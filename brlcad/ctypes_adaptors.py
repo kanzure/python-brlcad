@@ -124,8 +124,8 @@ def int_to_char(value):
 
 def rgb(values):
     if values is None:
-        return None
-    return chr(values[0]) + chr(values[1]) + chr(values[2])
+        values = (128, 128, 128)
+    return (ctypes.c_ubyte * 3)(*values)
 
 
 def str_to_vls(value):

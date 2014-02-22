@@ -1,13 +1,13 @@
 """
 Python wrapper for BRL-CAD combinations.
 """
+import collections
+import numpy as np
 import brlcad._bindings.librt as librt
-
 import brlcad.ctypes_adaptors as cta
 from brlcad.exceptions import BRLCADException
 from base import Primitive
 from brlcad.vmath import Transform
-import numpy as np
 
 
 def wrap_tree(*args):
@@ -125,7 +125,10 @@ class LeafNode(TreeNode):
     def is_same(self, other):
         if not isinstance(other, LeafNode) or self.name != other.name:
             return False
-        return np.allclose(self.matrix, other.matrix)
+        if self.matrix is not None:
+            return other.matrix is not None and np.allclose(self.matrix, other.matrix)
+        else:
+            return other.matrix is None
 
     def build_tree(self):
         node = cta.brlcad_new(librt.struct_tree_db_leaf)
@@ -166,7 +169,8 @@ class NotNode(TreeNode):
         return librt.cast(librt.pointer(node), librt.POINTER(librt.union_tree))
 
 
-class SymmetricNode(TreeNode):
+class SymmetricNode(TreeNode, collections.MutableSequence):
+
     def __new__(cls, arg):
         if isinstance(arg, librt.union_tree):
             left = TreeNode(arg.tr_b.tb_left.contents)
@@ -190,6 +194,26 @@ class SymmetricNode(TreeNode):
 
     def __repr__(self):
         return "{0}{1}".format(self.symbol, self.children)
+
+    def __len__(self):
+        return len(self.children)
+
+    def __getitem__(self, index):
+        return self.children[index]
+
+    def __delitem__(self, index):
+        del self.children[index]
+
+    def index(self, child):
+        return self.children.index(child)
+
+    def insert(self, index, child):
+        if index != len(self.children):
+            raise NotImplemented
+        self.add_child(child)
+
+    def __setitem__(self, index, value):
+        raise NotImplemented
 
     def add_child(self, child):
         if isinstance(child, type(self)):
@@ -293,7 +317,7 @@ OP_MAP = {
 
 class Combination(Primitive):
 
-    def __init__(self, name, tree, is_region=False, is_fastgen=0, inherit=False, shader=None,
+    def __init__(self, name, tree=(), is_region=False, is_fastgen=0, inherit=False, shader=None,
                  material=None, rgb_color=None, temperature=0,
                  region_id=0, air_code=0, gift_material=0, line_of_sight=0):
         Primitive.__init__(self, name=name)

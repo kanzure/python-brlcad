@@ -237,7 +237,7 @@ class WDB:
         new_comb.GIFTmater = gift_material
         new_comb.los = line_of_sight
         new_comb.rgb_valid = cta.bool_to_char(rgb_color)
-        new_comb.rgb = rgb_color if rgb_color else (128, 128, 128)
+        new_comb.rgb = cta.rgb(rgb_color)
         new_comb.temperature = temperature
         new_comb.shader = cta.str_to_vls(shader)
         new_comb.material = cta.str_to_vls(material)

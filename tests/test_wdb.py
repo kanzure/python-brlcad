@@ -38,6 +38,10 @@ class WDBTestCase(unittest.TestCase):
             brl_db.arbn("arbn.s")
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
+            test_comb = primitives.Combination(name="combination.c")
+            for shape_name in brl_db.ls():
+                test_comb.tree.add_child(shape_name)
+            brl_db.save(test_comb)
         # load the DB and cache it in a class variable:
         cls.brl_db = wdb.WDB("test_defaults.g")
 
@@ -190,6 +194,8 @@ class WDBTestCase(unittest.TestCase):
         test_shape_name = "test_save.s"
         for shape_name in self.brl_db.ls():
             shape = self.lookup_shape(shape_name)
+            if isinstance(shape, primitives.Combination):
+                continue
             shape = shape.copy()
             shape.name = test_shape_name
             expected = shape.copy()
@@ -220,6 +226,17 @@ class WDBTestCase(unittest.TestCase):
         self.assertIsNotNone(self.lookup_shape(shape_name))
         self.assertTrue(self.brl_db.delete(shape_name))
         self.assertIsNone(self.lookup_shape(shape_name))
+
+    def test_save_combination(self):
+        test_comb = self.lookup_shape("combination.c")
+        expected = test_comb.copy()
+        del expected.tree[0]
+        test_name = "test_save.c"
+        expected.name = test_name
+        self.brl_db.save(expected)
+        test_comb = self.lookup_shape(test_name)
+        self.assertTrue(expected.is_same(test_comb))
+        self.brl_db.delete(test_name)
 
 
 if __name__ == "__main__":
