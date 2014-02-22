@@ -77,4 +77,4 @@ if __name__ == "__main__":
 
     with WDB("test_wdb.g") as brl_db:
         for x in brl_db.ls():
-            print brl_db.lookup_internal(x)
+            print brl_db.lookup(x)

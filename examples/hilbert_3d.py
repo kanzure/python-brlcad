@@ -108,14 +108,14 @@ def hilbert_pipe(file_name, size=10, recursions=4, dc=0.2, direction=ZP, variant
     l = float(size) / (2**recursions)
     d = dc * l
     r = d
-    segments = [
+    points = [
         (x, d, 0, r) for x in
         generate_points(recursions, direction=direction, variant=variant,
                         x_vec=Vector(x_vec)*l, y_vec=Vector(y_vec)*l, z_vec=Vector(z_vec)*l)
     ]
     with WDB(file_name, "3D Hilbert space filling curve with pipes") as brl_db:
         pipe_name = "hilbert_3d.s"
-        brl_db.pipe(pipe_name, segments=segments)
+        brl_db.pipe(pipe_name, points=points)
         region_name = "hilbert_3d.r"
         brl_db.region(name=region_name, tree=pipe_name, rgb_color=(64, 180, 96))
 
@@ -159,7 +159,7 @@ def hilbert_3D_test():
                     if o1 < 0 or o2 < 0:
                         rgb_color *= 0.3
                         rgb_color += 60
-                    brl_db.pipe(shape_name, segments=segments)
+                    brl_db.pipe(shape_name, points=segments)
                     brl_db.region(name=region_name, tree=shape_name, rgb_color=tuple([int(c) for c in rgb_color]))
 
 

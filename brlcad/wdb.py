@@ -31,23 +31,21 @@ def mk_wrap_primitive(primitive_class):
                 )
             )
         else:
-            SAVE_MAP[primitive_class] = mk_func
-
-        def wrapped_func(db_self, *args, **kwargs):
-            if len(args) == 1 and isinstance(args[0], primitives.Primitive):
-                shape = args[0]
-                if not isinstance(shape, primitive_class):
-                    raise(
-                        "{0} expects primitive of type {1} but got {2}".format(
-                            mk_func.func_name, primitive_class, type(shape)
+            def wrapped_func(db_self, *args, **kwargs):
+                if len(args) == 1 and isinstance(args[0], primitives.Primitive):
+                    shape = args[0]
+                    if not isinstance(shape, primitive_class):
+                        raise(
+                            "{0} expects primitive of type {1} but got {2}".format(
+                                mk_func.func_name, primitive_class, type(shape)
+                            )
                         )
-                    )
-                kwargs["name"] = shape.name
-                shape.update_params(kwargs)
-                mk_func(db_self, **kwargs)
-            else:
-                mk_func(db_self, *args, **kwargs)
-        return wrapped_func
+                    shape.update_params(kwargs)
+                    mk_func(db_self, shape.name, **kwargs)
+                else:
+                    mk_func(db_self, *args, **kwargs)
+            SAVE_MAP[primitive_class] = wrapped_func
+        return mk_func
     return wrapper_func
 
 
@@ -84,19 +82,32 @@ class WDB:
     def ls(self):
         return [str(x.d_namep) for x in self if not(x.d_flags & libwdb.RT_DIR_HIDDEN)]
 
-    def lookup_internal(self, name):
+    def _lookup_internal(self, name):
         db_internal = libwdb.rt_db_internal()
         dpp = libwdb.pointer(libwdb.POINTER(libwdb.directory)())
         idb_type = libwdb.rt_db_lookup_internal(
             self.db_ip, name,
             dpp,
             libwdb.byref(db_internal),
-            libwdb.LOOKUP_NOISY,
+            libwdb.LOOKUP_QUIET,
             libwdb.byref(libwdb.rt_uniresource)
         )
+        # TODO: the "directory" structure is leaked here perhaps ?
+        return idb_type, db_internal, dpp
+
+    def lookup(self, name):
+        idb_type, db_internal, dpp = self._lookup_internal(name)
         if not idb_type:
             return None
         return p_table.create_primitive(idb_type, db_internal, dpp.contents.contents)
+
+    def delete(self, name):
+        idb_type, db_internal, dpp = self._lookup_internal(name)
+        if not idb_type:
+            return False
+        result1 = not libwdb.db_delete(self.db_ip, dpp.contents)
+        result2 = not libwdb.db_dirdelete(self.db_ip, dpp.contents)
+        return result1 and result2
 
     def close(self):
         libwdb.wdb_close(self.db_fp)
@@ -140,7 +151,7 @@ class WDB:
     def ellipsoid(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1)):
         libwdb.mk_ell(self.db_fp, name, cta.points(center), cta.direction(a), cta.direction(b), cta.direction(c))
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Torus)
     def torus(self, name, center=(0, 0, 0), n=(0, 0, 1), r_revolution=1, r_cross=0.2):
         libwdb.mk_tor(self.db_fp, name, cta.points(center), cta.direction(n), r_revolution, r_cross)
 
@@ -165,26 +176,26 @@ class WDB:
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(breadth), half_width)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.RHC)
     def rhc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5, asymptote=0.1):
             libwdb.mk_rhc(self.db_fp, name, cta.points(base), cta.direction(height),
                           cta.direction(breadth), half_width, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EPA)
     def epa(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5):
         libwdb.mk_epa(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(n_major), r_major, r_minor)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.EHY)
     def ehy(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5, asymptote=0.1):
         libwdb.mk_ehy(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(n_major), r_major, r_minor, asymptote)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.Hyperboloid)
     def hyperboloid(self, name, base=(0, 0, 0), height=(0, 0, 1), a_vec=(0, 1, 0), b_mag=0.5, base_neck_ratio=0.2):
         libwdb.mk_hyp(self.db_fp, name, cta.points(base), cta.direction(height),
                       cta.direction(a_vec), b_mag, base_neck_ratio)
 
-    @mk_wrap_primitive(primitives.Primitive)
+    @mk_wrap_primitive(primitives.ETO)
     def eto(self, name, center=(0, 0, 0), n=(0, 0, 1), s_major=(0, 0.5, 0.5), r_revolution=1, r_minor=0.2):
         libwdb.mk_eto(self.db_fp, name, cta.points(center), cta.direction(n),
                       cta.direction(s_major), r_revolution, r_minor)
@@ -196,16 +207,16 @@ class WDB:
         planes_arg = cta.brlcad_copy(cta.planes(planes), "mk_arbn")
         libwdb.mk_arbn(self.db_fp, name, len(planes_arg)/4, planes_arg)
 
-    @mk_wrap_primitive(primitives.Primitive)
-    def particle(self, name, base=(0, 0, 0), v_end=(0, 0, 1), r_base=0.5, r_end=0.2):
-        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(v_end), r_base, r_end)
+    @mk_wrap_primitive(primitives.Particle)
+    def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
+        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_end)
 
-    @mk_wrap_primitive(primitives.Primitive)
-    def pipe(self, name, segments=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
+    @mk_wrap_primitive(primitives.Pipe)
+    def pipe(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
         seg_list = libwdb.bu_list_new()
         libwdb.mk_pipe_init(seg_list)
-        for segment in segments:
-            libwdb.mk_add_pipe_pt(seg_list, cta.points(segment[0]), *segment[1:])
+        for pipe_point in points:
+            libwdb.mk_add_pipe_pt(seg_list, cta.points(pipe_point[0]), *pipe_point[1:])
         libwdb.mk_pipe(self.db_fp, name, seg_list)
 
     @mk_wrap_primitive(primitives.Combination)
@@ -226,7 +237,7 @@ class WDB:
         new_comb.GIFTmater = gift_material
         new_comb.los = line_of_sight
         new_comb.rgb_valid = cta.bool_to_char(rgb_color)
-        new_comb.rgb = rgb_color if rgb_color else (128, 128, 128)
+        new_comb.rgb = cta.rgb(rgb_color)
         new_comb.temperature = temperature
         new_comb.shader = cta.str_to_vls(shader)
         new_comb.material = cta.str_to_vls(material)
