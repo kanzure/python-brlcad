@@ -219,6 +219,20 @@ class WDB:
             libwdb.mk_add_pipe_pt(seg_list, cta.points(pipe_point[0]), *pipe_point[1:])
         libwdb.mk_pipe(self.db_fp, name, seg_list)
 
+    @mk_wrap_primitive(primitives.Primitive)
+    def sketch(self, name, sketch=None):
+        if not sketch:
+            return
+        si = libwdb.struct_rt_sketch_internal()
+        si.magic = libwdb.RT_SKETCH_INTERNAL_MAGIC
+        si.V = cta.points(sketch.base)
+        si.u_vec = cta.points(sketch.u_vec)
+        si.v_vec = cta.points(sketch.v_vec)
+        si.curve, vertices = sketch.build_curves()
+        si.vert_count = len(vertices)
+        si.verts = cta.points2D(vertices, point_count=len(vertices))
+        libwdb.mk_sketch(self.db_fp, name, si)
+
     @mk_wrap_primitive(primitives.Combination)
     def combination(self, name, is_region=False, tree=None, inherit=False,
                     shader=None, material=None, rgb_color=None, temperature=0,

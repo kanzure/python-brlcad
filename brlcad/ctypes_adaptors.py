@@ -53,13 +53,17 @@ def flatten_floats(container):
     return [x for x in iterate_doubles(container)]
 
 
-def points(p, point_count=1):
+def points(p, point_count=1, point_size=3):
     fp = [x for x in iterate_doubles(p)]
-    expected_count = point_count * 3
+    expected_count = point_count * point_size
     double_count = len(fp)
     if expected_count != double_count:
         raise BRLCADException("Expected {0} doubles, got: {1}".format(expected_count, double_count))
     return (ctypes.c_double * double_count)(*fp)
+
+
+def points2D(p, point_count=1):
+    return points(p, point_count=point_count, point_size=2)
 
 
 def direction(d):
