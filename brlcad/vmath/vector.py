@@ -239,7 +239,7 @@ class Vector(np.ndarray):
         result = length - len(other)
         if result:
             return result
-        for i in range(0, length):
+        for i in xrange(0, length):
             result = self[i] - other[i]
             if result:
                 return result

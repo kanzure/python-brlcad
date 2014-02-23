@@ -53,16 +53,40 @@ def flatten_floats(container):
     return [x for x in iterate_doubles(container)]
 
 
-def points(p, point_count=1, point_size=3):
+def point(p, point_size=3):
     fp = [x for x in iterate_doubles(p)]
-    expected_count = point_count * point_size
+    if point_size != len(fp):
+        raise BRLCADException("Expected {0} doubles, got: {1}".format(point_size, len(fp)))
+    return (ctypes.c_double * point_size)(*fp)
+
+
+def doubles(p, double_count=None):
+    if double_count == 0:
+        return None
+    fp = [x for x in iterate_doubles(p)]
+    actual_count = len(fp)
+    if double_count is not None and double_count != actual_count:
+        raise BRLCADException("Expected {0} doubles, got: {1}".format(double_count, actual_count))
+    if actual_count == 0:
+        return None
+    return (ctypes.c_double * actual_count)(*fp)
+
+
+def points(p, point_count=None, point_size=3):
+    if point_count == 0:
+        return None
+    fp = [x for x in iterate_doubles(p)]
     double_count = len(fp)
-    if expected_count != double_count:
-        raise BRLCADException("Expected {0} doubles, got: {1}".format(expected_count, double_count))
-    return (ctypes.c_double * double_count)(*fp)
+    if point_count is not None:
+        expected_count = point_count * point_size
+        if expected_count != double_count:
+            raise BRLCADException("Expected {} doubles, got: {}".format(expected_count, double_count))
+    if point_count % point_size != 0:
+        raise BRLCADException("Expected {}-tuples, got {} doubles !".format(point_size, double_count))
+    return ctypes.cast((ctypes.c_double * double_count)(*fp), ctypes.POINTER(ctypes.c_double * point_size))
 
 
-def points2D(p, point_count=1):
+def points2D(p, point_count=None):
     return points(p, point_count=point_count, point_size=2)
 
 
@@ -85,7 +109,7 @@ def plane(p):
 
 
 def transform_from_pointer(t):
-    return [t[x] for x in range(0, 16)]
+    return [t[x] for x in xrange(0, 16)]
 
 
 def transform(t, use_brlcad_malloc=False):

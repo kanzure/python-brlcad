@@ -93,7 +93,7 @@ class Pipe(Primitive):
     def __init__(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1)), copy=False):
         Primitive.__init__(self, name=name)
         if isinstance(points, list) and not copy:
-            for i in range(0, len(points)):
+            for i in xrange(0, len(points)):
                 points[i] = PipePoint(points[i])
         else:
             points = [PipePoint(point, copy=copy) for point in points]
@@ -123,7 +123,7 @@ class Pipe(Primitive):
     def from_wdb(name, data):
         points = []
         crt_head = data.pipe_segs_head.forw
-        for i in range(0, data.pipe_count):
+        for i in xrange(0, data.pipe_count):
             crt_point = ctypes.cast(crt_head, ctypes.POINTER(librt.wdb_pipept)).contents
             crt_head = crt_point.l.forw
             points.append((

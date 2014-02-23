@@ -182,9 +182,9 @@ class SymmetricNode(TreeNode, collections.MutableSequence):
             else:
                 arg = [leaf(x) for x in arg]
         # if any of the children is of the same class, it will accumulate the new nodes:
-        for i in range(0, len(arg)):
+        for i in xrange(0, len(arg)):
             if isinstance(arg[i], cls):
-                for j in range(0, len(arg)):
+                for j in xrange(0, len(arg)):
                     if i != j:
                         arg[i].add_child(arg[j])
                 return arg[i]
@@ -230,7 +230,7 @@ class SymmetricNode(TreeNode, collections.MutableSequence):
             return False
         if len(self.children) != len(other.children):
             return False
-        return all([self.children[i].is_same(other.children[i]) for i in range(0, len(self.children))])
+        return all([self.children[i].is_same(other.children[i]) for i in xrange(0, len(self.children))])
 
     def build_tree(self, subset=None):
         if subset and len(subset) == 1:
