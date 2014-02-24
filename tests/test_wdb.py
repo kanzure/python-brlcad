@@ -65,7 +65,7 @@ class WDBTestCase(unittest.TestCase):
     def check_tgc(self, name, expected_points):
         shape = self.lookup_shape(name)
         expected = Vector(expected_points)
-        actual = cta.flatten_floats([shape.base, shape.height, shape.a, shape.b, shape.c, shape.d])
+        actual = cta.flatten_numbers([shape.base, shape.height, shape.a, shape.b, shape.c, shape.d])
         if not expected.is_same(actual):
             self.fail("{0} != {1}".format(expected, actual))
 
@@ -96,7 +96,7 @@ class WDBTestCase(unittest.TestCase):
     def test_arbn_defaults(self):
         shape = self.lookup_shape("arbn.s")
         expected = Vector((1, 0, 0, 1, -1, 0, 0, 1, 0, 1, 0, 1, 0, -1, 0, 1, 0, 0, 1, 1, 0, 0, -1, 1))
-        self.assertTrue(expected.is_same(cta.flatten_floats(shape.planes)))
+        self.assertTrue(expected.is_same(cta.flatten_numbers(shape.planes)))
 
     def test_sphere_defaults(self):
         shape = self.lookup_shape("sphere.s")

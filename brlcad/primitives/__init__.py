@@ -14,9 +14,11 @@ from epa import EPA, EHY
 from hyperboloid import Hyperboloid
 from particle import Particle
 from pipe import Pipe, PipePoint
+from sketch import Sketch
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle",
     "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
+    "Sketch",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

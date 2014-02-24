@@ -29,9 +29,9 @@ def brlcad_copy(obj, debug_msg):
     return type(obj).from_address(obj_copy)
 
 
-def iterate_doubles(container):
+def iterate_numbers(container):
     """
-    Iterator which flattens nested hierarchies of geometry to plain list of doubles.
+    Iterator which flattens nested hierarchies of geometry to plain list of numbers.
     """
     for p in container:
         if isinstance(p, Number):
@@ -43,27 +43,61 @@ def iterate_doubles(container):
             for x in p:
                 yield x
         else:
-            raise BRLCADException("Can't extract doubles from type: {0}".format(type(p)))
+            raise BRLCADException("Can't extract numbers from type: {0}".format(type(p)))
 
 
-def flatten_floats(container):
+def flatten_numbers(container):
     """
     Flattens nested hierarchies of geometry to plain list of doubles.
     """
-    return [x for x in iterate_doubles(container)]
+    return [x for x in iterate_numbers(container)]
 
 
-def points(p, point_count=1):
-    fp = [x for x in iterate_doubles(p)]
-    expected_count = point_count * 3
+def point(p, point_size=3):
+    fp = [x for x in iterate_numbers(p)]
+    if point_size != len(fp):
+        raise BRLCADException("Expected {0} doubles, got: {1}".format(point_size, len(fp)))
+    return (ctypes.c_double * point_size)(*fp)
+
+
+def doubles(p, double_count=None, flatten=True):
+    if double_count == 0:
+        return None
+    if not p:
+        if double_count is None:
+            return None
+        actual_count = 0
+    else:
+        if flatten:
+            p = [x for x in iterate_numbers(p)]
+        actual_count = len(p)
+    if double_count is not None and double_count != actual_count:
+        raise BRLCADException("Expected {0} doubles, got: {1}".format(double_count, actual_count))
+    if actual_count == 0:
+        return None
+    return (ctypes.c_double * actual_count)(*p)
+
+
+def points(p, point_count=None, point_size=3):
+    if point_count == 0:
+        return None
+    fp = [x for x in iterate_numbers(p)]
     double_count = len(fp)
-    if expected_count != double_count:
-        raise BRLCADException("Expected {0} doubles, got: {1}".format(expected_count, double_count))
-    return (ctypes.c_double * double_count)(*fp)
+    if point_count is not None:
+        expected_count = point_count * point_size
+        if expected_count != double_count:
+            raise BRLCADException("Expected {} doubles, got: {}".format(expected_count, double_count))
+    if double_count % point_size != 0:
+        raise BRLCADException("Expected {}-tuples, got {} doubles !".format(point_size, double_count))
+    return ctypes.cast((ctypes.c_double * double_count)(*fp), ctypes.POINTER(ctypes.c_double * point_size))
+
+
+def points2D(p, point_count=None):
+    return points(p, point_count=point_count, point_size=2)
 
 
 def direction(d):
-    fp = [x for x in iterate_doubles(d)]
+    fp = [x for x in iterate_numbers(d)]
     double_count = len(fp)
     if double_count == 3:
         return (ctypes.c_double * 3)(*fp)
@@ -74,14 +108,14 @@ def direction(d):
 
 
 def plane(p):
-    fp = [x for x in iterate_doubles(p)]
+    fp = [x for x in iterate_numbers(p)]
     if len(fp) != 4:
         raise BRLCADException("Expected 4 doubles, got: {0}".format(len(fp)))
     return (ctypes.c_double * 4)(*fp)
 
 
 def transform_from_pointer(t):
-    return [t[x] for x in range(0, 16)]
+    return [t[x] for x in xrange(0, 16)]
 
 
 def transform(t, use_brlcad_malloc=False):
@@ -89,7 +123,7 @@ def transform(t, use_brlcad_malloc=False):
     Serializes a Transform-like object 't' (can be anything which will provide 16 floats)
     to the ctypes form of a transformation matrix as used by BRL-CAD code.
     """
-    fp = [x for x in iterate_doubles(t)]
+    fp = [x for x in iterate_numbers(t)]
     if len(fp) != 16:
         raise BRLCADException("Expected 16 doubles, got: {0}".format(len(fp)))
     result = (ctypes.c_double * 16)(*fp)
@@ -99,7 +133,7 @@ def transform(t, use_brlcad_malloc=False):
 
 
 def planes(values):
-    double_args = [x for x in iterate_doubles(values)]
+    double_args = [x for x in iterate_numbers(values)]
     count = len(double_args)
     if count % 4 != 0:
         raise ValueError("Invalid parameter count ({}) for planes !".format(count))
@@ -126,6 +160,14 @@ def rgb(values):
     if values is None:
         values = (128, 128, 128)
     return (ctypes.c_ubyte * 3)(*values)
+
+
+def integers(values, flatten=True):
+    if flatten:
+        values = flatten_numbers(values)
+    if not values:
+        return None
+    return (ctypes.c_int * len(values))(*values)
 
 
 def str_to_vls(value):
