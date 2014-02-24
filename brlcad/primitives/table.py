@@ -17,7 +17,7 @@ from combination import Combination
 from hyperboloid import Hyperboloid
 from particle import Particle
 from pipe import Pipe
-from sketch import Sketch
+from sketch import Sketch, Extrude
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -36,7 +36,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_SPH: ("ELL", Sphere, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_EPA: ("EPA", EPA, librt.RT_EPA_INTERNAL_MAGIC, librt.struct_rt_epa_internal),
     librt.ID_ETO: ("ETO", ETO, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
-    librt.ID_EXTRUDE: ("EXTRUDE", Primitive, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
+    librt.ID_EXTRUDE: ("EXTRUDE", Extrude, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
     librt.ID_GRIP: ("GRIP", Primitive, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
     librt.ID_HALF: ("HALF", Primitive, librt.RT_HALF_INTERNAL_MAGIC, librt.struct_rt_half_internal),
     librt.ID_HF: ("HF", Primitive, librt.RT_HF_INTERNAL_MAGIC, librt.struct_rt_hf_internal),

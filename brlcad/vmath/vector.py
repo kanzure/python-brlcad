@@ -245,17 +245,21 @@ class Vector(np.ndarray):
                 return result
         return 0
 
+    @staticmethod
+    def O3():
+        return Vector((0, 0, 0))
 
-def X():
-    return Vector((1, 0, 0))
+    @staticmethod
+    def X3():
+        return Vector((1, 0, 0))
 
+    @staticmethod
+    def Y3():
+        return Vector((0, 1, 0))
 
-def Y():
-    return Vector((0, 1, 0))
-
-
-def Z():
-    return Vector((0, 0, 1))
+    @staticmethod
+    def Z3():
+        return Vector((0, 0, 1))
 
 
 if __name__ == "__main__":

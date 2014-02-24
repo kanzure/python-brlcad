@@ -68,5 +68,15 @@ class SketchTestCase(unittest.TestCase):
         result = self.brl_db.lookup(sketch.name)
         self.assertTrue(sketch.is_same(result))
 
+    def test_extrude(self):
+        sketch = Sketch("extrude_sketch.s")
+        sketch.add_curve_segment(sketch.circle((0, 1), (0, 0)))
+        self.brl_db.save(sketch)
+        shape = sketch.extrude("extrude.s")
+        self.brl_db.save(shape)
+        result = self.brl_db.lookup(shape.name)
+        self.assertTrue(shape.is_same(result))
+        self.assertTrue(sketch.is_same(result.sketch))
+
 if __name__ == "__main__":
     unittest.main()

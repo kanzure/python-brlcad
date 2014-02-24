@@ -1,5 +1,5 @@
 """
-Python wrapper for the Sketch primitive of BRL-CAD.
+Python wrapper for the Sketch, Extrude and Revolve primitives of BRL-CAD.
 """
 import collections
 import numbers
@@ -508,6 +508,9 @@ class Sketch(Primitive, collections.MutableSequence):
     def bezier(self, points, reverse=False):
         return Bezier(self, points, reverse= reverse)
 
+    def extrude(self, name, base=None, height=None, u_vec=None, v_vec=None, copy=False):
+        return Extrude(name, self, base=base, height=height, u_vec=u_vec, v_vec=v_vec, copy=copy)
+
     @staticmethod
     def from_wdb(name, data):
         vertices = []
@@ -539,3 +542,54 @@ Curve.TYPE_MAP = {
     Bezier: Bezier,
 }
 
+
+class Extrude(Primitive):
+    """
+    Wraps the Extrude BRL-CAD primitive.
+    """
+
+    def __init__(self, name, sketch, base=None, height=None, u_vec=None, v_vec=None, copy=False):
+        Primitive.__init__(self, name=name)
+        self.sketch = sketch
+        self.base = Vector(base, copy=copy) if base else Vector.O3()
+        self.height = Vector(height, copy=copy) if height else Vector.Z3()
+        self.u_vec = Vector(u_vec, copy=copy) if u_vec else Vector.X3()
+        self.v_vec = Vector(v_vec, copy=copy) if v_vec else Vector.Y3()
+
+    def __repr__(self):
+        return "{}({}, sketch={}, base={}, height={}, u_vec={}, v_vec={})".format(
+            self.__class__.__name__, self.name, self.sketch,
+            repr(self.base), repr(self.height), repr(self.u_vec), repr(self.v_vec)
+        )
+
+    def update_params(self, params):
+        params.update({
+            "sketch": self.sketch,
+            "base": self.base,
+            "height": self.height,
+            "u_vec": self.u_vec,
+            "v_vec": self.v_vec,
+        })
+
+    def copy(self):
+        return Extrude(self.name, sketch=self.sketch, base=self.base,
+                       height=self.height, u_vec=self.u_vec, v_vec=self.v_vec, copy=True)
+
+    def has_same_data(self, other):
+        if not self.sketch.is_same(other.sketch):
+            return False
+        self_vectors = (self.base, self.height, self.u_vec, self.v_vec)
+        other_vectors = (other.base, other.height, other.u_vec, other.v_vec)
+        return all(map(Vector.is_same, self_vectors, other_vectors))
+
+    @staticmethod
+    def from_wdb(name, data):
+        result = Extrude(
+            name=name,
+            sketch=Sketch.from_wdb(str(data.sketch_name), data.skt.contents),
+            base=data.V,
+            height=data.h,
+            u_vec=data.u_vec,
+            v_vec=data.v_vec,
+        )
+        return result
