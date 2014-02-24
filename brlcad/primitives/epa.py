@@ -4,6 +4,7 @@ Python wrappers for the EPA and EHY primitives of BRL-CAD.
 
 from base import Primitive
 from brlcad.vmath import Vector
+import numpy as np
 
 
 class EPA(Primitive):
@@ -31,6 +32,17 @@ class EPA(Primitive):
             "r_major": self.r_major,
             "r_minor": self.r_minor,
         })
+
+    def copy(self):
+        return EPA(self.name, base=self.base, height=self.height, n_major=self.n_major,
+                   r_major=self.r_major, r_minor=self.r_minor, copy=True)
+
+    def has_same_data(self, other):
+        if not np.allclose((self.r_major, self.r_minor), (other.r_major, other.r_minor)):
+            return False
+        self_vectors = (self.base, self.height, self.n_major)
+        other_vectors = (other.base, other.height, other.n_major)
+        return all(map(Vector.is_same, self_vectors, other_vectors))
 
     @staticmethod
     def from_wdb(name, data):
@@ -65,6 +77,13 @@ class EHY(EPA):
         params.update({
             "asymptote": self.asymptote,
         })
+
+    def copy(self):
+        return EHY(self.name, base=self.base, height=self.height, n_major=self.n_major,
+                   r_major=self.r_major, r_minor=self.r_minor, asymptote=self.asymptote, copy=True)
+
+    def has_same_data(self, other):
+        return EPA.has_same_data(self, other) and np.allclose(self.asymptote, other.asymptote)
 
     @staticmethod
     def from_wdb(name, data):

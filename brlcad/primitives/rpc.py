@@ -4,6 +4,7 @@ Python wrappers for the RPC and RHC primitives of BRL-CAD.
 
 from base import Primitive
 from brlcad.vmath import Vector
+import numpy as np
 
 
 class RPC(Primitive):
@@ -28,6 +29,17 @@ class RPC(Primitive):
             "breadth": self.breadth,
             "half_width": self.half_width,
         })
+
+    def copy(self):
+        return RPC(self.name, base=self.base, height=self.height,
+                   breadth=self.breadth, half_width=self.half_width, copy=True)
+
+    def has_same_data(self, other):
+        if not np.allclose(self.half_width, other.half_width):
+            return False
+        self_vectors = (self.base, self.height, self.breadth)
+        other_vectors = (other.base, other.height, other.breadth)
+        return all(map(Vector.is_same, self_vectors, other_vectors))
 
     @staticmethod
     def from_wdb(name, data):
@@ -61,6 +73,13 @@ class RHC(RPC):
         params.update({
             "asymptote": self.asymptote,
         })
+
+    def copy(self):
+        return RHC(self.name, base=self.base, height=self.height, breadth=self.breadth,
+                   half_width=self.half_width, asymptote=self.asymptote, copy=True)
+
+    def has_same_data(self, other):
+        return RPC.has_same_data(self, other) and np.allclose(self.asymptote, other.asymptote)
 
     @staticmethod
     def from_wdb(name, data):

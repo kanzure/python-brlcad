@@ -4,6 +4,7 @@ import unittest
 from brlcad.vmath import Vector
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
+import brlcad.primitives as primitives
 
 
 class WDBTestCase(unittest.TestCase):
@@ -37,17 +38,23 @@ class WDBTestCase(unittest.TestCase):
             brl_db.arbn("arbn.s")
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
+            test_comb = primitives.Combination(name="combination.c")
+            for shape_name in brl_db.ls():
+                test_comb.tree.add_child(shape_name)
+            brl_db.save(test_comb)
         # load the DB and cache it in a class variable:
         cls.brl_db = wdb.WDB("test_defaults.g")
 
     @classmethod
     def tearDownClass(cls):
-        # close/delete the test DB
+        # close the test DB
         cls.brl_db.close()
-        os.remove("test_defaults.g")
+        # delete the test DB except the DEBUG_TESTS environment variable is set
+        if not os.environ.get("DEBUG_TESTS", False):
+            os.remove("test_defaults.g")
 
     def lookup_shape(self, name):
-        return self.brl_db.lookup_internal(name)
+        return self.brl_db.lookup(name)
 
     def check_arb(self, name, expected_points):
         shape = self.lookup_shape(name)
@@ -177,6 +184,59 @@ class WDBTestCase(unittest.TestCase):
         self.assertTrue(shape.height.is_same((0, 0, 1)))
         self.assertEqual(0.5, shape.r_base)
         self.assertEqual(0.2, shape.r_end)
+
+    def test_pipe_defaults(self):
+        shape = self.lookup_shape("pipe.s")
+        expected = primitives.Pipe("pipe.s")
+        self.assertTrue(expected.is_same(shape))
+
+    def test_save_primitives(self):
+        test_shape_name = "test_save.s"
+        for shape_name in self.brl_db.ls():
+            shape = self.lookup_shape(shape_name)
+            if isinstance(shape, primitives.Combination):
+                continue
+            shape = shape.copy()
+            shape.name = test_shape_name
+            expected = shape.copy()
+            self.brl_db.save(shape)
+            shape = self.lookup_shape(test_shape_name)
+            self.assertTrue(expected.is_same(shape))
+        self.brl_db.delete(test_shape_name)
+
+    def test_save_pipe(self):
+        shape = self.lookup_shape("pipe.s")
+        shape.append_point((0, 2, 2), 0.5, 0.3, 0.8)
+        for i in range(0, len(shape.points)):
+            shape.points[i].r_bend = 0.8
+        expected = shape.copy()
+        self.brl_db.save(shape)
+        shape = self.lookup_shape("pipe.s")
+        self.assertTrue(expected.is_same(shape))
+
+    def test_lookup_not_existing(self):
+        self.assertIsNone(self.lookup_shape("not_existing"))
+
+    def test_delete_not_existing(self):
+        self.assertFalse(self.brl_db.delete("not_existing"))
+
+    def test_delete_shape(self):
+        shape_name = "created_to_be_deleted.s"
+        self.brl_db.sphere(shape_name)
+        self.assertIsNotNone(self.lookup_shape(shape_name))
+        self.assertTrue(self.brl_db.delete(shape_name))
+        self.assertIsNone(self.lookup_shape(shape_name))
+
+    def test_save_combination(self):
+        test_comb = self.lookup_shape("combination.c")
+        expected = test_comb.copy()
+        del expected.tree[0]
+        test_name = "test_save.c"
+        expected.name = test_name
+        self.brl_db.save(expected)
+        test_comb = self.lookup_shape(test_name)
+        self.assertTrue(expected.is_same(test_comb))
+        self.brl_db.delete(test_name)
 
 
 if __name__ == "__main__":

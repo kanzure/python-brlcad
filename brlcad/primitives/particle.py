@@ -4,6 +4,7 @@ Python wrapper for the Particle primitive of BRL-CAD.
 
 from base import Primitive
 from brlcad.vmath import Vector
+import numpy as np
 
 
 class Particle(Primitive):
@@ -27,6 +28,14 @@ class Particle(Primitive):
             "r_base": self.r_base,
             "r_end": self.r_end,
         })
+
+    def copy(self):
+        return Particle(self.name, base=self.base, height=self.height, r_base=self.r_base, r_end=self.r_end, copy=True)
+
+    def has_same_data(self, other):
+        if not np.allclose((self.r_base, self.r_end), (other.r_base, other.r_end)):
+            return False
+        return all(map(Vector.is_same, (self.base, self.height), (other.base, other.height)))
 
     @staticmethod
     def from_wdb(name, data):

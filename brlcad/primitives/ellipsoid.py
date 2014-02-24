@@ -21,6 +21,12 @@ class Ellipsoid(Primitive):
             self.name, repr(self.center), repr(self.a), repr(self.b), repr(self.c)
         )
 
+    def __iter__(self):
+        yield self.center
+        yield self.a
+        yield self.b
+        yield self.c
+
     def update_params(self, params):
         params.update({
             "center": self.center,
@@ -28,6 +34,12 @@ class Ellipsoid(Primitive):
             "b": self.b,
             "c": self.c,
         })
+
+    def copy(self):
+        return Ellipsoid(self.name, self.center, self.a, self.b, self.c, copy=True)
+
+    def has_same_data(self, other):
+        return all(map(Vector.is_same, self, other))
 
     def _get_radius(self):
         """

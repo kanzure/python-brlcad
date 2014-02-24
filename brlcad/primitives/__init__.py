@@ -13,9 +13,10 @@ from torus import Torus, ETO
 from epa import EPA, EHY
 from hyperboloid import Hyperboloid
 from particle import Particle
+from pipe import Pipe, PipePoint
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle",
-    "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid",
+    "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

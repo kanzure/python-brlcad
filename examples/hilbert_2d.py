@@ -72,10 +72,10 @@ def hilbert_pipe(file_name, size=10, recursions=4):
     l = float(size) / (2**recursions)
     d = 0.5 * l
     r = d
-    segments = [(x, d, 0, r) for x in generate_points(recursions, u_vec=(0, l, 0), v_vec=(0, 0, l))]
+    points = [(x, d, 0, r) for x in generate_points(recursions, u_vec=(0, l, 0), v_vec=(0, 0, l))]
     with WDB(file_name, "2D Hilbert space filling curve with pipes") as brl_db:
         pipe_name = "hilbert_2d.s"
-        brl_db.pipe(pipe_name, segments=segments)
+        brl_db.pipe(pipe_name, points=points)
         region_name = "hilbert_2d.r"
         brl_db.region(name=region_name, tree=pipe_name, rgb_color=(64, 180, 96))
 

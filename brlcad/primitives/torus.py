@@ -4,6 +4,7 @@ Python wrappers for the TOR and ETO primitives of BRL-CAD.
 
 from base import Primitive
 from brlcad.vmath import Vector
+import numpy as np
 
 
 class Torus(Primitive):
@@ -27,6 +28,15 @@ class Torus(Primitive):
             "r_revolution": self.r_revolution,
             "r_cross": self.r_cross,
         })
+
+    def copy(self):
+        return Torus(self.name, center=self.center, n=self.n,
+                     r_revolution=self.r_revolution, r_cross=self.r_cross, copy=True)
+
+    def has_same_data(self, other):
+        if not np.allclose((self.r_revolution, self.r_cross), (other.r_revolution, other.r_cross)):
+            return False
+        return all(map(Vector.is_same, (self.center, self.n), (other.center, other.n)))
 
     @staticmethod
     def from_wdb(name, data):
@@ -64,6 +74,15 @@ class ETO(Primitive):
             "r_revolution": self.r_revolution,
             "r_minor": self.r_minor,
         })
+
+    def copy(self):
+        return ETO(self.name, center=self.center, n=self.n, s_major=self.s_major,
+                   r_revolution=self.r_revolution, r_minor=self.r_minor, copy=True)
+
+    def has_same_data(self, other):
+        if not np.allclose((self.r_revolution, self.r_minor), (other.r_revolution, other.r_minor)):
+            return False
+        return all(map(Vector.is_same, (self.center, self.n, self.s_major), (other.center, other.n, other.s_major)))
 
     @staticmethod
     def from_wdb(name, data):
