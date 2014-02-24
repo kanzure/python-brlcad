@@ -46,7 +46,24 @@ class SketchTestCase(unittest.TestCase):
         self.assertEqual(0, len(sketch.vertices))
 
     def test_example_sketch(self):
-        sketch = Sketch.example_sketch()
+        sketch = Sketch("example.s", u_vec=(0, 1, 0), v_vec=(0, 0, 1))
+        sketch.add_curve_segment(sketch.circle((0.5, 0), (0, 0)))
+        sketch.add_curve_segment(sketch.line((-1, -1), (-1, 1)))
+        sketch.add_curve_segment(sketch.line((-1, 1), (1, 1)))
+        sketch.add_curve_segment(sketch.line((1, 1), (1, -1)))
+        sketch.add_curve_segment(sketch.line((1, -1), (-1, -1)))
+        sketch.add_curve_segment(
+            sketch.bezier((
+                (-2, 0), (-2, 6), (0, -4), (2, 6), (2, 0)
+            ))
+        )
+        sketch.add_curve_segment(
+            sketch.nurb(
+                [(-2, 0), (-2, -3), (0, -1), (2, -3), (2, 0)],
+                order=4,
+                reverse=True
+            ),
+        )
         self.brl_db.save(sketch)
         result = self.brl_db.lookup(sketch.name)
         self.assertTrue(sketch.is_same(result))

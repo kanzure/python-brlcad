@@ -1,2 +1,4 @@
 import test_options
 import test_combination
+import test_wdb
+import test_sketch

@@ -21,6 +21,28 @@ def indexed_setter(index):
     return _setter
 
 
+def create_uniform_knots(ctl_point_cnt, order):
+    """
+    Creates a list of uniform knots where the start and end control points will be on the curve.
+    The first and last knot has (duplicity == order) for this purpose.
+    >>> create_uniform_knots(4, 2)
+    [0, 0, 1, 2, 3, 3]
+    >>> create_uniform_knots(2, 2)
+    [0, 0, 1, 1]
+    >>> create_uniform_knots(10, 3)
+    [0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8]
+    """
+    knot_count = ctl_point_cnt + order
+    span = ctl_point_cnt - order + 1
+    knot_vector = [0] * order
+    if span > 0:
+        knot_vector += range(1, span)
+    else:
+        span = 1
+    knot_vector += [span] * (knot_count - len(knot_vector))
+    return knot_vector
+
+
 class Curve(collections.MutableSequence):
     """
     Represents one curve segment of a sketch. Curve instances implement the collections.MutableSequence
@@ -99,8 +121,8 @@ class Line(Curve):
     end = property(fget=indexed_getter(1), fset=indexed_setter(1))
 
     def __repr__(self):
-        return "{}(start={}, end={})".format(
-            self.__class__.__name__, repr(self.start), repr(self.end)
+        return "{}(start={}, end={}, reverse={})".format(
+            self.__class__.__name__, repr(self.start), repr(self.end), self.reverse
         )
 
     def build_segment(self):
@@ -115,8 +137,7 @@ class Line(Curve):
         return True
 
     def copy_to(self, sketch):
-        # todo: implement
-        pass
+        return Line(sketch, self._points, reverse=self.reverse, copy=True)
 
 
 class CircularArc(Curve):
@@ -169,65 +190,147 @@ class CircularArc(Curve):
         return np.allclose(self.radius, other.radius)
 
     def copy_to(self, sketch):
-        # todo: implement
-        pass
+        return CircularArc(
+            sketch, self._points, reverse=self.reverse, radius=self.radius,
+            center_is_left=self.center_is_left, clock_wise=self.clock_wise, copy=True
+        )
 
 
 class NURB(Curve):
     """
-    NURB curve segment.
+    NURB curve segment. For more info on NURBS please read:
+    http://en.wikipedia.org/wiki/NURBS
     """
 
-    def __init__(self, sketch, points, reverse=False, point_type=None,
-                 knot_vector=None, weights=None, copy=False):
+    def __init__(self, sketch, points, knot_vector=None, order=None, reverse=False, point_type=None,
+                 weights=None, copy=False):
         Curve.__init__(self, sketch, points, reverse=reverse, copy=copy)
-        # todo: honor copy param below too:
-        self.point_type = point_type
-        self.knot_vector = knot_vector
-        self.weights = weights
+        self.point_type = point_type if point_type else librt.RT_NURB_PT_XY
+        # order -> will be inferred from the knot/control point vector lengths if missing
+        ctl_point_cnt = len(self._points)
+        if order is None:
+            if knot_vector is None:
+                order = len(points)
+            else:
+                order = len(knot_vector) - ctl_point_cnt
+            if order < 2:
+                raise ValueError(
+                    "Cannot infer NURB order from vector lengths {}/{} for control points/knots !".format(
+                        ctl_point_cnt, len(knot_vector)
+                    )
+                )
+        self.order = order
+        if ctl_point_cnt < order:
+            raise ValueError(
+                "NURB control point count ({}) must be greater or equal to it's order ({}) !".format(
+                    ctl_point_cnt, order
+                )
+            )
+        # knot vector -> will be set to a uniform knots placement if missing
+        if knot_vector is None:
+            knot_vector = create_uniform_knots(ctl_point_cnt, order)
+        if len(knot_vector) != ctl_point_cnt + order:
+            raise ValueError(
+                "Expected {} knots for NURB of order {} with {} control points, but got {} !".format(
+                    ctl_point_cnt + order, order, ctl_point_cnt, len(knot_vector)
+                )
+            )
+        if copy or not isinstance(knot_vector, list):
+            self.knot_vector = list(knot_vector)
+        else:
+            self.knot_vector = knot_vector
+        # weights
+        if not weights:
+            self.weights = None
+        elif copy or not isinstance(weights, list):
+            self.weights = list(weights)
+        else:
+            self.weights = weights
 
     @staticmethod
     def from_wdb(sketch, data, reverse):
         data = librt.cast(data, librt.POINTER(librt.struct_nurb_seg)).contents
-        return NURB(
+        point_type = (data.pt_type >> 1) & 0x0f
+        if bool(data.pt_type & 1):
+            weights = [data.weights[i] for i in xrange(0, data.c_size)]
+            coordinate_count = 3
+        else:
+            weights = None
+            coordinate_count = 2
+        if coordinate_count != data.pt_type >> 5:
+            raise ValueError(
+                "Expected {} NURB coordinates for sketch, but got {}".format(coordinate_count, data.pt_type >> 5)
+            )
+        result = NURB(
             sketch,
             points=[data.ctl_points[i] for i in xrange(0, data.c_size)],
             reverse=reverse,
-            point_type=data.pt_type,
-            knot_vector=data.k,
-            weights=[data.weights[i] for i in xrange(0, data.c_size)]
+            order=data.order,
+            point_type=point_type,
+            knot_vector=[data.k.knots[i] for i in xrange(0, data.k.k_size)],
+            weights=weights
         )
+        return result
 
-    degree = property(fget=lambda self: len(self.points) - 1, doc="degree of curve (number of control points - 1)")
-
-    order = property(fget=lambda self: len(self.points) - 2, doc="order of NURB curve (degree - 1)")
+    degree = property(fget=lambda self: self.order - 1, doc="polynomial degree of NURB curve (= order - 1)")
 
     def __repr__(self):
-        return "{}(control_points={}, point_type={}, knot_vector={}, reverse={}, weights={})".format(
-            self.__class__.__name__, repr(self.points),
-            self.point_type, self.knot_vector, self.reverse, self.weights
+        return "{}(control_points={}, point_type={}, order={}, knot_vector={}, reverse={}, weights={})".format(
+            self.__class__.__name__, repr(self.points), self.point_type,
+            self.order, self.knot_vector, self.reverse, self.weights
         )
 
     def build_segment(self):
-        # todo: implement
-        pass
+        result = librt.struct_nurb_seg()
+        result.magic = librt.CURVE_NURB_MAGIC
+        result.order = self.order
+        coordinates_count = 3 if self.weights else 2
+        result.pt_type = (1 if self.weights else 0) + (self.point_type << 1) + (coordinates_count << 5)
+        result.c_size = len(self._points)
+        result.ctl_points = cta.integers(self._points, flatten=False)
+        result.weights = cta.doubles(self.weights, flatten=False)
+        knots = librt.struct_knot_vector()
+        knots.magic = librt.NMG_KNOT_VECTOR_MAGIC
+        knots.k_size = len(self.knot_vector)
+        knots.knots = cta.doubles(self.knot_vector, flatten=False)
+        result.k = knots
+        return result
 
     def is_same_data(self, other):
-        # todo: implement
-        pass
+        # order
+        if self.order != other.order:
+            return False
+        # point_type
+        if self.point_type != other.point_type:
+            return False
+        # weights -> this one could be None, check that too
+        if self.weights is None:
+            if other.weights is not None:
+                return False
+        elif other.weights is None:
+            return False
+        elif len(self.weights) != len(other.weights) or not np.allclose(self.weights, other.weights):
+            return False
+        # knot_vector
+        if len(self.knot_vector) != len(other.knot_vector) or not np.allclose(self.knot_vector, other.knot_vector):
+            return False
+        return True
 
     def copy_to(self, sketch):
-        # todo: implement
-        pass
+        return NURB(
+            sketch, self._points, order=self.order, reverse=self.reverse, point_type=self.point_type,
+            knot_vector=self.knot_vector, weights=self.weights, copy=True
+        )
 
 
 class Bezier(Curve):
     """
-    Bezier curve segment.
+    Bezier curve segment. For more info on Bezier curves please read:
+    http://en.wikipedia.org/wiki/Bezier_curve
     """
 
-    def __init__(self, sketch, points, reverse=False):
-        Curve.__init__(self, sketch, points, reverse=reverse)
+    def __init__(self, sketch, points, reverse=False, copy=False):
+        Curve.__init__(self, sketch, points, reverse=reverse, copy=copy)
 
     @staticmethod
     def from_wdb(sketch, data, reverse):
@@ -246,16 +349,18 @@ class Bezier(Curve):
         )
 
     def build_segment(self):
-        # todo: implement
-        pass
+        result = librt.struct_bezier_seg()
+        result.magic = librt.CURVE_BEZIER_MAGIC
+        result.degree = self.degree
+        result.ctl_points = cta.integers(self._points, flatten=False)
+        return result
 
     def is_same_data(self, other):
-        # todo: implement
-        pass
+        # No additional data to what the Curve parent class already checks:
+        return True
 
     def copy_to(self, sketch):
-        # todo: implement
-        pass
+        Bezier(sketch, self._points, reverse=self.reverse, copy=True)
 
 
 class Sketch(Primitive, collections.MutableSequence):
@@ -394,23 +499,14 @@ class Sketch(Primitive, collections.MutableSequence):
     def circle(self, point, center, clock_wise=False, copy=False):
         return CircularArc(self, [point, center], clock_wise=clock_wise, copy=copy)
 
-    def nurb(self, points, reverse=False, point_type=None, knot_vector=None, weights=None, copy=False):
+    def nurb(self, points, reverse=False, order=None, point_type=None, knot_vector=None, weights=None, copy=False):
         return NURB(
-            self, points, reverse=reverse, point_type=point_type, knot_vector=knot_vector, weights=weights, copy=copy
+            self, points, reverse=reverse, order=order, point_type=point_type,
+            knot_vector=knot_vector, weights=weights, copy=copy
         )
 
     def bezier(self, points, reverse=False):
         return Bezier(self, points, reverse= reverse)
-
-    @staticmethod
-    def example_sketch():
-        example = Sketch("example.s")
-        example.add_curve_segment(example.circle((0.5, 0), (0, 0)))
-        example.add_curve_segment(example.line((-1, -1), (-1, 1)))
-        example.add_curve_segment(example.line((-1, 1), (1, 1)))
-        example.add_curve_segment(example.line((1, 1), (1, -1)))
-        example.add_curve_segment(example.line((1, -1), (-1, -1)))
-        return example
 
     @staticmethod
     def from_wdb(name, data):
@@ -420,7 +516,6 @@ class Sketch(Primitive, collections.MutableSequence):
         result = Sketch(
             name=name, base=Vector(data.V), u_vec=Vector(data.u_vec), v_vec=Vector(data.v_vec), vertices=vertices
         )
-        result.data = data
         curves = data.curve
         for i in xrange(0, curves.count):
             curve = curves.segment[i]
