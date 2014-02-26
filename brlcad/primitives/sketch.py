@@ -511,6 +511,9 @@ class Sketch(Primitive, collections.MutableSequence):
     def extrude(self, name, base=None, height=None, u_vec=None, v_vec=None, copy=False):
         return Extrude(name, self, base=base, height=height, u_vec=u_vec, v_vec=v_vec, copy=copy)
 
+    def revolve(self, name, revolve_center=None, revolve_axis=None, radius=None, angle=None):
+        return Revolve(name, self, revolve_center=revolve_center, revolve_axis=revolve_axis, radius=radius, angle=angle)
+
     @staticmethod
     def from_wdb(name, data):
         vertices = []
@@ -591,5 +594,60 @@ class Extrude(Primitive):
             height=data.h,
             u_vec=data.u_vec,
             v_vec=data.v_vec,
+        )
+        return result
+
+
+class Revolve(Primitive):
+    """
+    Wraps the Revolve BRL-CAD primitive.
+    """
+
+    def __init__(self, name, sketch, revolve_center=None, revolve_axis=None, radius=None, angle=None, copy=False):
+        Primitive.__init__(self, name=name)
+        self.sketch = sketch
+        self.revolve_center = Vector(revolve_center, copy=copy) if revolve_center else Vector.O3()
+        self.revolve_axis = Vector(revolve_axis, copy=copy) if revolve_axis else Vector.Z3()
+        self.radius = Vector(radius, copy=copy) if radius else Vector.X3()
+        self.angle = 180 if angle is None else float(angle)
+
+    def __repr__(self):
+        return "{}({}, sketch={}, revolve_center={}, revolve_axis={}, radius={}, angle={})".format(
+            self.__class__.__name__, self.name, self.sketch,
+            repr(self.revolve_center), repr(self.revolve_axis), repr(self.radius), self.angle
+        )
+
+    def update_params(self, params):
+        params.update({
+            "sketch": self.sketch,
+            "revolve_center": self.revolve_center,
+            "revolve_axis": self.revolve_axis,
+            "radius": self.radius,
+            "angle": self.angle,
+        })
+
+    def copy(self):
+        return Revolve(self.name, sketch=self.sketch, revolve_center=self.revolve_center,
+                       revolve_axis=self.revolve_axis, radius=self.radius, angle=self.angle,
+                       copy=True)
+
+    def has_same_data(self, other):
+        if not self.sketch.is_same(other.sketch):
+            return False
+        if self.angle != other.angle:
+            return False
+        self_vectors = (self.revolve_center, self.revolve_axis, self.radius)
+        other_vectors = (other.revolve_center, other.revolve_axis, other.radius)
+        return all(map(Vector.is_same, self_vectors, other_vectors))
+
+    @staticmethod
+    def from_wdb(name, data):
+        result = Revolve(
+            name=name,
+            sketch=Sketch.from_wdb(str(data.sketch_name.vls_str), data.skt.contents),
+            revolve_center=data.v3d,
+            revolve_axis=data.axis3d,
+            radius=data.r,
+            angle=data.ang,
         )
         return result

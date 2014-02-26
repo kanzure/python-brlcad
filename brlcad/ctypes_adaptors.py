@@ -96,6 +96,10 @@ def points2D(p, point_count=None):
     return points(p, point_count=point_count, point_size=2)
 
 
+def point2D(p):
+    return point(p, point_size=2)
+
+
 def direction(d):
     fp = [x for x in iterate_numbers(d)]
     double_count = len(fp)

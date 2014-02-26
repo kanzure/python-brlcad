@@ -17,7 +17,7 @@ from combination import Combination
 from hyperboloid import Hyperboloid
 from particle import Particle
 from pipe import Pipe
-from sketch import Sketch, Extrude
+from sketch import Sketch, Extrude, Revolve
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -46,7 +46,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_POLY: ("PG", Primitive, librt.RT_PG_INTERNAL_MAGIC, librt.struct_rt_pg_internal),
     librt.ID_PIPE: ("PIPE", Pipe, librt.RT_PIPE_INTERNAL_MAGIC, librt.struct_rt_pipe_internal),
     librt.ID_PARTICLE: ("PARTICLE", Particle, librt.RT_PART_INTERNAL_MAGIC, librt.struct_rt_part_internal),
-    librt.ID_REVOLVE: ("REVOLVE", Primitive, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
+    librt.ID_REVOLVE: ("REVOLVE", Revolve, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
     librt.ID_RHC: ("RHC", RHC, librt.RT_RHC_INTERNAL_MAGIC, librt.struct_rt_rhc_internal),
     librt.ID_RPC: ("RPC", RPC, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
     librt.ID_SKETCH: ("SKETCH", Sketch, librt.RT_SKETCH_INTERNAL_MAGIC, librt.struct_rt_sketch_internal),

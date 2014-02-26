@@ -246,6 +246,18 @@ class Vector(np.ndarray):
         return 0
 
     @staticmethod
+    def O2():
+        return Vector((0, 0))
+
+    @staticmethod
+    def U2():
+        return Vector((1, 0))
+
+    @staticmethod
+    def V2():
+        return Vector((0, 1))
+
+    @staticmethod
     def O3():
         return Vector((0, 0, 0))
 
