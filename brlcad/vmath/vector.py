@@ -239,23 +239,39 @@ class Vector(np.ndarray):
         result = length - len(other)
         if result:
             return result
-        for i in range(0, length):
+        for i in xrange(0, length):
             result = self[i] - other[i]
             if result:
                 return result
         return 0
 
+    @staticmethod
+    def O2():
+        return Vector((0, 0))
 
-def X():
-    return Vector((1, 0, 0))
+    @staticmethod
+    def U2():
+        return Vector((1, 0))
 
+    @staticmethod
+    def V2():
+        return Vector((0, 1))
 
-def Y():
-    return Vector((0, 1, 0))
+    @staticmethod
+    def O3():
+        return Vector((0, 0, 0))
 
+    @staticmethod
+    def X3():
+        return Vector((1, 0, 0))
 
-def Z():
-    return Vector((0, 0, 1))
+    @staticmethod
+    def Y3():
+        return Vector((0, 1, 0))
+
+    @staticmethod
+    def Z3():
+        return Vector((0, 0, 1))
 
 
 if __name__ == "__main__":

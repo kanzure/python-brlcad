@@ -7,6 +7,6 @@ are needed for the higher level operations implemented in python.
 from plane import Plane
 from segment import Segment
 from transform import Transform
-from vector import Vector, X, Y, Z
+from vector import Vector
 
-__all__ = ["Vector", "Segment", "Plane", "Transform", "X", "Y", "Z"]
+__all__ = ["Vector", "Segment", "Plane", "Transform"]

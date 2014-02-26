@@ -72,7 +72,7 @@ class WDB:
             raise BRLCADException("Can't create DB file <{0}>: {1}".format(db_file, e))
 
     def __iter__(self):
-        for i in range(0, libwdb.RT_DBNHASH):
+        for i in xrange(0, libwdb.RT_DBNHASH):
             dp = self.db_ip.contents.dbi_Head[i]
             while dp:
                 crt_dir = dp.contents
@@ -114,90 +114,90 @@ class WDB:
 
     @mk_wrap_primitive(primitives.Sphere)
     def sphere(self, name, center=(0, 0, 0), radius=1):
-        libwdb.mk_sph(self.db_fp, name, cta.points(center), radius)
+        libwdb.mk_sph(self.db_fp, name, cta.point(center), radius)
 
     @mk_wrap_primitive(primitives.Primitive)
     def rpp(self, name, pmin=(-1, -1, -1), pmax=(1, 1, 1)):
-        libwdb.mk_rpp(self.db_fp, name, cta.points(pmin), cta.points(pmax))
+        libwdb.mk_rpp(self.db_fp, name, cta.point(pmin), cta.point(pmax))
 
     @mk_wrap_primitive(primitives.Primitive)
     def wedge(self, name, vertex=(0, 0, 0), x_dir=(1, 0, 0), z_dir=(0, 0, 1),
               x_len=1, y_len=1, z_len=1, x_top_len=0.5):
         libwdb.mk_wedge(self.db_fp, name,
-                        cta.points(vertex), cta.direction(x_dir), cta.direction(z_dir),
+                        cta.point(vertex), cta.direction(x_dir), cta.direction(z_dir),
                         x_len, y_len, z_len, x_top_len)
 
     @mk_wrap_primitive(primitives.Primitive)
     def arb4(self, name, points=(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1)):
-        libwdb.mk_arb4(self.db_fp, name, cta.points(points, point_count=4))
+        libwdb.mk_arb4(self.db_fp, name, cta.doubles(points, double_count=12))
 
     @mk_wrap_primitive(primitives.Primitive)
     def arb5(self, name, points=(1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0, 0, 0, 1)):
-        libwdb.mk_arb5(self.db_fp, name, cta.points(points, point_count=5))
+        libwdb.mk_arb5(self.db_fp, name, cta.doubles(points, double_count=15))
 
     @mk_wrap_primitive(primitives.Primitive)
     def arb6(self, name, points=(1, 1, 0, 1, -1, 0, -1, -1, 0, -1, 1, 0, 1, 0, 1, -1, 0, 1)):
-        libwdb.mk_arb6(self.db_fp, name, cta.points(points, point_count=6))
+        libwdb.mk_arb6(self.db_fp, name, cta.doubles(points, double_count=18))
 
     @mk_wrap_primitive(primitives.Primitive)
     def arb7(self, name, points=(1, 1, -1, 1, -1, -1, -3, -1, -1, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, 1)):
-        libwdb.mk_arb7(self.db_fp, name, cta.points(points, point_count=7))
+        libwdb.mk_arb7(self.db_fp, name, cta.doubles(points, double_count=21))
 
     @mk_wrap_primitive(primitives.ARB8)
     def arb8(self, name, points=(1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, -1, 1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1)):
-        libwdb.mk_arb8(self.db_fp, name, cta.points(points, point_count=8))
+        libwdb.mk_arb8(self.db_fp, name, cta.doubles(points, double_count=24))
 
     @mk_wrap_primitive(primitives.Ellipsoid)
     def ellipsoid(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1)):
-        libwdb.mk_ell(self.db_fp, name, cta.points(center), cta.direction(a), cta.direction(b), cta.direction(c))
+        libwdb.mk_ell(self.db_fp, name, cta.point(center), cta.direction(a), cta.direction(b), cta.direction(c))
 
     @mk_wrap_primitive(primitives.Torus)
     def torus(self, name, center=(0, 0, 0), n=(0, 0, 1), r_revolution=1, r_cross=0.2):
-        libwdb.mk_tor(self.db_fp, name, cta.points(center), cta.direction(n), r_revolution, r_cross)
+        libwdb.mk_tor(self.db_fp, name, cta.point(center), cta.direction(n), r_revolution, r_cross)
 
     @mk_wrap_primitive(primitives.RCC)
     def rcc(self, name, base=(0, 0, 0), height=(0, 0, 1), radius=1):
-        libwdb.mk_rcc(self.db_fp, name, cta.points(base), cta.direction(height), radius)
+        libwdb.mk_rcc(self.db_fp, name, cta.point(base), cta.direction(height), radius)
 
     @mk_wrap_primitive(primitives.TGC)
     def tgc(self, name, base=(0, 0, 0), height=(0, 0, 1), a=(0, 1, 0), b=(0.5, 0, 0), c=(0, 0.5, 0), d=(1, 0, 0)):
-        libwdb.mk_tgc(self.db_fp, name, cta.points(base), cta.direction(height),
+        libwdb.mk_tgc(self.db_fp, name, cta.point(base), cta.direction(height),
                       cta.direction(a), cta.direction(b), cta.direction(c), cta.direction(d))
 
     @mk_wrap_primitive(primitives.Cone)
     def cone(self, name, base=(0, 0, 0), n=(0, 0, 1), h=1, r_base=1, r_top=0.5):
-        libwdb.mk_cone(self.db_fp, name, cta.points(base), cta.direction(n), h, r_base, r_top)
+        libwdb.mk_cone(self.db_fp, name, cta.point(base), cta.direction(n), h, r_base, r_top)
 
     @mk_wrap_primitive(primitives.TRC)
     def trc(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=1, r_top=0.5):
-        libwdb.mk_trc_h(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_top)
+        libwdb.mk_trc_h(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_top)
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
-        libwdb.mk_rpc(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(breadth), half_width)
+        libwdb.mk_rpc(self.db_fp, name, cta.point(base), cta.direction(height), cta.direction(breadth), half_width)
 
     @mk_wrap_primitive(primitives.RHC)
     def rhc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5, asymptote=0.1):
-            libwdb.mk_rhc(self.db_fp, name, cta.points(base), cta.direction(height),
+            libwdb.mk_rhc(self.db_fp, name, cta.point(base), cta.direction(height),
                           cta.direction(breadth), half_width, asymptote)
 
     @mk_wrap_primitive(primitives.EPA)
     def epa(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5):
-        libwdb.mk_epa(self.db_fp, name, cta.points(base), cta.direction(height), cta.direction(n_major), r_major, r_minor)
+        libwdb.mk_epa(self.db_fp, name, cta.point(base), cta.direction(height), cta.direction(n_major), r_major, r_minor)
 
     @mk_wrap_primitive(primitives.EHY)
     def ehy(self, name, base=(0, 0, 0), height=(0, 0, 1), n_major=(0, 1, 0), r_major=1, r_minor=0.5, asymptote=0.1):
-        libwdb.mk_ehy(self.db_fp, name, cta.points(base), cta.direction(height),
+        libwdb.mk_ehy(self.db_fp, name, cta.point(base), cta.direction(height),
                       cta.direction(n_major), r_major, r_minor, asymptote)
 
     @mk_wrap_primitive(primitives.Hyperboloid)
     def hyperboloid(self, name, base=(0, 0, 0), height=(0, 0, 1), a_vec=(0, 1, 0), b_mag=0.5, base_neck_ratio=0.2):
-        libwdb.mk_hyp(self.db_fp, name, cta.points(base), cta.direction(height),
+        libwdb.mk_hyp(self.db_fp, name, cta.point(base), cta.direction(height),
                       cta.direction(a_vec), b_mag, base_neck_ratio)
 
     @mk_wrap_primitive(primitives.ETO)
     def eto(self, name, center=(0, 0, 0), n=(0, 0, 1), s_major=(0, 0.5, 0.5), r_revolution=1, r_minor=0.2):
-        libwdb.mk_eto(self.db_fp, name, cta.points(center), cta.direction(n),
+        libwdb.mk_eto(self.db_fp, name, cta.point(center), cta.direction(n),
                       cta.direction(s_major), r_revolution, r_minor)
 
     @mk_wrap_primitive(primitives.ARBN)
@@ -209,15 +209,51 @@ class WDB:
 
     @mk_wrap_primitive(primitives.Particle)
     def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
-        libwdb.mk_particle(self.db_fp, name, cta.points(base), cta.direction(height), r_base, r_end)
+        libwdb.mk_particle(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_end)
 
     @mk_wrap_primitive(primitives.Pipe)
     def pipe(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
         seg_list = libwdb.bu_list_new()
         libwdb.mk_pipe_init(seg_list)
         for pipe_point in points:
-            libwdb.mk_add_pipe_pt(seg_list, cta.points(pipe_point[0]), *pipe_point[1:])
+            libwdb.mk_add_pipe_pt(seg_list, cta.point(pipe_point[0]), *pipe_point[1:])
         libwdb.mk_pipe(self.db_fp, name, seg_list)
+
+    @mk_wrap_primitive(primitives.Sketch)
+    def sketch(self, name, sketch=None):
+        if not sketch:
+            sketch = primitives.Sketch(name)
+        si = libwdb.struct_rt_sketch_internal()
+        si.magic = libwdb.RT_SKETCH_INTERNAL_MAGIC
+        si.V = cta.point(sketch.base)
+        si.u_vec = cta.point(sketch.u_vec)
+        si.v_vec = cta.point(sketch.v_vec)
+        si.curve, vertices = sketch.build_curves()
+        si.vert_count = len(vertices)
+        si.verts = cta.points2D(vertices, point_count=len(vertices))
+        libwdb.mk_sketch(self.db_fp, name, libwdb.byref(si))
+
+    @mk_wrap_primitive(primitives.Extrude)
+    def extrude(self, name, sketch=None, base=None, height=None, u_vec=None, v_vec=None):
+        libwdb.mk_extrusion(
+            self.db_fp, name, sketch.name,
+            cta.point((0, 0, 0) if base is None else base),
+            cta.point((0, 0, 1) if height is None else height),
+            cta.point((1, 0, 0) if u_vec is None else u_vec),
+            cta.point((0, 1, 0) if v_vec is None else v_vec),
+            0
+        )
+
+    @mk_wrap_primitive(primitives.Revolve)
+    def revolve(self, name, sketch=None, revolve_center=None, revolve_axis=None, radius=None, angle=None):
+        ri = cta.brlcad_new(libwdb.struct_rt_revolve_internal)
+        ri.magic = libwdb.RT_REVOLVE_INTERNAL_MAGIC
+        ri.v3d = cta.point((0, 0, 0) if revolve_center is None else revolve_center)
+        ri.axis3d = cta.point((0, 0, 1) if revolve_axis is None else revolve_axis)
+        ri.r = cta.point((1, 0, 0) if radius is None else radius)
+        ri.ang = 180 if angle is None else angle
+        ri.sketch_name = cta.str_to_vls(sketch.name)
+        libwdb.wdb_export(self.db_fp, name, libwdb.byref(ri), libwdb.ID_REVOLVE, 1)
 
     @mk_wrap_primitive(primitives.Combination)
     def combination(self, name, is_region=False, tree=None, inherit=False,

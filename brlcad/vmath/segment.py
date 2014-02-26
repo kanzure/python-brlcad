@@ -4,6 +4,7 @@ Segment-based geometry.
 import math
 from plane import Plane
 from vector import Vector
+import numpy as np
 
 
 class Segment(object):
@@ -87,6 +88,5 @@ class Segment(object):
 
 if __name__ == "__main__":
     import doctest
-    import numpy as np
     np.set_printoptions(suppress=True, precision=5)
     doctest.testmod()

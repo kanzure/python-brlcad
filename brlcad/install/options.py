@@ -290,7 +290,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
         options.output = os.path.join(bindings_path, "{0}.py".format(lib_name))
         lib_path = find_shared_lib_file([bin_dir, lib_dir], lib_name)
         options.libraries = [norm_win_path(lib_path)]
-        for i in range(0, len(lib_headers)):
+        for i in xrange(0, len(lib_headers)):
             lib_headers[i] = os.path.join(include_dir, "brlcad", lib_headers[i])
             if not os.access(lib_headers[i], os.R_OK):
                 raise SetupException("Missing header file: {0}".format(lib_headers[i]))
