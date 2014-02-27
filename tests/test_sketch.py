@@ -1,5 +1,6 @@
 import os
 import unittest
+import math
 from brlcad.primitives import Sketch
 
 import brlcad.wdb as wdb
@@ -67,6 +68,45 @@ class SketchTestCase(unittest.TestCase):
         self.brl_db.save(sketch)
         result = self.brl_db.lookup(sketch.name)
         self.assertTrue(sketch.is_same(result))
+
+    def test_extrude(self):
+        sketch = Sketch("extrude_sketch.s")
+        sketch.add_curve_segment(sketch.circle((0, 1), (0, 0)))
+        self.brl_db.save(sketch)
+        shape = sketch.extrude("extrude.s")
+        self.brl_db.save(shape)
+        result = self.brl_db.lookup(shape.name)
+        self.assertTrue(shape.is_same(result))
+        self.assertTrue(sketch.is_same(result.sketch))
+
+    def test_revolve(self):
+        sketch = Sketch(
+            "revolve_sketch.s",
+            # u_vec=(0, 1, 0), v_vec=(0, 0, 1)
+        )
+        sketch.add_curve_segment(
+            sketch.line(
+                start=(0.5, -1), end=(1, 0)
+            ),
+        )
+        sketch.add_curve_segment(
+            sketch.line(
+                start=(1, 0), end=(0.5, 1)
+            ),
+        )
+        sketch.add_curve_segment(
+            sketch.arc(
+                start=(0.5, 1), end=(1, 2), radius=0.7, center_is_left=True,
+            )
+        )
+        self.brl_db.save(sketch)
+        shape = sketch.revolve(
+            "revolve.s", angle=2*math.pi, radius=(1, 0, 0), revolve_axis=(0, 1, 0), revolve_center=(0, 0, 0)
+        )
+        self.brl_db.save(shape)
+        result = self.brl_db.lookup(shape.name)
+        self.assertTrue(shape.is_same(result))
+        self.assertTrue(sketch.is_same(result.sketch))
 
 if __name__ == "__main__":
     unittest.main()

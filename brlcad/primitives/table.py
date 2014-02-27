@@ -17,7 +17,7 @@ from combination import Combination
 from hyperboloid import Hyperboloid
 from particle import Particle
 from pipe import Pipe
-from sketch import Sketch
+from sketch import Sketch, Extrude, Revolve
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -36,7 +36,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_SPH: ("ELL", Sphere, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_EPA: ("EPA", EPA, librt.RT_EPA_INTERNAL_MAGIC, librt.struct_rt_epa_internal),
     librt.ID_ETO: ("ETO", ETO, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
-    librt.ID_EXTRUDE: ("EXTRUDE", Primitive, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
+    librt.ID_EXTRUDE: ("EXTRUDE", Extrude, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
     librt.ID_GRIP: ("GRIP", Primitive, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
     librt.ID_HALF: ("HALF", Primitive, librt.RT_HALF_INTERNAL_MAGIC, librt.struct_rt_half_internal),
     librt.ID_HF: ("HF", Primitive, librt.RT_HF_INTERNAL_MAGIC, librt.struct_rt_hf_internal),
@@ -46,7 +46,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_POLY: ("PG", Primitive, librt.RT_PG_INTERNAL_MAGIC, librt.struct_rt_pg_internal),
     librt.ID_PIPE: ("PIPE", Pipe, librt.RT_PIPE_INTERNAL_MAGIC, librt.struct_rt_pipe_internal),
     librt.ID_PARTICLE: ("PARTICLE", Particle, librt.RT_PART_INTERNAL_MAGIC, librt.struct_rt_part_internal),
-    librt.ID_REVOLVE: ("REVOLVE", Primitive, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
+    librt.ID_REVOLVE: ("REVOLVE", Revolve, librt.RT_REVOLVE_INTERNAL_MAGIC, librt.struct_rt_revolve_internal),
     librt.ID_RHC: ("RHC", RHC, librt.RT_RHC_INTERNAL_MAGIC, librt.struct_rt_rhc_internal),
     librt.ID_RPC: ("RPC", RPC, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
     librt.ID_SKETCH: ("SKETCH", Sketch, librt.RT_SKETCH_INTERNAL_MAGIC, librt.struct_rt_sketch_internal),

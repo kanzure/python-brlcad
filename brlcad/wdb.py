@@ -233,6 +233,28 @@ class WDB:
         si.verts = cta.points2D(vertices, point_count=len(vertices))
         libwdb.mk_sketch(self.db_fp, name, libwdb.byref(si))
 
+    @mk_wrap_primitive(primitives.Extrude)
+    def extrude(self, name, sketch=None, base=None, height=None, u_vec=None, v_vec=None):
+        libwdb.mk_extrusion(
+            self.db_fp, name, sketch.name,
+            cta.point((0, 0, 0) if base is None else base),
+            cta.point((0, 0, 1) if height is None else height),
+            cta.point((1, 0, 0) if u_vec is None else u_vec),
+            cta.point((0, 1, 0) if v_vec is None else v_vec),
+            0
+        )
+
+    @mk_wrap_primitive(primitives.Revolve)
+    def revolve(self, name, sketch=None, revolve_center=None, revolve_axis=None, radius=None, angle=None):
+        ri = cta.brlcad_new(libwdb.struct_rt_revolve_internal)
+        ri.magic = libwdb.RT_REVOLVE_INTERNAL_MAGIC
+        ri.v3d = cta.point((0, 0, 0) if revolve_center is None else revolve_center)
+        ri.axis3d = cta.point((0, 0, 1) if revolve_axis is None else revolve_axis)
+        ri.r = cta.point((1, 0, 0) if radius is None else radius)
+        ri.ang = 180 if angle is None else angle
+        ri.sketch_name = cta.str_to_vls(sketch.name)
+        libwdb.wdb_export(self.db_fp, name, libwdb.byref(ri), libwdb.ID_REVOLVE, 1)
+
     @mk_wrap_primitive(primitives.Combination)
     def combination(self, name, is_region=False, tree=None, inherit=False,
                     shader=None, material=None, rgb_color=None, temperature=0,
