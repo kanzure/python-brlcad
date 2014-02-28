@@ -182,3 +182,14 @@ def str_to_vls(value):
     if value is not None:
         libbn.bu_vls_strcat(result, libbn.String(value))
     return result.contents
+
+
+def ctypes_array(pointer_list):
+    """
+    Turns the given list of ctypes pointers into an array of the pointed type.
+    This won't work with 0 length lists as the ctypes type can't be inferred for those !
+    All elements of the given list should be ctypes pointers of the same type.
+    Only the first element is examined for the type extraction !
+    """
+    pointer_type = pointer_list[0]._type_
+    return (pointer_type * len(pointer_list))(*[x.contents for x in pointer_list])
