@@ -3,6 +3,7 @@ Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
 import brlcad._bindings.libwdb as libwdb
 import os
+from brlcad.util import check_missing_params
 import ctypes_adaptors as cta
 from exceptions import BRLCADException
 import primitives.table as p_table
@@ -283,6 +284,33 @@ class WDB:
     def region(self, *args, **kwargs):
         kwargs["is_region"] = True
         return self.combination(*args, **kwargs)
+
+    def hole(self, hole_start=None, hole_depth=None, hole_radius=None, obj_list=None):
+        """
+        Makes a hole in the given object list (which all need to be combinations).
+        It creates an RCC with the given parameters, and modifies each combination
+        by replacing the original combination tree with subtract(original - hole_rcc).
+        The only new object added is the hole RCC which will be named "make_hole_X"
+        where X is some integer.
+        """
+        check_missing_params(
+            "WDB.hole", hole_start=hole_start, hole_depth=hole_depth, hole_radius=hole_radius, obj_list=obj_list
+        )
+        if isinstance(obj_list, str):
+            obj_list = [obj_list]
+        idb_types, db_internals, dpp_list = zip(*[self._lookup_internal(obj) for obj in obj_list])
+        if not idb_types:
+            raise ValueError("No objects to hole !")
+        if any(map(lambda idb_type: idb_type != libwdb.ID_COMBINATION, idb_types)):
+            raise ValueError("All shapes should be combinations: {}".format(obj_list))
+        dir_list = cta.ctypes_array(dpp_list)
+        libwdb.make_hole(
+            self.db_fp,
+            cta.point(hole_start),
+            cta.point(hole_depth),
+            hole_radius,
+            len(dpp_list), dir_list
+        )
 
     def save(self, shape):
         if SAVE_MAP.has_key(shape.__class__):
