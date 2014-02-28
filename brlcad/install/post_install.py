@@ -94,7 +94,7 @@ def main(library_path, logger=None):
     logger.debug("bindings_path is {0}".format(bindings_path))
 
     # read configuration, find brl-cad installation and set up ctypesgen options
-    ctypesgen_library_options, options_map = load_ctypesgen_options(bindings_path, logger)
+    ctypesgen_library_options, options_map, brlcad_info = load_ctypesgen_options(bindings_path, logger)
 
     cleanup_bindings_dir(bindings_path, logger=logger)
 
@@ -145,7 +145,7 @@ def main(library_path, logger=None):
 
         # 1) generate the appropriate __init__.py file (__all__ will need to be constructed)
         logger.debug("About to write the __init__.py file")
-        generate_init_file(bindings_path, generated_libraries, logger)
+        generate_init_file(bindings_path, generated_libraries, brlcad_info["version"], logger)
         logger.debug("Okay, __init__.py has been updated.")
 
         # 2) load the latest generated module
@@ -165,7 +165,7 @@ def main(library_path, logger=None):
         # through options (right now it just overrides this value).
 
 
-def generate_init_file(bindings_path, library_names, logger):
+def generate_init_file(bindings_path, library_names, brlcad_version, logger):
     """
     Generates the __init__.py file based on the current list of generated
     wrappers.
@@ -174,8 +174,14 @@ def generate_init_file(bindings_path, library_names, logger):
     init_path = os.path.join(bindings_path, "__init__.py")
     logger.debug("Writing __init__.py to: {0}".format(init_path))
 
+    # Add the BRLCAD_VERSION variable to the exported symbols list:
+    library_names.append("BRLCAD_VERSION")
     # build the __init__.py file contents
-    init_contents = "__all__ = " + json.dumps(library_names)
+    init_contents = "".join([
+        "from distutils.version import StrictVersion\n\n"
+        "BRLCAD_VERSION = ", repr(brlcad_version), "\n",
+        "__all__ = ", json.dumps(library_names), "\n",
+    ])
 
     # save the init file
     init_file = open(init_path, "w")

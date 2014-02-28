@@ -8,6 +8,7 @@ from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
 from arbn import ARBN
+from brlcad.util import min_brlcad_version
 from ellipsoid import Ellipsoid, Sphere
 from rpc import RPC, RHC
 from tgc import TGC
@@ -58,10 +59,12 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_VOL: ("VOL", Primitive, librt.RT_VOL_INTERNAL_MAGIC, librt.struct_rt_vol_internal),
     librt.ID_PNTS: ("PNTS", Primitive, librt.RT_PNTS_INTERNAL_MAGIC, librt.struct_rt_pnts_internal),
     librt.ID_ANNOTATION: ("ANNOTATION", Primitive, librt.RT_ANNOTATION_INTERNAL_MAGIC, librt.struct_rt_annotation_internal),
-    librt.ID_HRT: ("HRT", Primitive, librt.RT_HRT_INTERNAL_MAGIC, librt.struct_rt_hrt_internal),
     librt.ID_COMBINATION: ("COMBINATION", Combination, librt.RT_COMB_MAGIC, librt.struct_rt_comb_internal),
     librt.ID_CONSTRAINT: ("CONSTRAINT", Primitive, librt.RT_CONSTRAINT_MAGIC, librt.struct_rt_constraint_internal),
 }
+
+if min_brlcad_version("7.24.1"):
+    MAGIC_TO_PRIMITIVE_TYPE[librt.ID_HRT] = ("HRT", Primitive, librt.RT_HRT_INTERNAL_MAGIC, librt.struct_rt_hrt_internal)
 
 
 def create_primitive(type_id, db_internal, directory):

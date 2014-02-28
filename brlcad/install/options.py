@@ -295,7 +295,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
             if not os.access(lib_headers[i], os.R_OK):
                 raise SetupException("Missing header file: {0}".format(lib_headers[i]))
         options.headers = lib_headers
-    return options_list, options_map
+    return options_list, options_map, brlcad_info
 
 
 def match_brlcad_version(brlcad_options, brlcad_installations, logger):
