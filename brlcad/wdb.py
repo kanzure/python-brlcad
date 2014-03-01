@@ -60,17 +60,22 @@ class WDB:
             self.db_fp = None
             if os.path.isfile(db_file):
                 self.db_ip = libwdb.db_open(db_file, "r+w")
-                if self.db_ip:
-                    self.db_fp = libwdb.wdb_dbopen(self.db_ip, libwdb.RT_WDB_TYPE_DB_DISK)
-                    if libwdb.db_dirbuild(self.db_ip) < 0:
-                        raise BRLCADException("Can't read existing DB file: <{0}>".format(db_file))
+                if self.db_ip == libwdb.DBI_NULL:
+                    raise BRLCADException("Can't open existing DB file: <{0}>".format(db_file))
+                if libwdb.db_dirbuild(self.db_ip) < 0:
+                    raise BRLCADException("Failed loading directory of DB file: <{}>".format(db_file))
+                self.db_fp = libwdb.wdb_dbopen(self.db_ip, libwdb.RT_WDB_TYPE_DB_DISK)
+                if self.db_fp == libwdb.RT_WDB_NULL:
+                    raise BRLCADException("Failed read existing DB file: <{}>".format(db_file))
             if not self.db_fp:
                 self.db_fp = libwdb.wdb_fopen(db_file)
+                if self.db_fp == libwdb.RT_WDB_NULL:
+                    raise BRLCADException("Failed creating new DB file: <{}>".format(db_file))
                 self.db_ip = self.db_fp.contents.dbip
-            if title:
-                libwdb.mk_id(self.db_fp, title)
+                if title:
+                    libwdb.mk_id(self.db_fp, title)
         except Exception as e:
-            raise BRLCADException("Can't create DB file <{0}>: {1}".format(db_file, e))
+            raise BRLCADException("Can't open DB file <{0}>: {1}".format(db_file, e))
 
     def __iter__(self):
         for i in xrange(0, libwdb.RT_DBNHASH):
