@@ -2,6 +2,7 @@ import os
 import unittest
 
 from brlcad.vmath import Vector
+import brlcad._bindings.libwdb as libwdb
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
 import brlcad.primitives as primitives
@@ -237,6 +238,27 @@ class WDBTestCase(unittest.TestCase):
         test_comb = self.lookup_shape(test_name)
         self.assertTrue(expected.is_same(test_comb))
         self.brl_db.delete(test_name)
+
+    def check_empty_db(self, empty_db):
+        # the _GLOBAL object should exist:
+        lst = [x for x in empty_db if str(x.d_namep) == '_GLOBAL']
+        self.assertEqual(1, len(lst))
+        go = lst[0]
+        # the _GLOBAL object should be hidden:
+        self.assertEqual(libwdb.RT_DIR_HIDDEN, libwdb.RT_DIR_HIDDEN & go.d_flags)
+        # the directory listing should be empty:
+        self.assertEqual(0, len(empty_db.ls()))
+
+    def test_empty_db(self):
+        db_name = "test_empty_db.g"
+        if os.path.isfile(db_name):
+            os.remove(db_name)
+        # first time the DB is created:
+        with wdb.WDB(db_name) as empty_db:
+            self.check_empty_db(empty_db)
+        # second time the DB exists and it is re-opened:
+        with wdb.WDB(db_name) as empty_db:
+            self.check_empty_db(empty_db)
 
 
 if __name__ == "__main__":
