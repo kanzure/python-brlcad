@@ -268,7 +268,10 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     lib_dir = brlcad_info["libdir"]
     bin_dir = brlcad_info["bindir"]
     include_dir = brlcad_info["includedir"]
-    default_options.include_search_paths = [norm_win_path(include_dir, escape_spaces=True)]
+    default_options.include_search_paths = [
+        norm_win_path(include_dir, escape_spaces=True),
+        norm_win_path(os.path.join(include_dir, "brlcad"), escape_spaces=True),
+    ]
     options_map = {}
     options_list = []
     aliases = parse_csv_list(settings.get("libraries", ""))
