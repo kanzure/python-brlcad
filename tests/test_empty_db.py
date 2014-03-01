@@ -23,7 +23,8 @@ class EmptyDBTestCase(unittest.TestCase):
         # the _GLOBAL object should be hidden:
         self.assertEqual(libwdb.RT_DIR_HIDDEN, libwdb.RT_DIR_HIDDEN & _global.d_flags)
         # the directory listing should be empty:
-        self.assertEqual(0, len(list(ls(db_ip))))
+        lst = [x for x in ls(db_ip) if not (x.d_flags & libwdb.RT_DIR_HIDDEN)]
+        self.assertEqual(0, len(lst))
 
     def test_direct_calls(self):
         db_name = "direct_empty_db.g"
@@ -46,3 +47,7 @@ class EmptyDBTestCase(unittest.TestCase):
         if self.db_fp == libwdb.RT_WDB_NULL:
             raise BRLCADException("Failed read existing DB file: <{}>".format(db_name))
         self.check_empty_db(db_ip)
+
+
+if __name__ == "__main__":
+    unittest.main()
