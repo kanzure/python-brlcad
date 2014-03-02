@@ -15,7 +15,8 @@ class Plane(object):
     """
 
     def __init__(self, normal, distance, copy=False):
-        self.normal = Vector(normal, copy=copy).assure_normal()
+        normal = Vector(normal, copy=copy)
+        self.normal = normal.assure_normal(error_message="Can't define a plane with 0 length normal !")
         self.distance = float(distance)
 
     def is_same(self, other, rtol=1.e-5, atol=1.e-8):
@@ -31,7 +32,7 @@ class Plane(object):
         """
         Creates a Plane object from a point p on the plane and a vector n perpendicular to the plane.
         """
-        normal = Vector(n, copy=copy).assure_normal()
+        normal = Vector(n, copy=copy)
         return Plane(normal, normal.dot(Vector(p, copy=False)))
 
     @staticmethod

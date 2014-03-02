@@ -158,7 +158,7 @@ class Vector(np.ndarray):
         """
         return self.copy().normalize()
 
-    def assure_normal(self):
+    def assure_normal(self, error_message="Cant normalize null vector !"):
         """
         Return a norm 1 copy, or this vector if it is already of norm 0 or 1.
         >>> x = Vector("10, 0, 0")
@@ -171,7 +171,9 @@ class Vector(np.ndarray):
         True
         """
         norm = self.norm()
-        if np.allclose(norm, 0) or np.allclose(norm, 1):
+        if np.allclose(norm, 0):
+            raise ValueError(error_message)
+        if np.allclose(norm, 1):
             return self
         else:
             return self.copy().__idiv__(norm)
