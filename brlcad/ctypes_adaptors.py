@@ -193,3 +193,9 @@ def ctypes_array(pointer_list):
     """
     pointer_type = pointer_list[0]._type_
     return (pointer_type * len(pointer_list))(*[x.contents for x in pointer_list])
+
+
+def ctypes_string_array(strings):
+    return (ctypes.POINTER(ctypes.c_char) * len(strings))(
+        *[ctypes.cast(x, ctypes.POINTER(ctypes.c_char)) for x in strings]
+    )
