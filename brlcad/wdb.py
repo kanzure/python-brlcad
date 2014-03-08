@@ -178,6 +178,10 @@ class WDB:
     def trc(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=1, r_top=0.5):
         libwdb.mk_trc_h(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_top)
 
+    @mk_wrap_primitive(primitives.VOL)
+    def vol(self, name, x_dim=0, y_dim=0, z_dim=0, low_thresh=0, high_thresh=1, cell_size=(0,0,0), mat=None):
+        libwdb.mk_vol(self.db_fp, name, x_dim, y_dim, z_dim, low_thresh, high_thresh, cta.direction(cell_size), mat)
+
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.point(base), cta.direction(height), cta.direction(breadth), half_width)

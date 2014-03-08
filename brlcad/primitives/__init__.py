@@ -17,7 +17,7 @@ from pipe import Pipe, PipePoint
 from sketch import Sketch, Extrude, Revolve
 
 __all__ = [
-    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle",
+    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle", "VOL",
     "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
     "Sketch", "Extrude", "Revolve",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
