@@ -4,10 +4,10 @@ Python wrapper for libwdb adapting python types to the needed ctypes structures.
 import brlcad._bindings.libwdb as libwdb
 import os
 from brlcad.util import check_missing_params
-import ctypes_adaptors as cta
-from exceptions import BRLCADException
-import primitives.table as p_table
-import primitives
+import brlcad.ctypes_adaptors as cta
+from brlcad.exceptions import BRLCADException
+import brlcad.primitives.table as p_table
+import brlcad.primitives as primitives
 
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
