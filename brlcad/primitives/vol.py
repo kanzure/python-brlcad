@@ -10,7 +10,7 @@ import numpy as np
 class VOL(Primitive):
 
     def __init__(self, name, x_dim=0, y_dim=0, z_dim=0, low_thresh=0, high_thresh=1, cell_size=(0,0,0),
-                 mat = "1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1", copy=False):
+                 mat = Transform.unit(), copy=False):
         Primitive.__init__(self, name=name)
         self.x_dim = x_dim
         self.y_dim = y_dim
@@ -18,7 +18,7 @@ class VOL(Primitive):
         self.low_thresh = low_thresh
         self.high_thresh = high_thresh
         self.cell_size = Vector(cell_size, copy)
-        self.mat = Transform(mat, copy)
+        self.mat = mat
 
 
     def __repr__(self):
