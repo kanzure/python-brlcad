@@ -18,7 +18,7 @@ class VOL(Primitive):
         self.low_thresh = low_thresh
         self.high_thresh = high_thresh
         self.cell_size = Vector(cell_size, copy)
-        self.mat = mat
+        self.mat = Transform(mat, copy)
 
 
     def __repr__(self):
