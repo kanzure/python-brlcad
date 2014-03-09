@@ -15,6 +15,7 @@ from hyperboloid import Hyperboloid
 from particle import Particle
 from pipe import Pipe, PipePoint
 from sketch import Sketch, Extrude, Revolve
+from vol import  VOL
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle", "VOL",
