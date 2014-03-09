@@ -5,10 +5,10 @@ import brlcad._bindings.libwdb as libwdb
 from brlcad.vmath import Transform
 import os
 from brlcad.util import check_missing_params
-import ctypes_adaptors as cta
-from exceptions import BRLCADException
-import primitives.table as p_table
-import primitives
+import brlcad.ctypes_adaptors as cta
+from brlcad.exceptions import BRLCADException
+import brlcad.primitives.table as p_table
+import brlcad.primitives as primitives
 
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that

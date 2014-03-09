@@ -8,7 +8,7 @@ from brlcad.exceptions import BRLCADException
 from arb8 import ARB8
 from base import Primitive
 from arbn import ARBN
-from brlcad.util import min_brlcad_version
+from brlcad.util import compare_version
 from ellipsoid import Ellipsoid, Sphere
 from rpc import RPC, RHC
 from tgc import TGC
@@ -63,7 +63,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_CONSTRAINT: ("CONSTRAINT", Primitive, librt.RT_CONSTRAINT_MAGIC, librt.struct_rt_constraint_internal),
 }
 
-if min_brlcad_version("7.24.1"):
+if compare_version("7.24.1") >= 0:
     MAGIC_TO_PRIMITIVE_TYPE[librt.ID_HRT] = ("HRT", Primitive, librt.RT_HRT_INTERNAL_MAGIC, librt.struct_rt_hrt_internal)
 
 
