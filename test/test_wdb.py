@@ -33,6 +33,7 @@ if __name__ == "__main__":
             (0, 0, -1, -8), (0, 0, 1, 9), (-1, 0, 0, 0.5), (1, 0, 0, 0.5), (0, -1, 0, 0.5), (0, 1, 0, 0.5)
         ])
         brl_db.particle("particle.s", (0, -5, 8.5), (0, 0, 0.75), 0.25, 0.5)
+        brl_db.vol("vol.s", 1, 2, 2, 0, 1, (0,0,0), "1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1")
         brl_db.pipe("pipe.s", [
             ((0.55, 4, 5.45), 0.1, 0, 0.45),
             ((0.55, 3.55, 5.4875), 0.1, 0, 0.45),
@@ -70,6 +71,7 @@ if __name__ == "__main__":
                 "eto.s",
                 primitives.leaf("arbn.s", Transform.translation(1, 0, 0)),
                 "particle.s",
+                "vol.s",
                 "pipe.s",
             ),
             shader="plastic {di .8 sp .2}", rgb_color=(64, 180, 96)
