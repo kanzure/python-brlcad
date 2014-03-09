@@ -4,11 +4,11 @@ Wraps the BRL-CAD GED library with python syntax.
 import brlcad._bindings.libged as libged
 from brlcad.exceptions import BRLCADException
 import brlcad.ctypes_adaptors as cta
-import functools
 import re
 try:
     import readline
 except ImportError:
+    # readline is not available on windows:
     readline = None
 
 

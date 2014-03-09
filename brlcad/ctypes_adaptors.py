@@ -203,6 +203,10 @@ def ctypes_array(pointer_list):
 
 
 def ctypes_string_array(strings):
+    """
+    Turns a python string array into a C string (char *) array. A typical example would be to pass the
+    command line arguments in the libged wrapper (see ged.py#execute_command).
+    """
     return (ctypes.POINTER(ctypes.c_char) * len(strings))(
         *[ctypes.cast(x, ctypes.POINTER(ctypes.c_char)) for x in strings]
     )
