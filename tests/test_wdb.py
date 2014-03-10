@@ -131,11 +131,12 @@ class WDBTestCase(unittest.TestCase):
 
     def test_vol_defaults(self):
         shape = self.lookup_shape("vol.s")
-        self.assertTrue(0,shape.x_dim)
-        self.assertTrue(0,shape.y_dim)
-        self.assertTrue(0,shape.z_dim)
-        self.assertTrue(0,shape.low_thresh)
-        self.assertTrue(0,shape.high_thresh)
+        self.assertTrue("vol_primitive", shape.file_name)
+        self.assertTrue(0, shape.x_dim)
+        self.assertTrue(0, shape.y_dim)
+        self.assertTrue(0, shape.z_dim)
+        self.assertTrue(0, shape.low_thresh)
+        self.assertTrue(0, shape.high_thresh)
         self.assertTrue(shape.cellsize.is_same((0,0,0)))
         self.assertTrue(np.allclose(Transform.unit(),shape.mat))
 

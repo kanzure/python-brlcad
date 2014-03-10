@@ -9,7 +9,7 @@ import numpy as np
 
 class VOL(Primitive):
 
-    def __init__(self, name, file_name, x_dim=0, y_dim=0, z_dim=0, low_thresh=0, high_thresh=1,
+    def __init__(self, name, file_name="vol_primitive", x_dim=0, y_dim=0, z_dim=0, low_thresh=0, high_thresh=1,
             cell_size=(0,0,0), mat=Transform.unit(), copy=False):
         Primitive.__init__(self, name=name)
         self.file_name = file_name
@@ -40,8 +40,8 @@ class VOL(Primitive):
         })
 
     def copy(self):
-        return VOL(self, self.name, self.file_name, self.x_dim, self.y_dim, self.z_dim, self.low_thresh, self.high_thresh,
-            self.cell_size, self.mat, copy=False)
+        return VOL(self.name, self.file_name, self.x_dim, self.y_dim, self.z_dim, self.low_thresh, self.high_thresh,
+                   self.cell_size, self.mat, True)
 
     def has_same_data(self, other):
         if not (self.file_name==other.file_name, self.x_dim == other.x_dim and self.y_dim == other.y_dim and
@@ -57,11 +57,11 @@ class VOL(Primitive):
         return VOL(
             name=name,
             file_name = data.file_name,
-            x_dim=data.x_dim,
-            y_dim=data.y_dim,
-            z_dim=data.z_dim,
-            low_thresh=data.low_thresh,
-            high_thresh=data.high_thresh,
-            cell_size=data.cell_size,
-            mat=data.mat
+            x_dim = data.x_dim,
+            y_dim = data.y_dim,
+            z_dim = data.z_dim,
+            low_thresh = data.low_thresh,
+            high_thresh = data.high_thresh,
+            cell_size = data.cell_size,
+            mat = data.mat
         )
