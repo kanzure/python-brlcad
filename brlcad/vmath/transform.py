@@ -20,13 +20,16 @@ class Transform(np.matrix):
 
     __array_priority__ = 15.0
 
-    def __new__(cls, data, copy=False):
+    def __new__(cls, data, copy=False, force=False):
         if isinstance(data, Transform) and data.dtype == np.float64:
             result = data.copy() if copy else data
         else:
             result = np.matrix.__new__(cls, data, dtype=np.float64, copy=copy)
         if result.shape != (4, 4):
-            raise ValueError("A transform must be a 4x4 matrix, got: {0}".format(result.shape))
+            if force:
+                result = np.resize(result,(4,4))
+            else :
+                raise ValueError("A transform must be a 4x4 matrix, got: {0}".format(result.shape))
         return result
 
     @staticmethod

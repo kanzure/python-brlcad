@@ -2,6 +2,7 @@
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
 import brlcad._bindings.libwdb as libwdb
+from brlcad.vmath import Transform
 import os
 from brlcad.util import check_missing_params
 import brlcad.ctypes_adaptors as cta
@@ -177,6 +178,12 @@ class WDB:
     @mk_wrap_primitive(primitives.TRC)
     def trc(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=1, r_top=0.5):
         libwdb.mk_trc_h(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_top)
+
+    @mk_wrap_primitive(primitives.VOL)
+    def vol(self, name, file_name, x_dim=1, y_dim=1, z_dim=1, low_thresh=0, high_thresh=128, cell_size=(1, 1, 1),
+            mat=Transform.unit()):
+        libwdb.mk_vol(self.db_fp, name, file_name, x_dim, y_dim, z_dim, low_thresh, high_thresh,
+                      cta.point(cell_size), cta.transform(mat, use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):

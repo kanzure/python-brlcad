@@ -1,7 +1,8 @@
 import os
 import unittest
 
-from brlcad.vmath import Vector
+from brlcad.vmath import Vector, Transform
+import numpy as np
 import brlcad._bindings.libwdb as libwdb
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
@@ -39,6 +40,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.arbn("arbn.s")
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
+            brl_db.vol("vol.s", "tests/resources/voxel.data")
             test_comb = primitives.Combination(name="combination.c")
             for shape_name in brl_db.ls():
                 test_comb.tree.add_child(shape_name)
@@ -126,6 +128,12 @@ class WDBTestCase(unittest.TestCase):
         self.assertTrue(shape.breadth.is_same((0, 0, 1)))
         self.assertEqual(0.5, shape.half_width)
         self.assertEqual(0.1, shape.asymptote)
+
+    def test_vol_defaults(self):
+        shape = self.lookup_shape("vol.s")
+        expected = primitives.VOL("vol.s", "tests/resources/voxel.data")
+        self.assertTrue(expected.has_same_data(shape))
+
 
     def test_rcc_defaults(self):
         self.check_tgc("rcc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -1, 0, -1, 0, 0")
