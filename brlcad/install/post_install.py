@@ -18,7 +18,7 @@ import shutil
 
 import ctypesgencore
 
-from options import load_ctypesgen_options
+from options import load_ctypesgen_options, load_config
 
 
 def setup_logging(level=logging.DEBUG):
@@ -93,10 +93,22 @@ def main(library_path, logger=None):
     bindings_path = os.path.join(library_path, "_bindings")
     logger.debug("bindings_path is {0}".format(bindings_path))
 
-    # read configuration, find brl-cad installation and set up ctypesgen options
-    ctypesgen_library_options, options_map, brlcad_info = load_ctypesgen_options(bindings_path, logger)
-
-    cleanup_bindings_dir(bindings_path, logger=logger)
+    # read configuration
+    config = load_config()
+    # install from cached directory if the config file requests it and the bindings are already there
+    # you will want to enable this in ~/.python-brlcad.cfg when developing higher level features to
+    # avoid the time consuming re-installation of the BRL-CAD bindings
+    # in the stock python-brlcad.cfg file it will be set to False
+    cache_bindings = config.getboolean("brlcad", "cached-reinstall")
+    cached_bindings_path = os.path.join(os.path.dirname(__file__), "..", "_bindings")
+    if cache_bindings and os.path.isdir(cached_bindings_path):
+        logger.debug("installing cached _bindings from {}".format(cached_bindings_path))
+        shutil.copytree(cached_bindings_path, bindings_path)
+        return
+    else:
+        cleanup_bindings_dir(bindings_path, logger=logger)
+    # find brl-cad installation and set up ctypesgen options
+    ctypesgen_library_options, options_map, brlcad_info = load_ctypesgen_options(bindings_path, config, logger)
 
     # Holds the name of a module and the names that the module defines.
     symbol_map = {}
@@ -163,6 +175,11 @@ def main(library_path, logger=None):
         # be working now?
         # TODO: ctypesgen needs to support "other_known_names" being passed in
         # through options (right now it just overrides this value).
+
+    # cache bindings if so configured:
+    if cache_bindings:
+        logger.debug("Caching _bindings to: {}".format(cached_bindings_path))
+        shutil.copytree(bindings_path, cached_bindings_path)
 
 
 def generate_init_file(bindings_path, library_names, brlcad_version, logger):

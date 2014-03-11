@@ -323,7 +323,7 @@ def match_brlcad_version(brlcad_options, brlcad_installations, logger):
             yield version, brlcad_info
 
 
-def load_ctypesgen_options(bindings_path, logger):
+def load_ctypesgen_options(bindings_path, config, logger):
     """
     Looks up the ctypesgen options based on the available brlcad version(s) and
     configuration settings.
@@ -336,7 +336,6 @@ def load_ctypesgen_options(bindings_path, logger):
     ctypesgen options. In particular it will check each library for existence
     of headers and object files. It will also check for a working gcc.
     """
-    config = load_config()
     brlcad_options = load_brlcad_options(config)
     brlcad_installations = find_brlcad_installations(config, logger)
     version_iter = match_brlcad_version(brlcad_options, brlcad_installations, logger)
