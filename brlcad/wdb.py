@@ -180,10 +180,10 @@ class WDB:
         libwdb.mk_trc_h(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_top)
 
     @mk_wrap_primitive(primitives.VOL)
-    def vol(self, name, file_name="vol_primitive", x_dim=0, y_dim=0, z_dim=0, low_thresh=0, high_thresh=1,
-            cell_size=(0,0,0), mat=Transform.unit()):
+    def vol(self, name, file_name, x_dim=1, y_dim=1, z_dim=1, low_thresh=0, high_thresh=128, cell_size=(1, 1, 1),
+            mat=Transform.unit()):
         libwdb.mk_vol(self.db_fp, name, file_name, x_dim, y_dim, z_dim, low_thresh, high_thresh,
-                      cta.direction(cell_size), cta.transform(mat, use_brlcad_malloc=True))
+                      cta.point(cell_size), cta.transform(mat, use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):

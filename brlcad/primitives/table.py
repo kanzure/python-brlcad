@@ -11,6 +11,7 @@ from arbn import ARBN
 from brlcad.util import compare_version
 from ellipsoid import Ellipsoid, Sphere
 from rpc import RPC, RHC
+from vol import VOL
 from tgc import TGC
 from torus import Torus, ETO
 from epa import EPA, EHY
@@ -56,7 +57,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_TGC: ("TGC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
     librt.ID_REC: ("REC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
     librt.ID_TOR: ("TOR", Torus, librt.RT_TOR_INTERNAL_MAGIC, librt.struct_rt_tor_internal),
-    librt.ID_VOL: ("VOL", Primitive, librt.RT_VOL_INTERNAL_MAGIC, librt.struct_rt_vol_internal),
+    librt.ID_VOL: ("VOL", VOL, librt.RT_VOL_INTERNAL_MAGIC, librt.struct_rt_vol_internal),
     librt.ID_PNTS: ("PNTS", Primitive, librt.RT_PNTS_INTERNAL_MAGIC, librt.struct_rt_pnts_internal),
     librt.ID_ANNOTATION: ("ANNOTATION", Primitive, librt.RT_ANNOTATION_INTERNAL_MAGIC, librt.struct_rt_annotation_internal),
     librt.ID_COMBINATION: ("COMBINATION", Combination, librt.RT_COMB_MAGIC, librt.struct_rt_comb_internal),

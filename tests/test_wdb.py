@@ -40,7 +40,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.arbn("arbn.s")
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
-            brl_db.vol("vol.s")
+            brl_db.vol("vol.s", "tests/resources/voxel.data")
             test_comb = primitives.Combination(name="combination.c")
             for shape_name in brl_db.ls():
                 test_comb.tree.add_child(shape_name)
@@ -131,14 +131,8 @@ class WDBTestCase(unittest.TestCase):
 
     def test_vol_defaults(self):
         shape = self.lookup_shape("vol.s")
-        self.assertTrue("vol_primitive", shape.file_name)
-        self.assertTrue(0, shape.x_dim)
-        self.assertTrue(0, shape.y_dim)
-        self.assertTrue(0, shape.z_dim)
-        self.assertTrue(0, shape.low_thresh)
-        self.assertTrue(0, shape.high_thresh)
-        self.assertTrue(shape.cellsize.is_same((0,0,0)))
-        self.assertTrue(np.allclose(Transform.unit(),shape.mat))
+        expected = primitives.VOL("vol.s", "tests/resources/voxel.data")
+        self.assertTrue(expected.has_same_data(shape))
 
 
     def test_rcc_defaults(self):
