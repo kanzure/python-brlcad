@@ -1,7 +1,9 @@
 import os
 import unittest
 
-from brlcad.vmath import Vector
+from brlcad.vmath import Vector, Transform
+import numpy as np
+import brlcad._bindings.libwdb as libwdb
 import brlcad.wdb as wdb
 import brlcad.ctypes_adaptors as cta
 import brlcad.primitives as primitives
@@ -38,6 +40,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.arbn("arbn.s")
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
+            brl_db.vol("vol.s", "tests/resources/voxel.data")
             test_comb = primitives.Combination(name="combination.c")
             for shape_name in brl_db.ls():
                 test_comb.tree.add_child(shape_name)
@@ -125,6 +128,12 @@ class WDBTestCase(unittest.TestCase):
         self.assertTrue(shape.breadth.is_same((0, 0, 1)))
         self.assertEqual(0.5, shape.half_width)
         self.assertEqual(0.1, shape.asymptote)
+
+    def test_vol_defaults(self):
+        shape = self.lookup_shape("vol.s")
+        expected = primitives.VOL("vol.s", "tests/resources/voxel.data")
+        self.assertTrue(expected.has_same_data(shape))
+
 
     def test_rcc_defaults(self):
         self.check_tgc("rcc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -1, 0, -1, 0, 0")
@@ -237,6 +246,27 @@ class WDBTestCase(unittest.TestCase):
         test_comb = self.lookup_shape(test_name)
         self.assertTrue(expected.is_same(test_comb))
         self.brl_db.delete(test_name)
+
+    def check_empty_db(self, empty_db):
+        # the _GLOBAL object should exist:
+        lst = [x for x in empty_db if str(x.d_namep) == '_GLOBAL']
+        self.assertEqual(1, len(lst))
+        go = lst[0]
+        # the _GLOBAL object should be hidden:
+        self.assertEqual(libwdb.RT_DIR_HIDDEN, libwdb.RT_DIR_HIDDEN & go.d_flags)
+        # the directory listing should be empty:
+        self.assertEqual(0, len(empty_db.ls()))
+
+    def test_empty_db(self):
+        db_name = "test_empty_db.g"
+        if os.path.isfile(db_name):
+            os.remove(db_name)
+        # first time the DB is created:
+        with wdb.WDB(db_name) as empty_db:
+            self.check_empty_db(empty_db)
+        # second time the DB exists and it is re-opened:
+        with wdb.WDB(db_name) as empty_db:
+            self.check_empty_db(empty_db)
 
 
 if __name__ == "__main__":

@@ -34,9 +34,7 @@ class Segment(object):
         >>> y.rotate_point([1, 0, 0], -math.pi / 2).is_same([0, 0, 1])
         True
         """
-        normal = self.direction.assure_normal()
-        if normal.is_same((0, 0, 0)):
-            raise ValueError("Can't rotate around a 0 length segment")
+        normal = self.direction.assure_normal(error_message="Can't rotate around a 0 length segment")
         point = Vector(point, copy=False)
         sina = math.sin(angle)
         cosa = math.cos(angle)
@@ -67,9 +65,7 @@ class Segment(object):
         >>> y.normal_plane().is_same(Plane("0, 1, 0", 0))
         True
         """
-        normal = self.direction.assure_normal()
-        if normal.is_same((0, 0, 0)):
-            raise ValueError("Can't have a normal plane for a 0 length segment")
+        normal = self.direction.assure_normal(error_message="Can't have a normal plane for a 0 length segment")
         return Plane(normal.copy(), normal.dot(self.start))
 
     def is_same(self, other, rtol=1.e-5, atol=1.e-8):

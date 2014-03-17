@@ -2,12 +2,13 @@
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
 import brlcad._bindings.libwdb as libwdb
+from brlcad.vmath import Transform
 import os
 from brlcad.util import check_missing_params
-import ctypes_adaptors as cta
-from exceptions import BRLCADException
-import primitives.table as p_table
-import primitives
+import brlcad.ctypes_adaptors as cta
+from brlcad.exceptions import BRLCADException
+import brlcad.primitives.table as p_table
+import brlcad.primitives as primitives
 
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
@@ -60,17 +61,22 @@ class WDB:
             self.db_fp = None
             if os.path.isfile(db_file):
                 self.db_ip = libwdb.db_open(db_file, "r+w")
-                if self.db_ip:
-                    self.db_fp = libwdb.wdb_dbopen(self.db_ip, libwdb.RT_WDB_TYPE_DB_DISK)
-                    if libwdb.db_dirbuild(self.db_ip) < 0:
-                        raise BRLCADException("Can't read existing DB file: <{0}>".format(db_file))
+                if self.db_ip == libwdb.DBI_NULL:
+                    raise BRLCADException("Can't open existing DB file: <{0}>".format(db_file))
+                if libwdb.db_dirbuild(self.db_ip) < 0:
+                    raise BRLCADException("Failed loading directory of DB file: <{}>".format(db_file))
+                self.db_fp = libwdb.wdb_dbopen(self.db_ip, libwdb.RT_WDB_TYPE_DB_DISK)
+                if self.db_fp == libwdb.RT_WDB_NULL:
+                    raise BRLCADException("Failed read existing DB file: <{}>".format(db_file))
             if not self.db_fp:
                 self.db_fp = libwdb.wdb_fopen(db_file)
+                if self.db_fp == libwdb.RT_WDB_NULL:
+                    raise BRLCADException("Failed creating new DB file: <{}>".format(db_file))
                 self.db_ip = self.db_fp.contents.dbip
-            if title:
-                libwdb.mk_id(self.db_fp, title)
+                if title:
+                    libwdb.mk_id(self.db_fp, title)
         except Exception as e:
-            raise BRLCADException("Can't create DB file <{0}>: {1}".format(db_file, e))
+            raise BRLCADException("Can't open DB file <{0}>: {1}".format(db_file, e))
 
     def __iter__(self):
         for i in xrange(0, libwdb.RT_DBNHASH):
@@ -172,6 +178,12 @@ class WDB:
     @mk_wrap_primitive(primitives.TRC)
     def trc(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=1, r_top=0.5):
         libwdb.mk_trc_h(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_top)
+
+    @mk_wrap_primitive(primitives.VOL)
+    def vol(self, name, file_name, x_dim=1, y_dim=1, z_dim=1, low_thresh=0, high_thresh=128, cell_size=(1, 1, 1),
+            mat=Transform.unit()):
+        libwdb.mk_vol(self.db_fp, name, file_name, x_dim, y_dim, z_dim, low_thresh, high_thresh,
+                      cta.point(cell_size), cta.transform(mat))
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):

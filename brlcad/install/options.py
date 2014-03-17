@@ -268,7 +268,10 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
     lib_dir = brlcad_info["libdir"]
     bin_dir = brlcad_info["bindir"]
     include_dir = brlcad_info["includedir"]
-    default_options.include_search_paths = [norm_win_path(include_dir, escape_spaces=True)]
+    default_options.include_search_paths = [
+        norm_win_path(include_dir, escape_spaces=True),
+        norm_win_path(os.path.join(include_dir, "brlcad"), escape_spaces=True),
+    ]
     options_map = {}
     options_list = []
     aliases = parse_csv_list(settings.get("libraries", ""))
@@ -295,7 +298,7 @@ def setup_libraries(bindings_path, config, settings, brlcad_info, logger):
             if not os.access(lib_headers[i], os.R_OK):
                 raise SetupException("Missing header file: {0}".format(lib_headers[i]))
         options.headers = lib_headers
-    return options_list, options_map
+    return options_list, options_map, brlcad_info
 
 
 def match_brlcad_version(brlcad_options, brlcad_installations, logger):
@@ -320,7 +323,7 @@ def match_brlcad_version(brlcad_options, brlcad_installations, logger):
             yield version, brlcad_info
 
 
-def load_ctypesgen_options(bindings_path, logger):
+def load_ctypesgen_options(bindings_path, config, logger):
     """
     Looks up the ctypesgen options based on the available brlcad version(s) and
     configuration settings.
@@ -333,7 +336,6 @@ def load_ctypesgen_options(bindings_path, logger):
     ctypesgen options. In particular it will check each library for existence
     of headers and object files. It will also check for a working gcc.
     """
-    config = load_config()
     brlcad_options = load_brlcad_options(config)
     brlcad_installations = find_brlcad_installations(config, logger)
     version_iter = match_brlcad_version(brlcad_options, brlcad_installations, logger)

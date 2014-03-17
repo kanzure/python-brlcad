@@ -1,3 +1,9 @@
+Here are some thoughts and workarounds about ctypesgen issues.
+
+***************************
+The following text describes a bug in ctypesgen which allows outputting of a declaration
+without outputting all of it's dependencies.
+
 Failure scenario: if X depends on Y, and Y depends on X, then what can happen is:
  * X sets "can_include" to true;
  * X will find Y as a requirement;
@@ -29,4 +35,20 @@ For a quick-hack fix, add at the end of ctypesgencore.processor.pipeline#process
 This will avoid librt failing - but it has to be said that a good part of the library is not wrapped !
 
 The real fix will be to make ctypesgen properly handle "typedef long long ..." !
+
+***************************
+Another issue with ctypesgen: if there is a name starting with '_' in a module which then is used as
+dependency in another module, the dependent module will fail loading.
+The reason is that the dependent module is importing the dependency with:
+
+from dependeny_module import *
+
+Now any name in dependency_module starting with a '_' is considered private and will not be imported,
+and loading the dependent module will fail.
+
+The names with "_" are likely private in the C libraries too, but unfortunately ctypesgen's dependency
+checking will prune the intermediate public symbols if not explicitly included.
+
+This was the case with __off_t and off_t in libbu - once off_t explicitly included, there's no need anymore
+for __off_t in the dependent modules and loading them will work.
 

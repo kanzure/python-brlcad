@@ -1,7 +1,7 @@
 from collections import Iterable
 import ctypes
 from numbers import Number
-from exceptions import BRLCADException
+from brlcad.exceptions import BRLCADException
 import numpy as np
 import brlcad._bindings.libbn as libbn
 
@@ -32,18 +32,25 @@ def brlcad_copy(obj, debug_msg):
 def iterate_numbers(container):
     """
     Iterator which flattens nested hierarchies of geometry to plain list of numbers.
+    Some examples:
+    >>> [x for x in iterate_numbers(2)]
+    [2]
+    >>> [x for x in iterate_numbers([3])]
+    [3]
+    >>> [x for x in iterate_numbers([(1,2,3),(4,5,6)])]
+    [1, 2, 3, 4, 5, 6]
     """
-    for p in container:
-        if isinstance(p, Number):
-            yield p
-        elif isinstance(p, np.ndarray):
-            for x in p.flat:
+    if isinstance(container, Number):
+        yield container
+    elif isinstance(container, np.ndarray):
+        for x in container.flat:
+            yield x
+    elif isinstance(container, Iterable):
+        for p in container:
+            for x in iterate_numbers(p):
                 yield x
-        elif isinstance(p, Iterable):
-            for x in p:
-                yield x
-        else:
-            raise BRLCADException("Can't extract numbers from type: {0}".format(type(p)))
+    else:
+        raise BRLCADException("Can't extract numbers from type: {0}".format(type(container)))
 
 
 def flatten_numbers(container):
@@ -193,3 +200,19 @@ def ctypes_array(pointer_list):
     """
     pointer_type = pointer_list[0]._type_
     return (pointer_type * len(pointer_list))(*[x.contents for x in pointer_list])
+
+
+def ctypes_string_array(strings):
+    """
+    Turns a python string array into a C string (char *) array. A typical example would be to pass the
+    command line arguments in the libged wrapper (see ged.py#execute_command).
+    """
+    return (ctypes.POINTER(ctypes.c_char) * len(strings))(
+        *[ctypes.cast(x, ctypes.POINTER(ctypes.c_char)) for x in strings]
+    )
+
+
+if __name__ == "__main__":
+    import doctest
+    np.set_printoptions(suppress=True, precision=5)
+    doctest.testmod()

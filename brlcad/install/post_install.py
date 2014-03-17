@@ -18,7 +18,7 @@ import shutil
 
 import ctypesgencore
 
-from options import load_ctypesgen_options
+from options import load_ctypesgen_options, load_config
 
 
 def setup_logging(level=logging.DEBUG):
@@ -93,10 +93,22 @@ def main(library_path, logger=None):
     bindings_path = os.path.join(library_path, "_bindings")
     logger.debug("bindings_path is {0}".format(bindings_path))
 
-    # read configuration, find brl-cad installation and set up ctypesgen options
-    ctypesgen_library_options, options_map = load_ctypesgen_options(bindings_path, logger)
-
-    cleanup_bindings_dir(bindings_path, logger=logger)
+    # read configuration
+    config = load_config()
+    # install from cached directory if the config file requests it and the bindings are already there
+    # you will want to enable this in ~/.python-brlcad.cfg when developing higher level features to
+    # avoid the time consuming re-installation of the BRL-CAD bindings
+    # in the stock python-brlcad.cfg file it will be set to False
+    cache_bindings = config.getboolean("brlcad", "cached-reinstall")
+    cached_bindings_path = os.path.join(os.path.dirname(__file__), "..", "_bindings")
+    if cache_bindings and os.path.isdir(cached_bindings_path):
+        logger.debug("installing cached _bindings from {}".format(cached_bindings_path))
+        shutil.copytree(cached_bindings_path, bindings_path)
+        return
+    else:
+        cleanup_bindings_dir(bindings_path, logger=logger)
+    # find brl-cad installation and set up ctypesgen options
+    ctypesgen_library_options, options_map, brlcad_info = load_ctypesgen_options(bindings_path, config, logger)
 
     # Holds the name of a module and the names that the module defines.
     symbol_map = {}
@@ -145,7 +157,7 @@ def main(library_path, logger=None):
 
         # 1) generate the appropriate __init__.py file (__all__ will need to be constructed)
         logger.debug("About to write the __init__.py file")
-        generate_init_file(bindings_path, generated_libraries, logger)
+        generate_init_file(bindings_path, generated_libraries, brlcad_info["version"], logger)
         logger.debug("Okay, __init__.py has been updated.")
 
         # 2) load the latest generated module
@@ -164,8 +176,13 @@ def main(library_path, logger=None):
         # TODO: ctypesgen needs to support "other_known_names" being passed in
         # through options (right now it just overrides this value).
 
+    # cache bindings if so configured:
+    if cache_bindings:
+        logger.debug("Caching _bindings to: {}".format(cached_bindings_path))
+        shutil.copytree(bindings_path, cached_bindings_path)
 
-def generate_init_file(bindings_path, library_names, logger):
+
+def generate_init_file(bindings_path, library_names, brlcad_version, logger):
     """
     Generates the __init__.py file based on the current list of generated
     wrappers.
@@ -174,8 +191,14 @@ def generate_init_file(bindings_path, library_names, logger):
     init_path = os.path.join(bindings_path, "__init__.py")
     logger.debug("Writing __init__.py to: {0}".format(init_path))
 
+    # Add the BRLCAD_VERSION variable to the exported symbols list:
+    library_names.append("BRLCAD_VERSION")
     # build the __init__.py file contents
-    init_contents = "__all__ = " + json.dumps(library_names)
+    init_contents = "".join([
+        "from distutils.version import StrictVersion\n\n"
+        "BRLCAD_VERSION = ", repr(brlcad_version), "\n",
+        "__all__ = ", json.dumps(library_names), "\n",
+    ])
 
     # save the init file
     init_file = open(init_path, "w")

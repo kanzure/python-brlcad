@@ -6,7 +6,7 @@ import numpy as np
 import brlcad._bindings.librt as librt
 import brlcad.ctypes_adaptors as cta
 from brlcad.exceptions import BRLCADException
-from base import Primitive
+from brlcad.primitives.base import Primitive
 from brlcad.vmath import Transform
 
 
@@ -172,6 +172,8 @@ class NotNode(TreeNode):
 class SymmetricNode(TreeNode, collections.MutableSequence):
 
     def __new__(cls, arg):
+        if isinstance(arg, (list, tuple, set)) and len(arg) == 1:
+            arg = arg[0]
         if isinstance(arg, librt.union_tree):
             left = TreeNode(arg.tr_b.tb_left.contents)
             right = TreeNode(arg.tr_b.tb_right.contents)
