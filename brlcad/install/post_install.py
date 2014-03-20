@@ -99,7 +99,7 @@ def main(library_path, logger=None):
     # you will want to enable this in ~/.python-brlcad.cfg when developing higher level features to
     # avoid the time consuming re-installation of the BRL-CAD bindings
     # in the stock python-brlcad.cfg file it will be set to False
-    cache_bindings = config.getboolean("brlcad", "cached-reinstall")
+    cache_bindings = config.has_option("brlcad", "cached-reinstall") and config.getboolean("brlcad", "cached-reinstall")
     cached_bindings_path = os.path.join(os.path.dirname(__file__), "..", "_bindings")
     if cache_bindings and os.path.isdir(cached_bindings_path):
         logger.debug("installing cached _bindings from {}".format(cached_bindings_path))
