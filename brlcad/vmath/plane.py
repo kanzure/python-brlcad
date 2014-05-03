@@ -8,12 +8,44 @@ import numpy as np
 
 class Plane(object):
     """
-    A plane represented by a normal vector perpendicular to the
-    plane and the shortest distance from the origin to the plane.
+    A plane represented by a normal vector n=PN perpendicular to the
+    plane and the shortest distance d=OP from the origin to the plane.
+
     Having a negative distance makes sense and means the plane is
     pointing to the Origin, positive distances mean pointing outwards.
-    """
 
+                          z
+                          |
+                          |
+             +------------|--plane--+
+            /    n        *        /
+            ; N +         '        ;
+           /     \        '       /
+           ;      \       '       ; Oriented outwards
+          /        \ d(>0)'      /  from the origin
+          ;       P *     '      ;
+         /           .    '     /
+         +---------------------+
+                       \  |
+                        \ |
+                         \|
+                        O +------y
+                         / \
+                       ,/---\-N--------------plane-----.
+                     .'/     +                       .'
+                   .'  x    n \                    .'
+                 .'            \ d(<0)           .'
+               .'               *              .'
+             .'                P             .'
+           .'                              .'
+         .'  Oriented towards the origin .'
+        '-------------------------------'
+
+    Notation:
+        d = OP -> distance from the origin to the plane
+        n = PN -> unit vector normal to the plane, giving it's orientation
+
+    """
     def __init__(self, normal, distance, copy=False):
         normal = Vector(normal, copy=copy)
         self.normal = normal.assure_normal(error_message="Can't define a plane with 0 length normal !")
