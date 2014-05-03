@@ -8,42 +8,55 @@ import numpy as np
 
 class Plane(object):
     """
-    A plane represented by a normal vector n=PN perpendicular to the
-    plane and the shortest distance d=OP from the origin to the plane.
+    A plane represented by a normal vector N perpendicular to the
+    plane and the shortest distance d from the origin to the plane.
 
-    Having a negative distance makes sense and means the plane is
-    pointing to the Origin, positive distances mean pointing outwards.
+    Having a negative distance makes sense and means the plane normal is
+    pointing from the plane to the Origin (the half-space defined by
+    the plane will not contain the origin), positive distances mean
+    the half-space defined will contain the origin, and the plane
+    normal points from the origin to the plane.
 
-                          z
-                          |
-                          |
-             +------------|--plane--+
-            /    n        *        /
-            ; N +         '        ;
-           /     \        '       /
-           ;      \       '       ; Oriented outwards
-          /        \ d(>0)'      /  from the origin
-          ;       P *     '      ;
-         /           .    '     /
-         +---------------------+
-                       \  |
-                        \ |
-                         \|
-                        O +------y
-                         / \
-                       ,/---\-N--------------plane-----.
-                     .'/     +                       .'
-                   .'  x    n \                    .'
-                 .'            \ d(<0)           .'
-               .'               *              .'
-             .'                P             .'
-           .'                              .'
-         .'  Oriented towards the origin .'
-        '-------------------------------'
+    In the following figure the plane normal N (=PN) is the same for both
+    planes, but the distance d (=OP) is positive for plane_1 and negative
+    for plane_2.
+
+    The half-space defined by the planes is below the planes
+    (opposite direction to where the plane normal is pointing), for
+    both plane_1 and plane_2, because of the plane normal being the same.
+    The half-space for plane_1 contains the origin, the one for
+    plane_2 does not.
+
+                   z
+                   |
+                   |
+             +-----|-----------plane_1--+
+            /      *                   /
+         +  ;      '                   ;
+        N \/       '                  / Half space
+           \       '                  ; contains the origin
+          / \ d(>0)'                 /
+          ;  *     '                 ;
+         /  P .    '                /
+         +-------------------------+
+                \  |
+                 \ |
+                  \|
+                 O +------y
+                  / \
+             +---/---\-N-------plane_2--+
+            /   /     +                /
+            ;   x    n \               ;
+           /            \ d(<0)       / Half space does not
+           ;             *            ; contain the origin
+          /             P            /
+          ;                          ;
+         /                          /
+         +-------------------------+
 
     Notation:
         d = OP -> distance from the origin to the plane
-        n = PN -> unit vector normal to the plane, giving it's orientation
+        N = PN -> unit vector normal to the plane, giving it's orientation
 
     """
     def __init__(self, normal, distance, copy=False):
