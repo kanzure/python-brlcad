@@ -97,6 +97,10 @@ class Vector(np.ndarray):
         if self.ndim > 1:
             raise ValueError("Expected vector, got array with {0} dimensions".format(self.ndim))
 
+    @staticmethod
+    def wrap(value):
+        return Vector(value, copy=False)
+
     def transpose(self):
         """
         This returns the transpose, which is _not_ a Vector !
@@ -127,6 +131,13 @@ class Vector(np.ndarray):
             return np.allclose(self, other, rtol=rtol, atol=atol)
         except ValueError:
             return False
+
+    def has_norm(self, norm, rtol=1.e-5, atol=1.e-8):
+        """
+        Return True if this vector has the same norm (within the given tolerances)
+        as the given norm parameter.
+        """
+        return np.allclose(norm, self.norm(), rtol=rtol, atol=atol)
 
     def normalize(self):
         """
@@ -181,6 +192,7 @@ class Vector(np.ndarray):
     def is_normal_to(self, other):
         """
         Returns True if this vector and other (vector-like) are perpendicular to each other.
+        Note that the null vector (0, 0, 0) is considered perpendicular to all other vectors.
         >>> Vector([1, 1, 0]).is_normal_to("0, 0, 1")
         True
         >>> x = Vector([1, 1, 1])
@@ -188,8 +200,26 @@ class Vector(np.ndarray):
         False
         >>> x.is_normal_to([0, 1, -1])
         True
+        >>> x.is_normal_to([0, 0, 0])
+        True
         """
         return np.allclose(self.dot(Vector(other)), 0)
+
+    def is_parallel_to(self, other):
+        """
+        Returns True if this vector and other (vector-like) are parallel to each other.
+        Note that the null vector (0, 0, 0) is considered parallel to all other vectors.
+        >>> Vector([1, 1, 0]).is_parallel_to("2, 2, 0")
+        True
+        >>> x = Vector([1, 1, 1])
+        >>> x.is_parallel_to((0, 1, 0))
+        False
+        >>> x.is_parallel_to([-0.1, -0.1, -0.1])
+        True
+        >>> x.is_parallel_to([0, 0, 0])
+        True
+        """
+        return np.allclose(self.cross(Vector(other)), 0)
 
     def construct_normal(self):
         """
