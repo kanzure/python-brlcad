@@ -1,7 +1,6 @@
 import unittest
 import math
 from brlcad.vmath import Arc
-import brlcad.vmath.arc as p_arc
 import numpy as np
 
 
@@ -102,8 +101,7 @@ class ArcTestCase(unittest.TestCase):
         for crt_data in self.arc_data:
             for param_names in self.base_arc_params:
                 crt_params = dict([x for x in crt_data.items() if x[0] in param_names])
-                # noinspection PyProtectedMember
-                for name in p_arc._ARC_CALC_FUNCTION_MAP:
+                for name in Arc.calc_function_map:
                     arc = Arc(verify=False, **crt_params)
                     actual_value = getattr(arc, name)
                     if name in crt_data:

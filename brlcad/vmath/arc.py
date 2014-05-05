@@ -2,152 +2,45 @@
 Math related to geometry features of circular arcs.
 """
 import math
-from brlcad.exceptions import BRLCADException
 from brlcad.vmath import Vector, Triangle
-import numpy as np
+from brlcad.vmath.geometry_object import GeometryObject, create_property
 
 
-class CalculatingType(object):
-    """
-    This is a singleton used to mark fields of the arc which are
-    currently calculating, to avoid infinite recursion as we
-    calculate arc elements which depend on each other but can
-    be calculated from alternative elements.
-    """
-    def __repr__(self):
-        return "Calculating"
+class Arc(GeometryObject):
 
-Calculating = CalculatingType()
+    calc_function_map = dict()
 
-_ARC_CALC_FUNCTION_MAP = dict()
-_ARC_PARAM_WRAPPERS = {
-    "arc_point": Vector.wrap,
-}
+    param_wrappers = {
+        "arc_point": Vector.wrap,
+    }
 
-
-def _create_getter(name, wrapper, calc_func=None):
-    """
-    Creates getter functions for the calculated properties of an arc.
-    The returned function wraps the passed in <calc_func> which will
-    be used to calculate the value of the property. The calculated
-    value is only calculated once and cached for further access.
-    It also populates the _ARC_CALC_FUNCTION_MAP and _ARC_PARAM_WRAPPERS
-    which allow programmatic access to the parameter calculation functions.
-    """
-    def getter(self):
-        value = self._props.get(name)
-        if value is Calculating:
-            return None
-        if value is None:
-            self._props[name] = Calculating
-            if calc_func:
-                value = calc_func(self)
-            else:
-                raise ValueError(
-                    "Mandatory parameter <{}> missing for: {}".format(name, self)
-                )
-            if value is None:
-                raise ValueError(
-                    "Not enough information to calculate <{}> for: {}".format(name, self)
-                )
-            self._props[name] = value
-        return value
-    if name in _ARC_CALC_FUNCTION_MAP or name in _ARC_PARAM_WRAPPERS:
-        raise BRLCADException("Programmer error: duplicate parameter name {}".format(name))
-    if calc_func in _ARC_CALC_FUNCTION_MAP.values():
-        raise BRLCADException(
-            "Programmer error: function {} is set up for parameter {}".format(calc_func, name)
-        )
-    _ARC_CALC_FUNCTION_MAP[name] = calc_func
-    _ARC_PARAM_WRAPPERS[name] = wrapper
-    return getter
-
-
-# noinspection PyPropertyAccess
-class Arc(object):
+    canonical_init_params = {
+        "start_point", "end_point", "angle", "plane_normal"
+    }
 
     def __init__(self, verify=False, **kwargs):
         """
-        Create an arc based on one of many possible parameter sets.
-        The following combinations are accepted:
-        * (start_point, end_point/secant, angle, plane_normal)
-        * (start_point, angle, origin, plane_normal)
-        * (start_point, end_point/secant, origin, plane_normal)
-        * (start_point, length, reflex_angle, origin, plane_normal)
-        * (start_point, end_point/secant, arc_height)
-        * (start_point, end_point/secant, arc_point)
-        If some extra parameters are already available, and checking is required,
-        use verify=True (default is False, meaning parameters are not checked for consistency).
-        Parameters which are not set will be calculated if needed, but at least one of
-        the above mentioned combinations must be provided completely.
-        """
-        # parse parameters from possibly raw input:
-        self._props = dict()
-        self._wrap_params(kwargs)
-        # verify parameter consistency
-        if verify:
-            self.verify()
-
-    @staticmethod
-    def wrap_param(param_name, value):
-        """
-        Wraps/parses the given parameter with/to the expected type.
-        For example a Vector parameter will be wrapped using:
-        Vector.wrap(value),
-        a float parameter will be wrapped using:
-        float(value)
-
-        This approach allows passing in parameters which can be of
-        any type accepted by those wrappers, e.g. a string of comma
-        separated numbers is a valid value for a Vector parameter.
-        """
-        wrapper = _ARC_PARAM_WRAPPERS[param_name]
-        if value is not None:
-            value = wrapper(value)
-        return value
-
-    def _wrap_params(self, params):
-        unknown_params = set(params.keys()).difference(_ARC_PARAM_WRAPPERS.keys())
-        if unknown_params:
-            raise ValueError("Unknown Arc parameters: {}".format(unknown_params))
-        for param_name, value in params.items():
-            self._props[param_name] = self.wrap_param(param_name, value)
-
-    def _is_set(self, param_name):
-        value = self._props.get(param_name)
-        return value is not None and value is not Calculating
-
-    def verify(self):
-        if self.start_point is None:
-            raise ValueError("<start_point> must be provided for an Arc")
-        verified_props = (
-            self.start_point, self.end_point, self.secant, self.origin,
-            self.angle, self.plane_normal, self.arc_height
-        )
-        if verified_props.count(None) > 0:
-            raise ValueError(
-                "Parameter set is not complete to fully define an arc: {}".format(self)
-            )
-        crt_props = dict(self._props)
-        for param_name, crt_value in crt_props.items():
-            calc_func = _ARC_CALC_FUNCTION_MAP.get(param_name)
-            if calc_func is not None:
-                calculated_value = calc_func(self)
-                if not np.allclose(crt_value, calculated_value):
-                    raise ValueError(
-                        "Verify failed for {}, expected: {} but got {}".format(
-                            param_name, calculated_value, crt_value
-                        )
-                    )
-
-    def __repr__(self):
-        return "{}(**{})".format(self.__class__.__name__, self._props)
+            Create an arc based on one of many possible parameter sets.
+            The following combinations are accepted:
+            * (start_point, end_point/secant, angle, plane_normal)
+            * (start_point, angle, origin, plane_normal)
+            * (start_point, end_point/secant, origin, plane_normal)
+            * (start_point, length, reflex_angle, origin, plane_normal)
+            * (start_point, end_point/secant, arc_height)
+            * (start_point, end_point/secant, arc_point)
+            If some extra parameters are already available, and checking is required,
+            use verify=True (default is False, meaning parameters are not checked for consistency).
+            Parameters which are not set will be calculated if needed, but at least one of
+            the above mentioned combinations must be provided completely.
+            """
+        GeometryObject.__init__(self, verify=verify, **kwargs)
 
     # Property declarations/calculation functions
 
-    start_point = property(
-        fget=_create_getter(name="start_point",
-                            wrapper=Vector.wrap),
+    start_point = create_property(
+        name="start_point",
+        context=locals(),
+        param_wrapper=Vector.wrap,
         doc="Start point of the arc"
     )
 
@@ -158,10 +51,10 @@ class Arc(object):
             return plane_normal.cross(start_radius)
         return None
 
-    start_tangent = property(
-        fget=_create_getter(name="start_tangent",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_start_tangent),
+    start_tangent = create_property(
+        name="start_tangent",
+        context=locals(),
+        param_wrapper=Vector.wrap,
         doc="The tangent (of <radius> length) to the arc at <start_point>."
     )
 
@@ -171,11 +64,11 @@ class Arc(object):
             return start_tangent.assure_normal("<start_tangent> of zero length")
         return None
 
-    start_tangent_unit = property(
-        fget=_create_getter(name="start_tangent_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_start_tangent_unit),
-        doc="The unit vector tangent to the arc at <start_point>"
+    start_tangent_unit = create_property(
+        name="start_tangent_unit",
+        context=locals(),
+        param_wrapper=Vector.wrap,
+        doc="The unit vector tangent to the arc at <start_point>",
     )
 
     def _calculate_start_radius(self):
@@ -184,10 +77,10 @@ class Arc(object):
             return self.start_point - origin
         return None
 
-    start_radius = property(
-        fget=_create_getter(name="start_radius",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_start_radius),
+    start_radius = create_property(
+        name="start_radius",
+        context=locals(),
+        param_wrapper=Vector.wrap,
         doc="The vector pointing from <origin> to <start_point>"
     )
 
@@ -197,10 +90,10 @@ class Arc(object):
             return start_radius.assure_normal("<start_radius> should be non-zero")
         return None
 
-    start_radius_unit = property(
-        fget=_create_getter(name="start_radius_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_start_radius_unit),
+    start_radius_unit = create_property(
+        name="start_radius_unit",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector pointing from <origin> to <start_point>"
     )
 
@@ -263,7 +156,7 @@ class Arc(object):
         and sin(angle) will be negative.
 
         """
-        if self._is_set("secant"):
+        if self.is_set("secant"):
             secant = self.secant
             if secant is not None:
                 return self.start_point + secant
@@ -272,7 +165,7 @@ class Arc(object):
         origin = self.origin
         cos_angle = None
         sin_angle = None
-        if self._is_set("length") and self._is_set("reflex_angle") and not self._is_set("angle"):
+        if self.is_set("length") and self.is_set("reflex_angle") and not self.is_set("angle"):
             radius = self.radius
             length = self.length
             reflex_angle = self.reflex_angle
@@ -297,10 +190,10 @@ class Arc(object):
             return origin + cos_angle * start_radius + sin_angle * start_tangent
         return None
 
-    end_point = property(
-        fget=_create_getter(name="end_point",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_end_point),
+    end_point = create_property(
+        name="end_point",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="End point of the arc"
     )
 
@@ -311,10 +204,10 @@ class Arc(object):
             return plane_normal.cross(end_radius)
         return None
 
-    end_tangent = property(
-        fget=_create_getter(name="end_tangent",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_end_tangent),
+    end_tangent = create_property(
+        name="end_tangent",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The tangent (of <radius> length) to the arc at <end_point>."
     )
 
@@ -324,10 +217,10 @@ class Arc(object):
             return end_tangent.assure_normal("<end_tangent> of zero length")
         return None
 
-    end_tangent_unit = property(
-        fget=_create_getter(name="end_tangent_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_end_tangent_unit),
+    end_tangent_unit = create_property(
+        name="end_tangent_unit",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector tangent to the arc at <end_point>"
     )
 
@@ -337,10 +230,10 @@ class Arc(object):
             return end_radius.assure_normal("<end_radius> should be non-zero")
         return None
 
-    end_radius_unit = property(
-        fget=_create_getter(name="end_radius_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_end_radius_unit),
+    end_radius_unit = create_property(
+        name="end_radius_unit",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector pointing from <origin> to <end_point>"
     )
 
@@ -350,10 +243,10 @@ class Arc(object):
             return end_point - self.origin
         return None
 
-    end_radius = property(
-        fget=_create_getter(name="end_radius",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_end_radius),
+    end_radius = create_property(
+        name="end_radius",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The vector pointing from <origin> to <end_point>"
     )
 
@@ -364,10 +257,10 @@ class Arc(object):
             return end_point - start_point
         return None
 
-    secant = property(
-        fget=_create_getter(name="secant",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_secant),
+    secant = create_property(
+        name="secant",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The secant vector pointing from <start_point> to <end_point>"
     )
 
@@ -377,10 +270,10 @@ class Arc(object):
             return secant.assure_normal("<secant> must be non-zero")
         return None
 
-    secant_unit = property(
-        fget=_create_getter(name="secant_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_secant_unit),
+    secant_unit = create_property(
+        name="secant_unit",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector pointing from <start_point> to <end_point>"
     )
 
@@ -390,10 +283,10 @@ class Arc(object):
             return secant.norm()
         return None
 
-    length = property(
-        fget=_create_getter(name="length",
-                            wrapper=float,
-                            calc_func=_calculate_length),
+    length = create_property(
+        name="length",
+        param_wrapper=float,
+        context=locals(),
         doc="The length of the <secant> vector."
     )
 
@@ -403,10 +296,10 @@ class Arc(object):
             return (end_point + self.start_point) / 2.0
         return None
 
-    mid_point = property(
-        fget=_create_getter(name="mid_point",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_mid_point),
+    mid_point = create_property(
+        name="mid_point",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The mid-point between <start_point> and <end_point>"
     )
 
@@ -454,7 +347,7 @@ class Arc(object):
                              `'''---~~~----'''  E'
 
         """
-        if self._is_set("reflex_angle"):
+        if self.is_set("reflex_angle"):
             reflex_angle = self.reflex_angle
             length = self.length
             radius = self.radius
@@ -468,7 +361,7 @@ class Arc(object):
         end_point = self.end_point
         if start_point is None or end_point is None:
             return None
-        if self._is_set("arc_point"):
+        if self.is_set("arc_point"):
             arc_point = self._props["arc_point"]
         else:
             arc_point = self.apex
@@ -476,10 +369,10 @@ class Arc(object):
             return self.central_angle(start_point=start_point, end_point=end_point, arc_point=arc_point)
         return None
 
-    angle = property(
-        fget=_create_getter(name="angle",
-                            wrapper=float,
-                            calc_func=_calculate_angle),
+    angle = create_property(
+        name="angle",
+        param_wrapper=float,
+        context=locals(),
         doc="The angle in radians between <start_radius> and <end_radius>. "
             "It will be positive if it points clockwise when looking "
             "in the direction of the plane-normal, negative otherwise."
@@ -491,15 +384,15 @@ class Arc(object):
             return abs(angle) > math.pi
         return None
 
-    reflex_angle = property(
-        fget=_create_getter(name="reflex_angle",
-                            wrapper=bool,
-                            calc_func=_calculate_reflex_angle),
+    reflex_angle = create_property(
+        name="reflex_angle",
+        param_wrapper=bool,
+        context=locals(),
         doc="True for a reflex angle (absolute value > 180 degrees), False otherwise."
     )
 
     def _calculate_plane_normal(self):
-        if self._is_set("arc_point"):
+        if self.is_set("arc_point"):
             # this is not available as a property:
             arc_point = self._props["arc_point"]
         else:
@@ -516,10 +409,10 @@ class Arc(object):
             return plane_normal
         return None
 
-    plane_normal = property(
-        fget=_create_getter(name="plane_normal",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_plane_normal),
+    plane_normal = create_property(
+        name="plane_normal",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector normal to the arc's plane. "
             "It's oriented so that the arc points clockwise from "
             "<start_point> to <end_point> when looking "
@@ -527,13 +420,13 @@ class Arc(object):
     )
 
     def _calculate_radius(self):
-        if not self._is_set("origin"):
-            if self._is_set("arc_height"):
+        if not self.is_set("origin"):
+            if self.is_set("arc_height"):
                 height = self.height
                 length = self.length
                 if height is not None and length is not None:
                     return 0.5 * height + 0.125 * length * length / height
-            if self._is_set("angle") or self._is_set("arc_point"):
+            if self.is_set("angle") or self.is_set("arc_point"):
                 angle = self.angle
                 length = self.length
                 if angle is not None and length is not None:
@@ -543,10 +436,10 @@ class Arc(object):
             return start_radius.norm()
         return None
 
-    radius = property(
-        fget=_create_getter(name="radius",
-                            wrapper=float,
-                            calc_func=_calculate_radius),
+    radius = create_property(
+        name="radius",
+        param_wrapper=float,
+        context=locals(),
         doc="The radius of the circle containing the arc."
     )
 
@@ -556,10 +449,10 @@ class Arc(object):
             return 2 * radius
         return None
 
-    diameter = property(
-        fget=_create_getter(name="diameter",
-                            wrapper=float,
-                            calc_func=_calculate_diameter),
+    diameter = create_property(
+        name="diameter",
+        param_wrapper=float,
+        context=locals(),
         doc="The diameter of the circle containing the arc."
     )
 
@@ -572,15 +465,15 @@ class Arc(object):
             return mid_point + (height - radius) * arc_height_unit
         return None
 
-    origin = property(
-        fget=_create_getter(name="origin",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_origin),
+    origin = create_property(
+        name="origin",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The origin of the circle containing the arc."
     )
 
     def _calculate_arc_height_unit(self):
-        if self._is_set("arc_height"):
+        if self.is_set("arc_height"):
             return self.arc_height.assure_normal("<arc_height> should be non-zero")
         plane_normal = self.plane_normal
         secant_unit = self.secant_unit
@@ -588,10 +481,10 @@ class Arc(object):
             return secant_unit.cross(plane_normal)
         return None
 
-    arc_height_unit = property(
-        fget=_create_getter(name="arc_height_unit",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_arc_height_unit),
+    arc_height_unit = create_property(
+        name="arc_height_unit",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The unit vector parallel to the arc's height."
     )
 
@@ -602,15 +495,15 @@ class Arc(object):
             return height * height_unit
         return None
 
-    arc_height = property(
-        fget=_create_getter(name="arc_height",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_arc_height),
+    arc_height = create_property(
+        name="arc_height",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The arc's height vector pointing from <mid_point> to <height_point>."
     )
 
     def _calculate_height(self):
-        if self._is_set("arc_height"):
+        if self.is_set("arc_height"):
             return self.arc_height.norm()
         radius = self.radius
         angle = self.angle
@@ -618,15 +511,15 @@ class Arc(object):
             return radius * (1 - math.cos(0.5 * angle))
         return None
 
-    height = property(
-        fget=_create_getter(name="height",
-                            wrapper=float,
-                            calc_func=_calculate_height),
+    height = create_property(
+        name="height",
+        param_wrapper=float,
+        context=locals(),
         doc="The <arc_height> vector's length."
     )
 
     def _calculate_apex(self):
-        if self._is_set("origin") and self._is_set("plane_normal"):
+        if self.is_set("origin") and self.is_set("plane_normal"):
             radius = self.radius
             height_unit = self.arc_height_unit
             origin = self.origin
@@ -638,10 +531,10 @@ class Arc(object):
             return mid_point + arc_height
         return None
 
-    apex = property(
-        fget=_create_getter(name="apex",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_apex),
+    apex = create_property(
+        name="apex",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The highest point on the arc, the farthest one from the <secant>. "
             "It is placed at the intersection of the arc with <arc_height> vector, "
             "at half-way on the arc between <start_point> and <end_point>"
@@ -654,10 +547,10 @@ class Arc(object):
             return abs(radius - height)
         return None
 
-    d_origin = property(
-        fget=_create_getter(name="d_origin",
-                            wrapper=Vector.wrap,
-                            calc_func=_calculate_d_origin),
+    d_origin = create_property(
+        name="d_origin",
+        param_wrapper=Vector.wrap,
+        context=locals(),
         doc="The distance between the secant and <origin>."
             "This is the length of the <origin> -> <mid_point> vector."
     )
