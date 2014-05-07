@@ -1,6 +1,7 @@
 """
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
+import fnmatch
 import brlcad._bindings.libwdb as libwdb
 from brlcad.vmath import Transform
 import os
@@ -86,8 +87,9 @@ class WDB:
                 yield crt_dir
                 dp = crt_dir.d_forw
 
-    def ls(self):
-        return [str(x.d_namep) for x in self if not(x.d_flags & libwdb.RT_DIR_HIDDEN)]
+    def ls(self, pattern=None):
+        name_generator = (str(x.d_namep) for x in self if not(x.d_flags & libwdb.RT_DIR_HIDDEN))
+        return [x for x in name_generator if pattern is None or fnmatch.fnmatch(name=x, pat=pattern)]
 
     def _lookup_internal(self, name):
         db_internal = libwdb.rt_db_internal()
@@ -226,6 +228,9 @@ class WDB:
 
     @mk_wrap_primitive(primitives.Pipe)
     def pipe(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
+        """
+        The pipe points are: (point, outer_d, inner_d, bend_d)
+        """
         seg_list = libwdb.bu_list_new()
         libwdb.mk_pipe_init(seg_list)
         for pipe_point in points:

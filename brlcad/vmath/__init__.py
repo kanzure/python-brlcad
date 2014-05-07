@@ -8,5 +8,7 @@ from plane import Plane
 from segment import Segment
 from transform import Transform
 from vector import Vector
+from triangle import Triangle
+from arc import Arc
 
-__all__ = ["Vector", "Segment", "Plane", "Transform"]
+__all__ = ["Vector", "Segment", "Plane", "Transform", "Arc", "Triangle"]

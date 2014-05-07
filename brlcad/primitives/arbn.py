@@ -10,7 +10,7 @@ class ARBN(Primitive):
 
     def __init__(self, name, planes, copy=False):
         Primitive.__init__(self, name=name)
-        self.planes = [Plane.from_values(x, copy=copy) for x in planes]
+        self.planes = [Plane.wrap(x, copy=copy) for x in planes]
 
     def __repr__(self):
         return "ARBN({0}, {1})".format(self.name, repr(self.planes))

@@ -8,12 +8,66 @@ import numpy as np
 
 class Plane(object):
     """
-    A plane represented by a normal vector perpendicular to the
-    plane and the shortest distance from the origin to the plane.
-    Having a negative distance makes sense and means the plane is
-    pointing to the Origin, positive distances mean pointing outwards.
-    """
+    A plane represented by a normal vector N perpendicular to the
+    plane and the shortest distance d from the origin to the plane.
 
+    The plane is defined as the points P which satisfy the condition
+    that the projection of OP on the line defined by N is of length d:
+
+    N.dot(P) = d
+
+    Having a negative distance makes sense and means the plane normal is
+    pointing from the plane to the Origin (the half-space defined by
+    the plane will not contain the origin), positive distances mean
+    the half-space defined will contain the origin, and the plane
+    normal points from the origin to the plane.
+
+    In the following figure the plane normal N (=PN) is the same for both
+    planes, but the distance d (=OP) is positive for plane_1 and negative
+    for plane_2.
+
+    The half-space defined by the planes is below the planes
+    (opposite direction to where the plane normal is pointing), for
+    both plane_1 and plane_2, because of the plane normal being the same.
+    The half-space for plane_1 contains the origin, the one for
+    plane_2 does not.
+
+    The condition of a point P to be contained by the half-space is:
+
+    N.dot(P) <= d
+
+                   z
+                   |
+                   |
+             +-----|-----------plane_1--+
+            /      *                   /
+         +  ;      '                   ;
+        N \/       '                  / Half space
+           \       '                  ; contains the origin
+          / \ d(>0)'                 /
+          ;  *     '                 ;
+         /  P .    '                /
+         +-------------------------+
+                \  |
+                 \ |
+                  \|
+                 O +------y
+                  / \
+             +---/---\-N-------plane_2--+
+            /   /     +                /
+            ;   x      \               ;
+           /            \ d(<0)       / Half space does not
+           ;             *            ; contain the origin
+          /             P            /
+          ;                          ;
+         /                          /
+         +-------------------------+
+
+    Notation:
+        d = OP -> distance from the origin to the plane
+        N = PN -> unit vector normal to the plane, giving it's orientation
+
+    """
     def __init__(self, normal, distance, copy=False):
         normal = Vector(normal, copy=copy)
         self.normal = normal.assure_normal(error_message="Can't define a plane with 0 length normal !")
@@ -36,19 +90,19 @@ class Plane(object):
         return Plane(normal, normal.dot(Vector(p, copy=False)))
 
     @staticmethod
-    def from_values(values, copy=False):
+    def wrap(values, copy=False):
         """
         Parses a Plane object from mostly everything which provides 4 floats, including a string:
-        >>> Plane.from_values("1,0,0,4")
+        >>> Plane.wrap("1,0,0,4")
         Plane(Vector([ 1.,  0.,  0.]), 4.0)
-        >>> Plane.from_values((0, -1, 0, 2))
+        >>> Plane.wrap((0, -1, 0, 2))
         Plane(Vector([ 0., -1.,  0.]), 2.0)
-        >>> x = Plane.from_values([0, 0, 10, 3])
+        >>> x = Plane.wrap([0, 0, 10, 3])
         >>> x
         Plane(Vector([ 0.,  0.,  1.]), 3.0)
-        >>> x is Plane.from_values(x)
+        >>> x is Plane.wrap(x)
         True
-        >>> y = Plane.from_values(x, copy=True)
+        >>> y = Plane.wrap(x, copy=True)
         >>> x is y
         False
         >>> x.is_same(y)
@@ -74,6 +128,13 @@ class Plane(object):
 
     def __repr__(self):
         return "Plane({0}, {1})".format(repr(self.normal), self.distance)
+
+    def contains(self, point):
+        """
+        True if this plane contains the given point, False otherwise.
+        """
+        point = Vector(point, copy=False)
+        return np.allclose(self.normal.dot(point), self.distance)
 
     def compare_for_sort(self, other):
         result = self.distance - other.distance
