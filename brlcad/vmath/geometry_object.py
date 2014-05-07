@@ -67,7 +67,7 @@ def create_property(name, context, param_wrapper, calc_func=None, doc=None):
             )
         calc_function_map[name] = calc_func
         if not doc:
-            doc = getattr(calc_func, "__doc__", default=None)
+            doc = getattr(calc_func, "__doc__", None)
 
     def getter(self):
         if self._param_status.get(name) is Calculating:
@@ -206,7 +206,7 @@ class GeometryObject(object):
             self._param_status[param_name] = Initialized
 
     def verify(self):
-        verified_props = [getattr(self, param_name) for param_name in self.canonical_init_params]
+        verified_props = [getattr(self, param_name, None) for param_name in self.canonical_init_params]
         if verified_props.count(None) > 0:
             raise ValueError(
                 "Parameter set is not complete to fully define the geometry object: {}".format(self)
