@@ -8,6 +8,8 @@ from brlcad.vmath.geometry_object import GeometryObject, create_property
 
 class Arc(GeometryObject):
 
+    # Structures to be override from super-class:
+
     calc_function_map = dict()
 
     param_wrappers = {
@@ -18,21 +20,23 @@ class Arc(GeometryObject):
         "start_point", "end_point", "angle", "plane_normal"
     }
 
+    # end of structures to be overridden
+
     def __init__(self, verify=False, **kwargs):
         """
-            Create an arc based on one of many possible parameter sets.
-            The following combinations are accepted:
-            * (start_point, end_point/secant, angle, plane_normal)
-            * (start_point, angle, origin, plane_normal)
-            * (start_point, end_point/secant, origin, plane_normal)
-            * (start_point, length, reflex_angle, origin, plane_normal)
-            * (start_point, end_point/secant, arc_height)
-            * (start_point, end_point/secant, arc_point)
-            If some extra parameters are already available, and checking is required,
-            use verify=True (default is False, meaning parameters are not checked for consistency).
-            Parameters which are not set will be calculated if needed, but at least one of
-            the above mentioned combinations must be provided completely.
-            """
+        Create an arc based on one of many possible parameter sets.
+        The following combinations are accepted:
+        * (start_point, end_point/secant, angle, plane_normal)
+        * (start_point, angle, origin, plane_normal)
+        * (start_point, end_point/secant, origin, plane_normal)
+        * (start_point, length, reflex_angle, origin, plane_normal)
+        * (start_point, end_point/secant, arc_height)
+        * (start_point, end_point/secant, arc_point)
+        If some extra parameters are already available, and checking is required,
+        use verify=True (default is False, meaning parameters are not checked for consistency).
+        Parameters which are not set will be calculated if needed, but at least one of
+        the above mentioned combinations must be provided completely.
+        """
         GeometryObject.__init__(self, verify=verify, **kwargs)
 
     # Property declarations/calculation functions
