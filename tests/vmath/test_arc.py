@@ -79,13 +79,13 @@ class ArcTestCase(unittest.TestCase):
             for param_names in self.base_arc_params:
                 crt_params = dict([x for x in crt_data.items() if x[0] in param_names])
                 arc = Arc(verify=False, **crt_params)
-                print "******************************"
-                print "param_names: ", param_names
-                print "crt_params: ", crt_params
-                print "******************************"
-                print arc
+                # print "******************************"
+                # print "param_names: ", param_names
+                # print "crt_params: ", crt_params
+                # print "******************************"
+                # print arc
                 arc.verify()
-                print arc
+                # print arc
                 for name, expected_value in crt_data.items():
                     if hasattr(arc, name):
                         expected_value = Arc.wrap_param(name, expected_value)
