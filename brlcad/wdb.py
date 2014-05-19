@@ -187,6 +187,10 @@ class WDB:
         libwdb.mk_vol(self.db_fp, name, file_name, x_dim, y_dim, z_dim, low_thresh, high_thresh,
                       cta.point(cell_size), cta.transform(mat))
 
+    @mk_wrap_primitive(primitives.ARS)
+    def ars(self, name, ncurves, pts_per_curve, curves):
+        libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(curves, ncurves, pts_per_curve*3))
+
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.point(base), cta.direction(height), cta.direction(breadth), half_width)
