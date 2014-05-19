@@ -130,14 +130,14 @@ def transform_from_pointer(t):
 
 def array2d_from_pointer(t, num_rows, num_cols) :
     result = [[t[i][j] for j in range(num_cols) ] for i in range(num_rows)]
-    return result
+    return np.array(result)
 
 def array2d(t, num_rows, num_cols) :
     result = ((ctypes.c_double * num_cols) * num_rows)()
     for i in range(num_rows):
         for j in range(num_cols):
             result[i][j] = t[i][j]
-    return np.array(result)
+    return result
 
 def transform(t, use_brlcad_malloc=False):
     """
