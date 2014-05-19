@@ -1,5 +1,5 @@
 """
-Python wrappers for the VOL primitives of BRL-CAD.
+Python wrappers for the ARS primitives of BRL-CAD.
 """
 from base import Primitive
 import numpy as np
@@ -19,8 +19,7 @@ class ARS(Primitive):
             self.curves = curves
 
     def __repr__(self):
-        result = "{}({}, file_name={}, x_dim={}, y_dim={}, z_dim={}, " \
-                 "low_thresh={}, high_thresh={} cell_size={}, mat={})"
+        result = "{}({}, name={}, ncurves={}, pts_per_curve={}, curves={})"
         return result.format(
             self.__class__.__name__, self.name, self.ncurves, self.pts_per_curve, repr(self.curves)
         )
