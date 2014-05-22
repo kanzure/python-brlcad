@@ -13,10 +13,7 @@ class ARS(Primitive):
         Primitive.__init__(self, name=name)
         self.ncurves = ncurves
         self.pts_per_curve = pts_per_curve
-        if copy:
-            self.curves = cta.array2d(curves, ncurves, pts_per_curve*3)
-        else:
-            self.curves = curves
+        self.curves = np.array(curves,copy)
 
     def __repr__(self):
         result = "{}({}, name={}, ncurves={}, pts_per_curve={}, curves={})"
@@ -46,5 +43,5 @@ class ARS(Primitive):
             name=data.name,
             ncurves=data.ncurves,
             pts_per_curve=data.pts_per_curve,
-            curves=cta.array2d_from_pointer(data.curves, data.ncurves, data.pts_per_curve*3)
+            curves=cta.array2d_from_pointer(data.curves)
         )

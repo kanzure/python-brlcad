@@ -128,16 +128,16 @@ def plane(p):
 def transform_from_pointer(t):
     return [t[x] for x in xrange(0, 16)]
 
-def array2d_from_pointer(t, num_rows, num_cols) :
-    result = [[t[i][j] for j in range(num_cols) ] for i in range(num_rows)]
+def array2d_from_pointer(t) :
+    result = [[t[i][j] for j in range(len(t[i])) ] for i in range(len(t))]
     return np.array(result)
 
-def array2d(t, num_rows, num_cols) :
-    result = ((ctypes.c_double * num_cols) * num_rows)()
-    for i in range(num_rows):
-        for j in range(num_cols):
-            result[i][j] = t[i][j]
-    return result
+def array2d(t):
+    arrayPointers = []
+    for i in range(len(t)):
+        arrayPointer = (ctypes.c_double * len(t[i]))(*(t[i]))
+        arrayPointers.append(arrayPointer)
+    return ctypes_array(arrayPointer)
 
 def transform(t, use_brlcad_malloc=False):
     """

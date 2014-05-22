@@ -19,7 +19,7 @@ from vol import VOL
 from ars import ARS
 
 __all__ = [
-    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle", "VOL", "ARS"
+    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle", "VOL", "ARS",
     "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
     "Sketch", "Extrude", "Revolve",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
