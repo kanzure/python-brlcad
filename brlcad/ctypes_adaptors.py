@@ -149,7 +149,7 @@ def array2d(t,type = ctypes.c_double):
     result =  (ctypes.POINTER(type) * len(arrays))(
         *[ctypes.cast(brlcad_copy(array,"array2d"), ctypes.POINTER(type)) for array in arrays]
     )
-    return ctypes.cast(result, ctypes.POINTER(ctypes.POINTER(type)))
+    return ctypes.cast(brlcad_copy(result,"array2d"), ctypes.POINTER(ctypes.POINTER(type)))
 
 def transform(t, use_brlcad_malloc=False):
     """
