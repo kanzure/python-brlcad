@@ -204,6 +204,10 @@ class WDB:
                 mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves))
 
+    @mk_wrap_primitive(primitives.HALF)
+    def half(self, name, norm=(1, 0, 0), d=1.0):
+        libwdb.mk_half(self.db_fp, name, cta.point(norm), d)
+
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):
         libwdb.mk_rpc(self.db_fp, name, cta.point(base), cta.direction(height), cta.direction(breadth), half_width)

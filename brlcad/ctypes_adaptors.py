@@ -2,8 +2,10 @@ from collections import Iterable
 import ctypes
 from numbers import Number
 from brlcad.exceptions import BRLCADException
+from brlcad.vmath import Plane
 import numpy as np
 import brlcad._bindings.libbn as libbn
+
 
 
 def brlcad_new(obj_type, debug_msg=None):
@@ -124,6 +126,10 @@ def plane(p):
         raise BRLCADException("Expected 4 doubles, got: {0}".format(len(fp)))
     return (ctypes.c_double * 4)(*fp)
 
+def plane_from_pointer(t):
+    normal = [t[x] for x in range(3)]
+    distance = t[3]
+    return Plane(normal, distance)
 
 def transform_from_pointer(t):
     return [t[x] for x in xrange(0, 16)]
