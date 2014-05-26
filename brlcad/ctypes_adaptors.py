@@ -128,16 +128,22 @@ def plane(p):
 def transform_from_pointer(t):
     return [t[x] for x in xrange(0, 16)]
 
-def array2d_from_pointer(t) :
-    result = [[t[i][j] for j in range(len(t[i])) ] for i in range(len(t))]
+def array2d_from_pointer(t,num_rows, num_cols) :
+    result = [[None for x in range(num_cols)] for y in range(num_rows)]
+    for i in range(num_rows):
+        for j in range(num_cols):
+            result[i][j] = t[i][j]
     return np.array(result)
 
-def array2d(t):
-    arrayPointers = []
+def array2d(t,type = ctypes.c_double):
+    arrays = []
     for i in range(len(t)):
-        arrayPointer = (ctypes.c_double * len(t[i]))(*(t[i]))
-        arrayPointers.append(arrayPointer)
-    return ctypes_array(arrayPointer)
+        array = ((type * len(t[i]))(*(t[i])))
+        arrays.append(array)
+    result =  (ctypes.POINTER(type) * len(arrays))(
+        *[ctypes.cast(brlcad_copy(array,"array2d"), ctypes.POINTER(type)) for array in arrays]
+    )
+    return ctypes.cast(result, ctypes.POINTER(ctypes.POINTER(type)))
 
 def transform(t, use_brlcad_malloc=False):
     """
@@ -208,7 +214,7 @@ def ctypes_array(pointer_list):
     All elements of the given list should be ctypes pointers of the same type.
     Only the first element is examined for the type extraction !
     """
-    pointer_type = pointer_list[0]._type_
+    pointer_type = pointer_list[0]
     return (pointer_type * len(pointer_list))(*[x.contents for x in pointer_list])
 
 

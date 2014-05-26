@@ -13,7 +13,7 @@ class ARS(Primitive):
         Primitive.__init__(self, name=name)
         self.ncurves = ncurves
         self.pts_per_curve = pts_per_curve
-        self.curves = np.array(curves,copy)
+        self.curves = curves
 
     def __repr__(self):
         result = "{}({}, name={}, ncurves={}, pts_per_curve={}, curves={})"
@@ -40,8 +40,8 @@ class ARS(Primitive):
     @staticmethod
     def from_wdb(name, data):
         return ARS(
-            name=data.name,
+            name=name,
             ncurves=data.ncurves,
             pts_per_curve=data.pts_per_curve,
-            curves=cta.array2d_from_pointer(data.curves)
+            curves=cta.array2d_from_pointer(data.curves,data.ncurves,data.pts_per_curve*3)
         )

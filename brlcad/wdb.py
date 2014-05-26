@@ -189,7 +189,20 @@ class WDB:
 
     @mk_wrap_primitive(primitives.ARS)
     def ars(self, name, ncurves, pts_per_curve, curves):
-        libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(curves))
+        mod_curves  = [[None for x in range(pts_per_curve*3)] for y in range(ncurves)]
+        ## for start
+        for i in range(pts_per_curve):
+            for j in range(3):
+                mod_curves[0][3*i+j] = curves[0][j]
+        ##for other curves
+        for i in range(1,ncurves-1):
+            for j in range(3*pts_per_curve):
+                mod_curves[i][j] = curves[i][j]
+        ## for end
+        for i in range(pts_per_curve):
+            for j in range(3):
+                mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
+        libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves))
 
     @mk_wrap_primitive(primitives.RPC)
     def rpc(self, name, base=(0, 0, 0), height=(-1, 0, 0), breadth=(0, 0, 1), half_width=0.5):

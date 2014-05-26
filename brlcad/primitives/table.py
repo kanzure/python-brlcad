@@ -27,7 +27,6 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     # TODO: add proper wrappers for all primitives which have here "Primitive" as wrapper
     librt.ID_ARBN: ("ARBN", ARBN, librt.RT_ARBN_INTERNAL_MAGIC, librt.struct_rt_arbn_internal),
     librt.ID_ARB8: ("ARB", ARB8, librt.RT_ARB_INTERNAL_MAGIC, librt.struct_rt_arb_internal),
-    librt.ID_ARS: ("ARS", ARS, librt.RT_ARS_INTERNAL_MAGIC, librt.struct_rt_ars_internal),
     librt.ID_BINUNIF: ("BINUNIF", Primitive, librt.RT_BINUNIF_INTERNAL_MAGIC, librt.struct_rt_binunif_internal),
     librt.ID_BOT: ("BOT", Primitive, librt.RT_BOT_INTERNAL_MAGIC, librt.struct_rt_bot_internal),
     librt.ID_BREP: ("BREP", Primitive, librt.RT_BREP_INTERNAL_MAGIC, librt.struct_rt_brep_internal),
@@ -59,6 +58,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_REC: ("REC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
     librt.ID_TOR: ("TOR", Torus, librt.RT_TOR_INTERNAL_MAGIC, librt.struct_rt_tor_internal),
     librt.ID_VOL: ("VOL", VOL, librt.RT_VOL_INTERNAL_MAGIC, librt.struct_rt_vol_internal),
+    librt.ID_ARS: ("ARS", ARS, librt.RT_ARS_INTERNAL_MAGIC, librt.struct_rt_ars_internal),
     librt.ID_PNTS: ("PNTS", Primitive, librt.RT_PNTS_INTERNAL_MAGIC, librt.struct_rt_pnts_internal),
     librt.ID_ANNOTATION: ("ANNOTATION", Primitive, librt.RT_ANNOTATION_INTERNAL_MAGIC, librt.struct_rt_annotation_internal),
     librt.ID_COMBINATION: ("COMBINATION", Combination, librt.RT_COMB_MAGIC, librt.struct_rt_comb_internal),
