@@ -29,7 +29,10 @@ class ARS(Primitive):
             mod_curves = curves
         self.ncurves = ncurves
         self.pts_per_curve = pts_per_curve
-        self.curves = mod_curves
+        if copy:
+            self.curves = [x[:] for x in mod_curves]
+        else:
+            self.curves = mod_curves
 
     def __repr__(self):
         result = "{}({}, name={}, ncurves={}, pts_per_curve={}, curves={})"
