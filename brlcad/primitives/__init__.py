@@ -18,9 +18,10 @@ from sketch import Sketch, Extrude, Revolve
 from vol import VOL
 from ars import ARS
 from half import HALF
+from superell import SUPERELL
 
 __all__ = [
-    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "RPC", "RHC", "Particle", "VOL", "ARS",
+    "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "SUPERELL", "RPC", "RHC", "Particle", "VOL", "ARS",
     "HALF", "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
     "Sketch", "Extrude", "Revolve",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"

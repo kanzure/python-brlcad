@@ -48,7 +48,7 @@ class WDBTestCase(unittest.TestCase):
                              [1, 0, -1, 0, -1, -1, -1, 0, -1, 0, 1, -1],
                              [1, 0, -3, 0, -1, -3, -1, 0, -3, 0, 1, -3 ],
                              [0, 0, -3]])
-
+            brl_db.superell("superell.s")
             test_comb = primitives.Combination(name="combination.c")
             for shape_name in brl_db.ls():
                 test_comb.tree.add_child(shape_name)
@@ -140,6 +140,11 @@ class WDBTestCase(unittest.TestCase):
     def test_vol_defaults(self):
         shape = self.lookup_shape("vol.s")
         expected = primitives.VOL("vol.s", "tests/resources/voxel.data")
+        self.assertTrue(expected.has_same_data(shape))
+
+    def test_superell_defaults(self):
+        shape = self.lookup_shape("superell.s")
+        expected = primitives.SUPERELL("superell.s")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_half_defaults(self):
