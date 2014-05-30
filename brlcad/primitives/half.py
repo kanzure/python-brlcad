@@ -2,17 +2,15 @@
 Python wrappers for the HALF primitives of BRL-CAD.
 """
 from base import Primitive
-from brlcad.vmath import Vector, Transform, Plane
-import numpy as np
+from brlcad.vmath import Vector, Plane
 import brlcad.ctypes_adaptors as cta
-import os
 
 
 class HALF(Primitive):
 
     def __init__(self, name, norm=(1, 0, 0), d=1.0, copy=False):
         Primitive.__init__(self, name=name)
-        self.eqn = Plane(Vector(norm),d,copy)
+        self.eqn = Plane(Vector(norm), d, copy=copy)
 
     def __repr__(self):
         result = "{}({}, Eqn={})"

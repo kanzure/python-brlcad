@@ -9,10 +9,10 @@ import os
 
 class ARS(Primitive):
 
-    def __init__(self, name, ncurves, pts_per_curve, curves, modified=True,copy=False):
+    def __init__(self, name, ncurves, pts_per_curve, curves, modified=True, copy=False):
         Primitive.__init__(self, name=name)
         if modified:
-            mod_curves  = [[None for x in range(pts_per_curve*3)] for y in range(ncurves)]
+            mod_curves = [[None for x in range(pts_per_curve*3)] for y in range(ncurves)]
             ## for start
             for i in range(pts_per_curve):
                 for j in range(3):
@@ -43,8 +43,8 @@ class ARS(Primitive):
     def update_params(self, params):
         params.update({
             "ncurves": self.ncurves,
-            "pts_per_curve":self.pts_per_curve,
-            "curves":self.curves
+            "pts_per_curve": self.pts_per_curve,
+            "curves": self.curves
         })
 
     def copy(self):

@@ -126,30 +126,32 @@ def plane(p):
         raise BRLCADException("Expected 4 doubles, got: {0}".format(len(fp)))
     return (ctypes.c_double * 4)(*fp)
 
+
 def plane_from_pointer(t):
     normal = [t[x] for x in range(3)]
     distance = t[3]
     return Plane(normal, distance)
 
+
 def transform_from_pointer(t):
     return [t[x] for x in xrange(0, 16)]
 
-def array2d_from_pointer(t,num_rows, num_cols) :
-    result = [[None for x in range(num_cols)] for y in range(num_rows)]
-    for i in range(num_rows):
-        for j in range(num_cols):
-            result[i][j] = t[i][j]
+
+def array2d_from_pointer(t, num_rows, num_cols):
+    result = [[t[y][x] for x in range(num_cols)] for y in range(num_rows)]
     return np.array(result)
 
-def array2d(t,type = ctypes.c_double):
+
+def array2d(t, data_type=ctypes.c_double):
     arrays = []
     for i in range(len(t)):
-        array = ((type * len(t[i]))(*(t[i])))
+        array = ((data_type * len(t[i]))(*(t[i])))
         arrays.append(array)
-    result =  (ctypes.POINTER(type) * len(arrays))(
-        *[ctypes.cast(brlcad_copy(array,"array2d"), ctypes.POINTER(type)) for array in arrays]
+    result = (ctypes.POINTER(data_type) * len(arrays))(
+        *[ctypes.cast(brlcad_copy(array, "array2d"), ctypes.POINTER(data_type)) for array in arrays]
     )
-    return ctypes.cast(brlcad_copy(result,"array2d"), ctypes.POINTER(ctypes.POINTER(type)))
+    return ctypes.cast(brlcad_copy(result, "array2d"), ctypes.POINTER(ctypes.POINTER(data_type)))
+
 
 def transform(t, use_brlcad_malloc=False):
     """

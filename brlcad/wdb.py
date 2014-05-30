@@ -205,10 +205,10 @@ class WDB:
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves))
 
     @mk_wrap_primitive(primitives.SUPERELL)
-    def superell(self, name, v=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
+    def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
         s = cta.brlcad_new(libwdb.struct_rt_superell_internal)
         s.magic = libwdb.RT_SUPERELL_INTERNAL_MAGIC
-        s.v = cta.point(v)
+        s.v = cta.point(center)
         s.a = cta.point(a)
         s.b = cta.point(b)
         s.c = cta.point(c)
