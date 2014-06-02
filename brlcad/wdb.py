@@ -270,6 +270,24 @@ class WDB:
             libwdb.mk_add_pipe_pt(seg_list, cta.point(pipe_point[0]), *pipe_point[1:])
         libwdb.mk_pipe(self.db_fp, name, seg_list)
 
+    @mk_wrap_primitive(primitives.Metaball)
+    def metaball(self, name, points=(((1, 1, 1), 1, 0), ((0, 0, 1), 2, 0)), threshold=1, method=2):
+        """
+        ctrl_points: corresponds to metaball control points
+                ctrl_point = (point, field_strength, sweat)
+        """
+        num_ctrl_points = points.__len__()
+        ctrl_point_array = []
+        for i in range(num_ctrl_points):
+            ctrl_point_detail = [None]*5
+            ctrl_point_detail[0:3] = points[i][0]
+            ctrl_point_detail[3] = points[i][1]
+            ctrl_point_detail[4] = points[i][2]
+            ctrl_point_array.append(ctrl_point_detail)
+        libwdb.mk_metaball(self.db_fp, name, num_ctrl_points, method, threshold,
+                           cta.array2d(ctrl_point_array))
+
+
     @mk_wrap_primitive(primitives.Sketch)
     def sketch(self, name, sketch=None):
         if not sketch:

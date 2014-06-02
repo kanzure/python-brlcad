@@ -41,6 +41,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.particle("particle.s")
             brl_db.pipe("pipe.s")
             brl_db.vol("vol.s", "tests/resources/voxel.data")
+            brl_db.metaball("metaball.s")
             brl_db.half("half.s")
             brl_db.ars("ars.s", 6, 4, [[0, 0, 3],
                              [1, 1, 3, 1, -1, 3, -1, -1, 3, -1, 1, 3],
@@ -145,6 +146,11 @@ class WDBTestCase(unittest.TestCase):
     def test_superell_defaults(self):
         shape = self.lookup_shape("superell.s")
         expected = primitives.SUPERELL("superell.s")
+        self.assertTrue(expected.has_same_data(shape))
+
+    def test_metaball_defailts(self):
+        shape = self.lookup_shape("metaball.s")
+        expected = primitives.Metaball("metaball.s")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_half_defaults(self):
