@@ -43,6 +43,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.vol("vol.s", "tests/resources/voxel.data")
             brl_db.metaball("metaball.s")
             brl_db.half("half.s")
+            brl_db.ebm("ebm.s", "tests/resources/Ychar.bw")
             brl_db.ars("ars.s", 6, 4, [[0, 0, 3],
                              [1, 1, 3, 1, -1, 3, -1, -1, 3, -1, 1, 3],
                              [1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1],
@@ -114,6 +115,11 @@ class WDBTestCase(unittest.TestCase):
         shape = self.lookup_shape("sphere.s")
         self.assertTrue(shape.center.is_same((0, 0, 0)))
         self.assertEqual(1, shape.radius)
+
+    def test_ebm_defaults(self):
+        shape = self.lookup_shape("ebm.s")
+        expected = primitives.EBM("ebm.s", "tests/resources/Ychar.bw")
+        self.assertTrue(expected.has_same_data(shape))
 
     def test_ellipsoid_defaults(self):
         shape = self.lookup_shape("ellipsoid.s")

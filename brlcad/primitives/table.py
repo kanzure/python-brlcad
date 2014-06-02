@@ -24,6 +24,7 @@ from pipe import Pipe
 from sketch import Sketch, Extrude, Revolve
 from superell import SUPERELL
 from metaball import Metaball
+from ebm import EBM
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -35,7 +36,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_BREP: ("BREP", Primitive, librt.RT_BREP_INTERNAL_MAGIC, librt.struct_rt_brep_internal),
     librt.ID_CLINE: ("CLINE", Primitive, librt.RT_CLINE_INTERNAL_MAGIC, librt.struct_rt_cline_internal),
     librt.ID_DSP: ("DSP", Primitive, librt.RT_DSP_INTERNAL_MAGIC, librt.struct_rt_dsp_internal),
-    librt.ID_EBM: ("EBM", Primitive, librt.RT_EBM_INTERNAL_MAGIC, librt.struct_rt_ebm_internal),
+    librt.ID_EBM: ("EBM", EBM, librt.RT_EBM_INTERNAL_MAGIC, librt.struct_rt_ebm_internal),
     librt.ID_EHY: ("EHY", EHY, librt.RT_EHY_INTERNAL_MAGIC, librt.struct_rt_ehy_internal),
     librt.ID_ELL: ("ELL", Ellipsoid, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),
     librt.ID_SPH: ("ELL", Sphere, librt.RT_ELL_INTERNAL_MAGIC, librt.struct_rt_ell_internal),

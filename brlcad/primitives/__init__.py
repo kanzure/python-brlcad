@@ -20,10 +20,11 @@ from ars import ARS
 from half import HALF
 from superell import SUPERELL
 from metaball import Metaball
+from ebm import EBM
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "SUPERELL", "RPC", "RHC", "Particle", "VOL", "ARS",
     "HALF", "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
-    "Sketch", "Extrude", "Revolve", "Metaball",
+    "Sketch", "Extrude", "Revolve", "Metaball", "EBM",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

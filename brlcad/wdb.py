@@ -187,6 +187,10 @@ class WDB:
         libwdb.mk_vol(self.db_fp, name, file_name, x_dim, y_dim, z_dim, low_thresh, high_thresh,
                       cta.point(cell_size), cta.transform(mat))
 
+    @mk_wrap_primitive(primitives.EBM)
+    def ebm(self, name, file_name, x_dim=350, y_dim=350, tallness=20, mat=Transform.unit()):
+        libwdb.mk_ebm(self.db_fp, name, file_name, x_dim, y_dim, tallness, cta.transform(mat))
+
     @mk_wrap_primitive(primitives.ARS)
     def ars(self, name, ncurves, pts_per_curve, curves):
         mod_curves  = [[None for x in range(pts_per_curve*3)] for y in range(ncurves)]
@@ -285,7 +289,7 @@ class WDB:
             ctrl_point_detail[4] = points[i][2]
             ctrl_point_array.append(ctrl_point_detail)
         libwdb.mk_metaball(self.db_fp, name, num_ctrl_points, method, threshold,
-                           cta.array2d(ctrl_point_array))
+                           cta.array2d_fixed_cols(ctrl_point_array, 5))
 
 
     @mk_wrap_primitive(primitives.Sketch)
