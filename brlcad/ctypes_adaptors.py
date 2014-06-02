@@ -142,6 +142,15 @@ def array2d_from_pointer(t, num_rows, num_cols):
     return np.array(result)
 
 
+def array2d_fixed_cols(t, num_cols_fixed=5, data_type=ctypes.c_double):
+    arrays = []
+    for i in range(len(t)):
+        array = (data_type*num_cols_fixed)(*t[i])
+        arrays.append(brlcad_copy(array,"array2d_fixed_cols"))
+    result = ((data_type*num_cols_fixed)*len(t))(*arrays)
+    return ctypes.cast(brlcad_copy(result, "array2d_fixed_cols"), ctypes.POINTER(data_type*num_cols_fixed))
+
+
 def array2d(t, data_type=ctypes.c_double):
     arrays = []
     for i in range(len(t)):
