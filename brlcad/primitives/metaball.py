@@ -3,6 +3,7 @@ Python wrapper for the Metaball primitive of BRL-CAD.
 """
 import collections
 import functools
+import types
 from base import Primitive
 from brlcad.vmath import Vector
 import ctypes
@@ -49,6 +50,7 @@ class MetaballCtrlPoint(collections.Sequence):
         >>> x.is_same(MetaballCtrlPoint(("0, 0, 1", 1, 0)))
         True
         """
+        types.ListType,types.TupleType
         if isinstance(point, MetaballCtrlPoint):
             if copy:
                 return MetaballCtrlPoint(*point, copy=True)
@@ -56,7 +58,8 @@ class MetaballCtrlPoint(collections.Sequence):
                 return point
         result = collections.Sequence.__new__(cls)
         is_non_string_sequence = isinstance(point, collections.Sequence) and not isinstance(point, str)
-        if is_non_string_sequence and len(point) == 3:
+        if is_non_string_sequence and len(point) == 3 and isinstance(point[0], (types.ListType, types.TupleType,
+                                                                                types.StringType)):
             # this means the parameters were wrapped in a sequence, so we unwrap them
             point, field_strength, sweat = point
         result.items = [Vector(point, copy=copy), float(field_strength), float(sweat)]
