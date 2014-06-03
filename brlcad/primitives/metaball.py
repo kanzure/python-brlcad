@@ -59,7 +59,7 @@ class MetaballCtrlPoint(collections.Sequence):
         result = collections.Sequence.__new__(cls)
         is_non_string_sequence = isinstance(point, collections.Sequence) and not isinstance(point, str)
         if is_non_string_sequence and len(point) == 3 and isinstance(point[0], (types.ListType, types.TupleType,
-                                                                                types.StringType)):
+                                                                                types.StringType, Vector)):
             # this means the parameters were wrapped in a sequence, so we unwrap them
             point, field_strength, sweat = point
         result.items = [Vector(point, copy=copy), float(field_strength), float(sweat)]
@@ -146,11 +146,11 @@ class Metaball(Primitive):
             points.append((
                 Vector(crt_point.coord), crt_point.fldstr, crt_point.sweat
             ))
-            if points.__len__() > 3:
+            if len(points) >= 3:
                 if Vector(points[0][0]).is_same(Vector(points[-1][0])) and \
                     points[0][1] == points[-1][1] and points[0][2] == points[-1][2]:
                     points[-2:] = []
-                    break;
+                    break
         return Metaball(
             name=name,
             threshold=data.threshold,

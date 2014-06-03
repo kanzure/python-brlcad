@@ -11,6 +11,7 @@ from brlcad.exceptions import BRLCADException
 import brlcad.primitives.table as p_table
 import brlcad.primitives as primitives
 
+
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
 libwdb.mk_addmember.argtypes = [
@@ -278,19 +279,9 @@ class WDB:
     def metaball(self, name, points=(((1, 1, 1), 1, 0), ((0, 0, 1), 2, 0)), threshold=1, method=2):
         """
         ctrl_points: corresponds to metaball control points
-                ctrl_point = (point, field_strength, sweat)
+               ctrl_point = (point, field_strength, sweat)
         """
-        num_ctrl_points = points.__len__()
-        ctrl_point_array = []
-        for i in range(num_ctrl_points):
-            ctrl_point_detail = [None]*5
-            ctrl_point_detail[0:3] = points[i][0]
-            ctrl_point_detail[3] = points[i][1]
-            ctrl_point_detail[4] = points[i][2]
-            ctrl_point_array.append(ctrl_point_detail)
-        libwdb.mk_metaball(self.db_fp, name, num_ctrl_points, method, threshold,
-                           cta.array2d_fixed_cols(ctrl_point_array, 5))
-
+        libwdb.mk_metaball(self.db_fp, name, len(points), method, threshold, cta.array2d_fixed_cols(points, 5))
 
     @mk_wrap_primitive(primitives.Sketch)
     def sketch(self, name, sketch=None):
