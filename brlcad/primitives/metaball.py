@@ -139,18 +139,18 @@ class Metaball(Primitive):
     @staticmethod
     def from_wdb(name, data):
         points=[]
-        crt_head = data.metaball_ctrl_head.forw
+        points_head = data.metaball_ctrl_head.forw
+        crt_head = points_head
         while(1):
             crt_point = ctypes.cast(crt_head, ctypes.POINTER(librt.wdb_metaballpt)).contents
             crt_head = crt_point.l.forw
             points.append((
                 Vector(crt_point.coord), crt_point.fldstr, crt_point.sweat
             ))
-            if len(points) >= 3:
-                if Vector(points[0][0]).is_same(Vector(points[-1][0])) and \
-                    points[0][1] == points[-1][1] and points[0][2] == points[-1][2]:
-                    points[-2:] = []
-                    break
+            if ctypes.addressof(points_head) == ctypes.addressof(crt_head):
+                points[-1:] = []
+                break
+
         return Metaball(
             name=name,
             threshold=data.threshold,
