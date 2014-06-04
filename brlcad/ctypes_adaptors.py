@@ -229,7 +229,7 @@ def ctypes_array(pointer_list):
     All elements of the given list should be ctypes pointers of the same type.
     Only the first element is examined for the type extraction !
     """
-    pointer_type = pointer_list[0]
+    pointer_type = pointer_list[0]._type_
     return (pointer_type * len(pointer_list))(*[x.contents for x in pointer_list])
 
 
