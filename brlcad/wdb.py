@@ -264,6 +264,10 @@ class WDB:
     def particle(self, name, base=(0, 0, 0), height=(0, 0, 1), r_base=0.5, r_end=0.2):
         libwdb.mk_particle(self.db_fp, name, cta.point(base), cta.direction(height), r_base, r_end)
 
+    @mk_wrap_primitive(primitives.Grip)
+    def grip(self, name, center=(0, 0, 0), normal=(1, 0, 0), magnitude=1):
+        libwdb.mk_grip(self.db_fp, name, cta.point(center, 3), cta.point(normal, 3), magnitude)
+
     @mk_wrap_primitive(primitives.Pipe)
     def pipe(self, name, points=(((0, 0, 0), 0.5, 0.3, 1), ((0, 0, 1), 0.5, 0.3, 1))):
         """

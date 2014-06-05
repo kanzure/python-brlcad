@@ -25,6 +25,7 @@ from sketch import Sketch, Extrude, Revolve
 from superell import Superell
 from metaball import Metaball
 from ebm import EBM
+from grip import Grip
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -43,7 +44,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_EPA: ("EPA", EPA, librt.RT_EPA_INTERNAL_MAGIC, librt.struct_rt_epa_internal),
     librt.ID_ETO: ("ETO", ETO, librt.RT_ETO_INTERNAL_MAGIC, librt.struct_rt_eto_internal),
     librt.ID_EXTRUDE: ("EXTRUDE", Extrude, librt.RT_EXTRUDE_INTERNAL_MAGIC, librt.struct_rt_extrude_internal),
-    librt.ID_GRIP: ("GRIP", Primitive, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
+    librt.ID_GRIP: ("GRIP", Grip, librt.RT_GRIP_INTERNAL_MAGIC, librt.struct_rt_grip_internal),
     librt.ID_HALF: ("HALF", Half, librt.RT_HALF_INTERNAL_MAGIC, librt.struct_rt_half_internal),
     librt.ID_HF: ("HF", Primitive, librt.RT_HF_INTERNAL_MAGIC, librt.struct_rt_hf_internal),
     librt.ID_HYP: ("HYP", Hyperboloid, librt.RT_HYP_INTERNAL_MAGIC, librt.struct_rt_hyp_internal),
