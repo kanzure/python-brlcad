@@ -4,7 +4,7 @@ Python wrappers for the SUPERELL primitives of BRL-CAD.
 from base import Primitive
 from brlcad.vmath import Vector
 
-class SUPERELL(Primitive):
+class Superell(Primitive):
 
     def __init__(self,name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0, copy=False):
         Primitive.__init__(self, name=name)
@@ -33,7 +33,7 @@ class SUPERELL(Primitive):
         })
 
     def copy(self):
-        return SUPERELL(self.name, self.center, self.a, self.b, self.c, self.n, self.e, copy=True)
+        return Superell(self.name, self.center, self.a, self.b, self.c, self.n, self.e, copy=True)
 
     def has_same_data(self, other):
         return self.e == other.e and \
@@ -45,7 +45,7 @@ class SUPERELL(Primitive):
 
     @staticmethod
     def from_wdb(name, data):
-        return SUPERELL(
+        return Superell(
             name=name,
             center=data.v,
             a=data.a,

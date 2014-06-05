@@ -209,7 +209,7 @@ class WDB:
                 mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
 
-    @mk_wrap_primitive(primitives.SUPERELL)
+    @mk_wrap_primitive(primitives.Superell)
     def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
         s = cta.brlcad_new(libwdb.struct_rt_superell_internal)
         s.magic = libwdb.RT_SUPERELL_INTERNAL_MAGIC

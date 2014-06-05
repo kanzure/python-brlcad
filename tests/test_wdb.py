@@ -151,7 +151,7 @@ class WDBTestCase(unittest.TestCase):
 
     def test_superell_defaults(self):
         shape = self.lookup_shape("superell.s")
-        expected = primitives.SUPERELL("superell.s")
+        expected = primitives.Superell("superell.s")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_metaball_defailts(self):
