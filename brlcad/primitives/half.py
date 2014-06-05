@@ -8,9 +8,12 @@ import brlcad.ctypes_adaptors as cta
 
 class Half(Primitive):
 
-    def __init__(self, name, norm=(1, 0, 0), d=1.0, copy=False):
+    def __init__(self, name, norm=(1, 0, 0), d=1.0, plane=None, copy=False):
         Primitive.__init__(self, name=name)
-        self.plane = Plane(Vector(norm), d, copy=copy)
+        if plane is not None:
+            self.plane = plane
+        else:
+            self.plane = Plane(Vector(norm), d, copy=copy)
 
     def __repr__(self):
         result = "{}({}, Plane={})"
@@ -36,6 +39,5 @@ class Half(Primitive):
         plane = cta.plane_from_pointer(data.eqn)
         return Half(
             name=name,
-            norm=plane.normal,
-            d=plane.distance
+            plane=plane
         )
