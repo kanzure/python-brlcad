@@ -142,22 +142,31 @@ def array2d_from_pointer(t, num_rows, num_cols):
     return np.array(result)
 
 
-def array2d_fixed_cols(t, num_cols_fixed=5):
+def array2d_fixed_cols(t, num_cols_fixed=5, use_brlcad_malloc=False):
     result = brlcad_new((ctypes.c_double * num_cols_fixed)*len(t), "metaball array")
     for i in range(len(t)):
-        result[i] = brlcad_copy(doubles(t[i]), "metaball point")
+        if use_brlcad_malloc:
+            result[i] = brlcad_copy(doubles(t[i],double_count=num_cols_fixed), "metaball point")
+        else:
+            result[i] = doubles(t[i],double_count=num_cols_fixed)
     return ctypes.cast(result, ctypes.POINTER(ctypes.c_double * num_cols_fixed))
 
 
-def array2d(t, data_type=ctypes.c_double):
+def array2d(t, data_type=ctypes.c_double, use_brlcad_malloc=False):
     arrays = []
     for i in range(len(t)):
         array = ((data_type * len(t[i]))(*(t[i])))
         arrays.append(array)
-    result = (ctypes.POINTER(data_type) * len(arrays))(
+    if use_brlcad_malloc:
+        result = (ctypes.POINTER(data_type) * len(arrays))(
         *[ctypes.cast(brlcad_copy(array, "array2d"), ctypes.POINTER(data_type)) for array in arrays]
     )
-    return ctypes.cast(brlcad_copy(result, "array2d"), ctypes.POINTER(ctypes.POINTER(data_type)))
+        return ctypes.cast(brlcad_copy(result, "array2d"), ctypes.POINTER(ctypes.POINTER(data_type)))
+    else:
+        result = (ctypes.POINTER(data_type) * len(arrays))(
+        *[ctypes.cast(array, ctypes.POINTER(data_type)) for array in arrays]
+    )
+        return ctypes.cast(result, ctypes.POINTER(ctypes.POINTER(data_type)))
 
 
 def transform(t, use_brlcad_malloc=False):

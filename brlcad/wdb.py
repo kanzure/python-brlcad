@@ -207,7 +207,7 @@ class WDB:
         for i in range(pts_per_curve):
             for j in range(3):
                 mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
-        libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves))
+        libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.SUPERELL)
     def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
@@ -281,7 +281,8 @@ class WDB:
         ctrl_points: corresponds to metaball control points
                ctrl_point = (point, field_strength, sweat)
         """
-        libwdb.mk_metaball(self.db_fp, name, len(points), method, threshold, cta.array2d_fixed_cols(points, 5))
+        libwdb.mk_metaball(self.db_fp, name, len(points), method, threshold, cta.array2d_fixed_cols(points, 5,
+                                                                                                use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.Sketch)
     def sketch(self, name, sketch=None):
