@@ -17,14 +17,14 @@ from pipe import Pipe, PipePoint
 from sketch import Sketch, Extrude, Revolve
 from vol import VOL
 from ars import ARS
-from half import HALF
+from half import Half
 from superell import Superell
 from metaball import Metaball
 from ebm import EBM
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "Superell", "RPC", "RHC", "Particle", "VOL", "ARS",
-    "HALF", "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
+    "Half", "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
     "Sketch", "Extrude", "Revolve", "Metaball", "EBM",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

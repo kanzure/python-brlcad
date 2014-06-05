@@ -161,7 +161,7 @@ class WDBTestCase(unittest.TestCase):
 
     def test_half_defaults(self):
         shape = self.lookup_shape("half.s")
-        expected = primitives.HALF("half.s")
+        expected = primitives.Half("half.s")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_ars_defaults(self):

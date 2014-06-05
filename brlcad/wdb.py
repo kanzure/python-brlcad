@@ -221,7 +221,7 @@ class WDB:
         s.n = n
         libwdb.wdb_export(self.db_fp, name, libwdb.byref(s), libwdb.ID_SUPERELL, 1)
 
-    @mk_wrap_primitive(primitives.HALF)
+    @mk_wrap_primitive(primitives.Half)
     def half(self, name, norm=(1, 0, 0), d=1.0):
         libwdb.mk_half(self.db_fp, name, cta.point(norm), d)
 
