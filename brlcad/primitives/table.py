@@ -26,6 +26,7 @@ from superell import Superell
 from metaball import Metaball
 from ebm import EBM
 from grip import Grip
+from bot import BOT
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -33,7 +34,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_ARBN: ("ARBN", ARBN, librt.RT_ARBN_INTERNAL_MAGIC, librt.struct_rt_arbn_internal),
     librt.ID_ARB8: ("ARB", ARB8, librt.RT_ARB_INTERNAL_MAGIC, librt.struct_rt_arb_internal),
     librt.ID_BINUNIF: ("BINUNIF", Primitive, librt.RT_BINUNIF_INTERNAL_MAGIC, librt.struct_rt_binunif_internal),
-    librt.ID_BOT: ("BOT", Primitive, librt.RT_BOT_INTERNAL_MAGIC, librt.struct_rt_bot_internal),
+    librt.ID_BOT: ("BOT", BOT, librt.RT_BOT_INTERNAL_MAGIC, librt.struct_rt_bot_internal),
     librt.ID_BREP: ("BREP", Primitive, librt.RT_BREP_INTERNAL_MAGIC, librt.struct_rt_brep_internal),
     librt.ID_CLINE: ("CLINE", Primitive, librt.RT_CLINE_INTERNAL_MAGIC, librt.struct_rt_cline_internal),
     librt.ID_DSP: ("DSP", Primitive, librt.RT_DSP_INTERNAL_MAGIC, librt.struct_rt_dsp_internal),

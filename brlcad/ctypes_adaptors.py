@@ -218,7 +218,7 @@ def integers(values, flatten=True):
         values = flatten_numbers(values)
     if not values:
         return None
-    return (ctypes.c_int * len(values))(*values)
+    return (ctypes.c_int * len(values))(*[int(val) for val in values])
 
 
 def str_to_vls(value):

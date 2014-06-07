@@ -11,7 +11,6 @@ from brlcad.exceptions import BRLCADException
 import brlcad.primitives.table as p_table
 import brlcad.primitives as primitives
 
-
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
 libwdb.mk_addmember.argtypes = [
@@ -208,6 +207,15 @@ class WDB:
             for j in range(3):
                 mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
+
+    @mk_wrap_primitive(primitives.BOT)
+    def bot(self, name, mode=1, orientation=1, flags=(0x1 | 0x2), vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0 , 0]),
+                 faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(), face_mode=()):
+        #Todo : Add Plates
+        if mode == 3:
+            raise BRLCADException("Plates not implemented")
+        libwdb.mk_bot(self.db_fp, name, mode, orientation, flags, len(vertices), len(faces), cta.doubles(vertices),
+                      cta.integers(faces), cta.doubles(thickness), 0)
 
     @mk_wrap_primitive(primitives.Superell)
     def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
