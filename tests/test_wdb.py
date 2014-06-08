@@ -195,7 +195,7 @@ class WDBTestCase(unittest.TestCase):
 
     def test_bot_defaults(self):
         shape = self.lookup_shape("bot.s")
-        expected = primitives.VOL("bot.s")
+        expected = primitives.BOT("bot.s")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_torus_defaults(self):

@@ -8,20 +8,19 @@ import numpy as np
 
 
 class BOT(Primitive):
-    def __init__(self, name, mode=1, orientation=1, flags=(0x1 | 0x2), vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0],
-                 [1, 0 , 0]), faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(2, 3, 1), face_mode=(True, True,
-                 False), copy=False):
+    def __init__(self, name, mode=1, orientation=1, flags=0, vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]),
+                 faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(), face_mode=(), copy=False):
         Primitive.__init__(self, name=name)
         self.mode=mode
         self.orientation=orientation
         self.flags=flags
-        self.faces = [Vector(face,copy) for face in faces]
+        self.vertices = [Vector(vertex, copy) for vertex in vertices]
         if copy:
-            self.vertices = [vertex[:] for vertex in vertices]
+            self.faces = [face[:] for face in faces]
             self.face_mode = face_mode[:]
             self.thickness = thickness[:]
         else:
-            self.vertices = [vertex for vertex in vertices]
+            self.faces = [face for face in faces]
             self.face_mode = face_mode
             self.thickness = thickness
 
@@ -80,14 +79,14 @@ class BOT(Primitive):
         for i in range(data.num_vertices):
             vp1 = data.vertices[i*3+0]
             vp2 = data.vertices[i*3+1]
-            vp3 = data.vertices[i*3+1]
+            vp3 = data.vertices[i*3+2]
             vertex = [vp1,vp2,vp3]
             vertices.append(vertex)
         faces = []
         for i in range(data.num_faces):
             fv1 = data.faces[i*3+0]
             fv2 = data.faces[i*3+1]
-            fv3 = data.faces[i*3+1]
+            fv3 = data.faces[i*3+2]
             face = [int(fv1), int(fv2), int(fv3)]
             faces.append(face)
         return BOT(

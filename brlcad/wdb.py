@@ -206,10 +206,11 @@ class WDB:
         for i in range(pts_per_curve):
             for j in range(3):
                 mod_curves[ncurves-1][3*i+j] = curves[ncurves-1][j]
+
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.BOT)
-    def bot(self, name, mode=1, orientation=1, flags=(0x1 | 0x2), vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0 , 0]),
+    def bot(self, name, mode=1, orientation=1, flags=0, vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]),
                  faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(), face_mode=()):
         #Todo : Add Plates
         if mode == 3:
