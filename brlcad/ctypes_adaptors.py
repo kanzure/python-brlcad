@@ -5,6 +5,7 @@ from brlcad.exceptions import BRLCADException
 from brlcad.vmath import Plane
 import numpy as np
 import brlcad._bindings.libbn as libbn
+import brlcad._bindings.libbu as libbu
 
 
 
@@ -30,6 +31,30 @@ def brlcad_copy(obj, debug_msg):
     ctypes.memmove(obj_copy, ctypes.addressof(obj), count)
     return type(obj).from_address(obj_copy)
 
+def bit_set(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be set
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    bit_array[(bit >> libbu.BU_BITV_SHIFT)] |= (1 << (bit & libbu.BU_BITV_MASK))
+
+def bit_test(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be tested
+    :return: True if the kth bit is set else False
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    return (bit_array[(bit >> libbu.BU_BITV_SHIFT)] & (1 << (bit & libbu.BU_BITV_MASK))) != 0
+
+def bit_clear(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be cleared
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    bit_array[(bit >> libbu.BU_BITV_SHIFT)] &= (~(1 << (bit & libbu.BU_BITV_MASK)))
 
 def iterate_numbers(container):
     """
