@@ -5,11 +5,13 @@ Python wrapper for the Bot primitive of BRL-CAD.
 from base import Primitive
 from brlcad.vmath import Vector
 import numpy as np
+import brlcad.ctypes_adaptors as cta
 
 
 class BOT(Primitive):
-    def __init__(self, name, mode=1, orientation=1, flags=0, vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]),
-                 faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(), face_mode=(), copy=False):
+    def __init__(self, name, mode=3, orientation=1, flags=0, vertices=[[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]],
+                 faces = [[0, 1, 2], [1, 2, 3], [3, 1, 0]], thickness=[2, 3, 1], face_mode=[True, True,
+                 False], copy=False):
         Primitive.__init__(self, name=name)
         self.mode=mode
         self.orientation=orientation
@@ -89,12 +91,24 @@ class BOT(Primitive):
             fv3 = data.faces[i*3+2]
             face = [int(fv1), int(fv2), int(fv3)]
             faces.append(face)
+        thickness = []
+        face_mode = []
+        if data.mode == 3:
+            for i in range(data.num_faces):
+                thickness.append(data.thickness[i])
+                if cta.bit_test(data.face_mode, i):
+                    face_mode.append(True)
+                else:
+                    face_mode.append(False)
         return BOT(
             name=name,
             mode=data.mode,
             orientation=data.orientation,
             flags=data.bot_flags,
             vertices=vertices,
-            faces=faces
+            faces=faces,
+            thickness=thickness,
+            face_mode=face_mode
         )
+
 

@@ -3,6 +3,7 @@ Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
 import fnmatch
 import brlcad._bindings.libwdb as libwdb
+import brlcad._bindings.libbu as libbu
 from brlcad.vmath import Transform
 import os
 from brlcad.util import check_missing_params
@@ -210,13 +211,18 @@ class WDB:
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
 
     @mk_wrap_primitive(primitives.BOT)
-    def bot(self, name, mode=1, orientation=1, flags=0, vertices=([0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]),
-                 faces = ([0, 1, 2], [1, 2, 3], [3, 1, 0]), thickness=(), face_mode=()):
-        #Todo : Add Plates
+    def bot(self, name, mode=3, orientation=1, flags=0, vertices=[[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]],
+                 faces = [[0, 1, 2], [1, 2, 3], [3, 1, 0]], thickness=[2, 3, 1], face_mode=[True, True, False]):
         if mode == 3:
-            raise BRLCADException("Plates not implemented")
+            face_mode_struct = libbu.bu_bitv_new(len(faces))
+            for i in range(len(faces)):
+                if face_mode[i]:
+                    cta.bit_set(face_mode_struct, i)
+        else:
+            face_mode_struct = 0
+
         libwdb.mk_bot(self.db_fp, name, mode, orientation, flags, len(vertices), len(faces), cta.doubles(vertices),
-                      cta.integers(faces), cta.doubles(thickness), 0)
+                      cta.integers(faces), cta.doubles(thickness), face_mode_struct)
 
     @mk_wrap_primitive(primitives.Superell)
     def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
