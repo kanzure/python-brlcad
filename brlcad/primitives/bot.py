@@ -114,12 +114,12 @@ class BOT(Primitive):
             return "Clockwise"
 
     def add_face(self, face):
-        if self.mode == 0 or self.mode==1:
+        if self.mode == 1 or self.mode == 2:
             if isinstance(face,Face):
                  self.faces.append(face)
             else:
                 raise BRLCADException("Invalid face type")
-        if self.mode == 3 or self.mode == 4:
+        elif self.mode == 3 or self.mode == 4:
             if isinstance(face,PlateFace):
                  self.faces.append(face)
             else:
