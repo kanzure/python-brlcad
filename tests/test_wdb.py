@@ -34,7 +34,6 @@ class WDBTestCase(unittest.TestCase):
             brl_db.rpc("rpc.s")
             brl_db.rhc("rhc.s")
             brl_db.epa("epa.s")
-            brl_db.bot("bot.s")
             brl_db.ehy("ehy.s")
             brl_db.hyperboloid("hyperboloid.s")
             brl_db.eto("eto.s")
@@ -192,11 +191,6 @@ class WDBTestCase(unittest.TestCase):
 
     def test_trc_defaults(self):
         self.check_tgc("trc.s", "0, 0, 0, 0, 0, 1, 0, -1, 0, -1, 0, 0, 0, -0.5, 0, -0.5, 0, 0")
-
-    def test_bot_defaults(self):
-        shape = self.lookup_shape("bot.s")
-        expected = primitives.BOT("bot.s")
-        self.assertTrue(expected.has_same_data(shape))
 
     def test_torus_defaults(self):
         shape = self.lookup_shape("torus.s")
