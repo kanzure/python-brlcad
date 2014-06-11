@@ -12,6 +12,7 @@ from brlcad.exceptions import BRLCADException
 import brlcad.primitives.table as p_table
 import brlcad.primitives as primitives
 
+
 # This is unfortunately needed because the original signature
 # has an array of doubles and ctpyes refuses to take None as value for that
 libwdb.mk_addmember.argtypes = [
@@ -210,20 +211,6 @@ class WDB:
 
         libwdb.mk_ars(self.db_fp, name, ncurves, pts_per_curve, cta.array2d(mod_curves, use_brlcad_malloc=True))
 
-    @mk_wrap_primitive(primitives.BOT)
-    def bot(self, name, mode=3, orientation=1, flags=0, vertices=[[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]],
-                 faces = [[0, 1, 2], [1, 2, 3], [3, 1, 0]], thickness=[2, 3, 1], face_mode=[True, True, False]):
-        if mode == 3:
-            face_mode_struct = libbu.bu_bitv_new(len(faces))
-            for i in range(len(faces)):
-                if face_mode[i]:
-                    cta.bit_set(face_mode_struct, i)
-        else:
-            face_mode_struct = 0
-
-        libwdb.mk_bot(self.db_fp, name, mode, orientation, flags, len(vertices), len(faces), cta.doubles(vertices),
-                      cta.integers(faces), cta.doubles(thickness), face_mode_struct)
-
     @mk_wrap_primitive(primitives.Superell)
     def superell(self, name, center=(0, 0, 0), a=(1, 0, 0), b=(0, 1, 0), c=(0, 0, 1), n=0, e=0):
         s = cta.brlcad_new(libwdb.struct_rt_superell_internal)
@@ -316,6 +303,18 @@ class WDB:
         si.vert_count = len(vertices)
         si.verts = cta.points2D(vertices, point_count=len(vertices))
         libwdb.mk_sketch(self.db_fp, name, libwdb.byref(si))
+
+    @mk_wrap_primitive(primitives.BOT)
+    def bot(self, name, mode=3, orientation=1, flags=0, vertices=[[0, 0, 0], [0, 0, 1], [0, 1, 0], [1, 0, 0]],
+                 faces = [[0, 1, 2], [1, 2, 3], [3, 1, 0]], thickness=[2, 3, 1], face_mode=[True, True, False]):
+        face_mode_struct = 0
+        if mode == 3:
+            face_mode_struct=libbu.bu_bitv_new(len(faces))
+            for i in range(len(faces)):
+                if face_mode[i]:
+                    cta.bit_set(face_mode_struct, i)
+        libwdb.mk_bot(self.db_fp, name, mode, orientation, flags, len(vertices), len(faces), cta.doubles(vertices),
+                      cta.integers(faces), cta.doubles(thickness), face_mode_struct)
 
     @mk_wrap_primitive(primitives.Extrude)
     def extrude(self, name, sketch=None, base=None, height=None, u_vec=None, v_vec=None):
