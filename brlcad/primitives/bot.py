@@ -207,8 +207,14 @@ class BOT(Primitive):
         return bot
 
 
+def BOT_SURFACE(name, orientation=1, flags=0, vertices=None, faces=None, copy=False):
+    return BOT(name=name, mode=1, orientation=orientation, flags=flags, vertices=vertices, faces=faces, copy=copy)
 
+def BOT_SOLID(name, orientation=1, flags=0, vertices=None, faces=None, copy=False):
+    return BOT(name=name, mode=2, orientation=orientation, flags=flags, vertices=vertices, faces=faces, copy=copy)
 
+def BOT_PLATES(name, orientation=1, flags=0, vertices=None, faces=None, copy=False):
+    return BOT(name=name, mode=3, orientation=orientation, flags=flags, vertices=vertices, faces=faces, copy=copy)
 
 
 

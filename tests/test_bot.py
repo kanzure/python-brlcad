@@ -32,7 +32,7 @@ class SketchTestCase(unittest.TestCase):
             os.remove(cls.TEST_FILE_NAME)
 
     def test_example_sketch(self):
-        bot_p = bot.BOT("prism.s", mode=3)
+        bot_p = bot.BOT_PLATES(name="prism.s")
         bot_p.add_face(bot.PlateFace(bot=bot_p, vertices=[[0, 0, 1], [1, 0, 0], [0, 1, 0]], thickness=5, face_mode=True))
         bot_p.add_face(bot.PlateFace(bot=bot_p, vertices=[[0, 0, 0], [1, 0, 0], [0, 1, 0]], thickness=1, face_mode=True))
         bot_p.add_face(bot.PlateFace(bot=bot_p, vertices=[[0, 0, 1], [0, 0, 0], [0, 1, 0]], thickness=1, face_mode=True))
