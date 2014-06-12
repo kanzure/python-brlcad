@@ -31,6 +31,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.tgc("tgc.s")
             brl_db.cone("cone.s")
             brl_db.trc("trc.s")
+            brl_db.submodel("submodel.s", "resources/test_submodel.g", "my_bot")
             brl_db.rpc("rpc.s")
             brl_db.rhc("rhc.s")
             brl_db.epa("epa.s")
@@ -168,6 +169,11 @@ class WDBTestCase(unittest.TestCase):
     def test_half_defaults(self):
         shape = self.lookup_shape("half.s")
         expected = primitives.Half("half.s")
+        self.assertTrue(expected.has_same_data(shape))
+
+    def test_submodel_defaults(self):
+        shape = self.lookup_shape("submodel.s")
+        expected = primitives.Submodel("submodel.s", "resources/test_submodel.g", "my_bot")
         self.assertTrue(expected.has_same_data(shape))
 
     def test_ars_defaults(self):

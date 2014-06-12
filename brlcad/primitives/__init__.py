@@ -23,10 +23,11 @@ from metaball import Metaball
 from ebm import EBM
 from grip import Grip
 from bot import BOT
+from submodel import Submodel
 
 __all__ = [
     "Primitive", "ARB8", "ARBN", "Ellipsoid", "Sphere", "Superell", "RPC", "RHC", "Particle", "VOL", "ARS",
     "Half", "TGC", "Cone", "RCC", "TRC", "Torus", "ETO", "EPA", "EHY", "Hyperboloid", "Pipe", "PipePoint",
-    "Sketch", "Extrude", "Revolve", "Metaball", "EBM", "Grip", "BOT"
+    "Sketch", "Extrude", "Revolve", "Metaball", "EBM", "Grip", "BOT", "Submodel",
     "Combination", "negate", "intersect", "subtract", "union", "xor", "wrap_tree", "leaf"
 ]

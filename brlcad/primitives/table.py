@@ -27,6 +27,7 @@ from metaball import Metaball
 from ebm import EBM
 from grip import Grip
 from bot import BOT
+from submodel import Submodel
 
 
 MAGIC_TO_PRIMITIVE_TYPE = {
@@ -58,7 +59,7 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_RHC: ("RHC", RHC, librt.RT_RHC_INTERNAL_MAGIC, librt.struct_rt_rhc_internal),
     librt.ID_RPC: ("RPC", RPC, librt.RT_RPC_INTERNAL_MAGIC, librt.struct_rt_rpc_internal),
     librt.ID_SKETCH: ("SKETCH", Sketch, librt.RT_SKETCH_INTERNAL_MAGIC, librt.struct_rt_sketch_internal),
-    librt.ID_SUBMODEL: ("SUBMODEL", Primitive, librt.RT_SUBMODEL_INTERNAL_MAGIC, librt.struct_rt_submodel_internal),
+    librt.ID_SUBMODEL: ("SUBMODEL", Submodel, librt.RT_SUBMODEL_INTERNAL_MAGIC, librt.struct_rt_submodel_internal),
     librt.ID_SUPERELL: ("SUPERELL", Superell, librt.RT_SUPERELL_INTERNAL_MAGIC, librt.struct_rt_superell_internal),
     librt.ID_TGC: ("TGC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),
     librt.ID_REC: ("REC", TGC, librt.RT_TGC_INTERNAL_MAGIC, librt.struct_rt_tgc_internal),

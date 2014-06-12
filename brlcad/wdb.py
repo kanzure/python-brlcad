@@ -316,6 +316,10 @@ class WDB:
         libwdb.mk_bot(self.db_fp, name, mode, orientation, flags, len(vertices), len(faces), cta.doubles(vertices),
                       cta.integers(faces), cta.doubles(thickness), face_mode_struct)
 
+    @mk_wrap_primitive(primitives.Submodel)
+    def submodel(self, name, file_name, treetop, method=1):
+        libwdb.mk_submodel(self.db_fp, name, file_name, treetop, method)
+
     @mk_wrap_primitive(primitives.Extrude)
     def extrude(self, name, sketch=None, base=None, height=None, u_vec=None, v_vec=None):
         libwdb.mk_extrusion(
