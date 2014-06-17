@@ -179,8 +179,13 @@ def array2d_fixed_cols(t, num_cols_fixed=5, use_brlcad_malloc=False):
 
 def array2d(t, data_type=ctypes.c_double, use_brlcad_malloc=False):
     arrays = []
+    if data_type==ctypes.c_double:
+        data_func = float
+    elif data_type == ctypes.c_int:
+        data_func = int
+
     for i in range(len(t)):
-        array = ((data_type * len(t[i]))(*(t[i])))
+        array = ((data_type * len(t[i]))(*([data_func(k) for k in t[i]])))
         arrays.append(array)
     if use_brlcad_malloc:
         result = (ctypes.POINTER(data_type) * len(arrays))(

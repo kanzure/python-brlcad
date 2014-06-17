@@ -46,7 +46,7 @@ class WDBTestCase(unittest.TestCase):
             brl_db.metaball("metaball.s")
             brl_db.half("half.s")
             brl_db.ebm("ebm.s", "resources/Ychar.bw")
-            brl_db.ars("ars.s", 6, 4, [[0, 0, 3],
+            brl_db.ars("ars.s", [[0, 0, 3],
                              [1, 1, 3, 1, -1, 3, -1, -1, 3, -1, 1, 3],
                              [1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1],
                              [1, 0, -1, 0, -1, -1, -1, 0, -1, 0, 1, -1],
@@ -178,12 +178,12 @@ class WDBTestCase(unittest.TestCase):
 
     def test_ars_defaults(self):
         shape = self.lookup_shape("ars.s")
-        expected = primitives.ARS("ars.s", 6, 4, [[0, 0, 3],
-                                                  [1, 1, 3, 1, -1, 3, -1, -1, 3, -1, 1, 3],
-                                                  [1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1],
-                                                  [1, 0, -1, 0, -1, -1, -1, 0, -1, 0, 1, -1],
-                                                  [1, 0, -3, 0, -1, -3, -1, 0, -3, 0, 1, -3 ],
-                                                  [0, 0, -3]])
+        expected = primitives.ARS("ars.s",  [[0, 0, 3],
+                                             [1, 1, 3, 1, -1, 3, -1, -1, 3, -1, 1, 3],
+                                             [1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1],
+                                             [1, 0, -1, 0, -1, -1, -1, 0, -1, 0, 1, -1],
+                                             [1, 0, -3, 0, -1, -3, -1, 0, -3, 0, 1, -3 ],
+                                             [0, 0, -3]])
         self.assertTrue(expected.has_same_data(shape))
 
     def test_rcc_defaults(self):

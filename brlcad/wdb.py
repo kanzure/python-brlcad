@@ -194,7 +194,9 @@ class WDB:
         libwdb.mk_ebm(self.db_fp, name, file_name, x_dim, y_dim, tallness, cta.transform(mat))
 
     @mk_wrap_primitive(primitives.ARS)
-    def ars(self, name, ncurves, pts_per_curve, curves):
+    def ars(self, name, curves):
+        ncurves = len(curves)
+        pts_per_curve = len(cta.flatten_numbers(curves[1]))/3
         mod_curves  = [[None for x in range(pts_per_curve*3)] for y in range(ncurves)]
         ## for start
         for i in range(pts_per_curve):
