@@ -35,7 +35,6 @@ class ARS(Primitive):
             else:
                 self.curves = curves
         else:
-            print curves
             raise BRLCADException("Invalid Curve Data in Ars")
 
     def __repr__(self):
