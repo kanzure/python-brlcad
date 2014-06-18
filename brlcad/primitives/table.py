@@ -64,7 +64,8 @@ MAGIC_TO_PRIMITIVE_TYPE = {
     librt.ID_CONSTRAINT: ("CONSTRAINT", Primitive, librt.RT_CONSTRAINT_MAGIC, librt.struct_rt_constraint_internal),
 }
 
-if compare_version("7.24.1") >= 0:
+# if this is version 7.24.1 or later, use RT_HRT_INTERNAL_MAGIC
+if compare_version("7.24.1") <= 0:
     MAGIC_TO_PRIMITIVE_TYPE[librt.ID_HRT] = ("HRT", Primitive, librt.RT_HRT_INTERNAL_MAGIC, librt.struct_rt_hrt_internal)
 
 

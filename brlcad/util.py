@@ -21,9 +21,15 @@ def compare_version(version):
     """
     if not isinstance(version, StrictVersion):
         version = StrictVersion(version)
-    if BRLCAD_VERSION < version:
+
+    # returns 1 if the given version is bigger than the wrapped BRL-CAD version
+    if version > BRLCAD_VERSION:
         return 1
-    elif BRLCAD_VERSION > version:
+
+    # returns -1 if the given version is smaller than the wrapped BRL-CAD version
+    elif version < BRLCAD_VERSION:
         return -1
+
+    # returns 0 if the versions are equal
     else:
         return 0
