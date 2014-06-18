@@ -2,8 +2,11 @@ from collections import Iterable
 import ctypes
 from numbers import Number
 from brlcad.exceptions import BRLCADException
+from brlcad.vmath import Plane
 import numpy as np
 import brlcad._bindings.libbn as libbn
+import brlcad._bindings.libbu as libbu
+
 
 
 def brlcad_new(obj_type, debug_msg=None):
@@ -28,6 +31,30 @@ def brlcad_copy(obj, debug_msg):
     ctypes.memmove(obj_copy, ctypes.addressof(obj), count)
     return type(obj).from_address(obj_copy)
 
+def bit_set(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be set
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    bit_array[(bit >> libbu.BU_BITV_SHIFT)] |= (1 << (bit & libbu.BU_BITV_MASK))
+
+def bit_test(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be tested
+    :return: True if the kth bit is set else False
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    return (bit_array[(bit >> libbu.BU_BITV_SHIFT)] & (1 << (bit & libbu.BU_BITV_MASK))) != 0
+
+def bit_clear(bitv, bit):
+    """
+    :param bitv: libbu.bu_bitv structure
+    :param bit: the kth bit to be cleared
+    """
+    bit_array = ctypes.cast(ctypes.byref(bitv.contents.bits), ctypes.POINTER(ctypes.c_ubyte))
+    bit_array[(bit >> libbu.BU_BITV_SHIFT)] &= (~(1 << (bit & libbu.BU_BITV_MASK)))
 
 def iterate_numbers(container):
     """
@@ -125,8 +152,51 @@ def plane(p):
     return (ctypes.c_double * 4)(*fp)
 
 
+def plane_from_pointer(t):
+    normal = [t[x] for x in range(3)]
+    distance = t[3]
+    return Plane(normal, distance)
+
+
 def transform_from_pointer(t):
     return [t[x] for x in xrange(0, 16)]
+
+
+def array2d_from_pointer(t, num_rows, num_cols):
+    result = [[t[y][x] for x in range(num_cols)] for y in range(num_rows)]
+    return np.array(result)
+
+
+def array2d_fixed_cols(t, num_cols_fixed=5, use_brlcad_malloc=False):
+    result = brlcad_new((ctypes.c_double * num_cols_fixed)*len(t), "metaball array")
+    for i in range(len(t)):
+        if use_brlcad_malloc:
+            result[i] = brlcad_copy(doubles(t[i],double_count=num_cols_fixed), "metaball point")
+        else:
+            result[i] = doubles(t[i],double_count=num_cols_fixed)
+    return ctypes.cast(result, ctypes.POINTER(ctypes.c_double * num_cols_fixed))
+
+
+def array2d(t, data_type=ctypes.c_double, use_brlcad_malloc=False):
+    arrays = []
+    if data_type==ctypes.c_double:
+        data_func = float
+    elif data_type == ctypes.c_int:
+        data_func = int
+
+    for i in range(len(t)):
+        array = ((data_type * len(t[i]))(*([data_func(k) for k in t[i]])))
+        arrays.append(array)
+    if use_brlcad_malloc:
+        result = (ctypes.POINTER(data_type) * len(arrays))(
+        *[ctypes.cast(brlcad_copy(array, "array2d"), ctypes.POINTER(data_type)) for array in arrays]
+    )
+        return ctypes.cast(brlcad_copy(result, "array2d"), ctypes.POINTER(ctypes.POINTER(data_type)))
+    else:
+        result = (ctypes.POINTER(data_type) * len(arrays))(
+        *[ctypes.cast(array, ctypes.POINTER(data_type)) for array in arrays]
+    )
+        return ctypes.cast(result, ctypes.POINTER(ctypes.POINTER(data_type)))
 
 
 def transform(t, use_brlcad_malloc=False):
@@ -178,7 +248,7 @@ def integers(values, flatten=True):
         values = flatten_numbers(values)
     if not values:
         return None
-    return (ctypes.c_int * len(values))(*values)
+    return (ctypes.c_int * len(values))(*[int(val) for val in values])
 
 
 def str_to_vls(value):
