@@ -23,6 +23,269 @@ class DBType(object):
 
 _GED_INSTANCE = None
 
+_GED_COMMANDS = [
+    "E",
+    "adc",
+    "add_metaballpt",
+    "adjust",
+    "ae2dir",
+    "aet",
+    "analyze",
+    "annotate",
+    "append_pipept",
+    "arb",
+    "arced",
+    "arot",
+    "attr",
+    "autoview",
+    "bb",
+    "bev",
+    "blast",
+    "bo",
+    "bot",
+    "bot_condense",
+    "bot_decimate",
+    "bot_dump",
+    "bot_edge_split",
+    "bot_face_fuse",
+    "bot_face_sort",
+    "bot_face_split",
+    "bot_flip",
+    "bot_fuse",
+    "bot_merge",
+    "bot_smooth",
+    "bot_split",
+    "bot_sync",
+    "bot_vertex_fuse",
+    "brep",
+    "cat",
+    "cc",
+    "center",
+    "clone",
+    "coil",
+    "color",
+    "comb",
+    "comb_color",
+    "comb_std",
+    "combmem",
+    "concat",
+    "constraint",
+    "copy",
+    "copyeval",
+    "copymat",
+    "cpi",
+    "dbip",
+    "dbot_dump",
+    "debugbu",
+    "debugdir",
+    "debuglib",
+    "debugmem",
+    "debugnmg",
+    "decompose",
+    "delay",
+    "delete_metaballpt",
+    "delete_pipept",
+    "dir2ae",
+    "draw",
+    "dump",
+    "dup",
+    "eac",
+    "echo",
+    "edarb",
+    "edcodes",
+    "edcolor",
+    "edcomb",
+    "edit",
+    "editit",
+    "edmater",
+    "erase",
+    "ev",
+    "exists",
+    "expand",
+    "eye",
+    "eye_pos",
+    "facetize",
+    "fb2pix",
+    "find",
+    "find_arb_edge_nearest_pt",
+    "find_bot_edge_nearest_pt",
+    "find_botpt_nearest_pt",
+    "find_metaballpt_nearest_pt",
+    "find_pipept_nearest_pt",
+    "form",
+    "fracture",
+    "gdiff",
+    "get",
+    "get_autoview",
+    "get_bot_edges",
+    "get_comb",
+    "get_eyemodel",
+    "get_type",
+    "glob",
+    "gqa",
+    "graph",
+    "grid",
+    "grid2model_lu",
+    "grid2view_lu",
+    "group",
+    "hide",
+    "how",
+    "human",
+    "illum",
+    "importFg4Section",
+    "inside",
+    "instance",
+    "isize",
+    "item",
+    "joint",
+    "keep",
+    "keypoint",
+    "kill",
+    "killall",
+    "killrefs",
+    "killtree",
+    "list",
+    "loadview",
+    "lod",
+    "log",
+    "lookat",
+    "lt",
+    "m2v_point",
+    "make",
+    "make_bb",
+    "make_name",
+    "make_pnts",
+    "match",
+    "mater",
+    "memprint",
+    "mirror",
+    "model2grid_lu",
+    "model2view",
+    "model2view_lu",
+    "move",
+    "move_all",
+    "move_arb_edge",
+    "move_arb_face",
+    "move_botpt",
+    "move_botpts",
+    "move_metaballpt",
+    "move_pipept",
+    "mrot",
+    "nirt",
+    "nmg_collapse",
+    "nmg_fix_normals",
+    "nmg_simplify",
+    "ocenter",
+    "orient",
+    "orotate",
+    "oscale",
+    "otranslate",
+    "overlay",
+    "pathlist",
+    "pathsum",
+    "perspective",
+    "pix2fb",
+    "plot",
+    "pmat",
+    "pmodel2view",
+    "png",
+    "polybinout",
+    "pov",
+    "prcolor",
+    "prefix",
+    "prepend_pipept",
+    "preview",
+    "protate",
+    "ps",
+    "pscale",
+    "pset",
+    "ptranslate",
+    "pull",
+    "push",
+    "put",
+    "put_comb",
+    "putmat",
+    "qray",
+    "quat",
+    "qvrot",
+    "rcodes",
+    "rect",
+    "red",
+    "redraw",
+    "regdef",
+    "region",
+    "remove",
+    "reopen",
+    "report",
+    "rfarb",
+    "rmap",
+    "rmat",
+    "rmater",
+    "rot",
+    "rot_point",
+    "rotate_about",
+    "rotate_arb_face",
+    "rrt",
+    "rselect",
+    "rt",
+    "rtabort",
+    "rtcheck",
+    "rtwizard",
+    "savekey",
+    "saveview",
+    "scale",
+    "screen_grab",
+    "search",
+    "select",
+    "set_output_script",
+    "set_transparency",
+    "set_uplotOutputMode",
+    "setview",
+    "shaded_mode",
+    "shader",
+    "shells",
+    "showmats",
+    "simulate",
+    "size",
+    "slew",
+    "solids_on_ray",
+    "sphgroup",
+    "summary",
+    "sync",
+    "tables",
+    "tire",
+    "title",
+    "tol",
+    "tops",
+    "tra",
+    "track",
+    "tree",
+    "unhide",
+    "units",
+    "v2m_point",
+    "vdraw",
+    "version",
+    "view2grid_lu",
+    "view2model",
+    "view2model_lu",
+    "view2model_vec",
+    "view_func",
+    "viewdir",
+    "vnirt",
+    "voxelize",
+    "vrot",
+    "wcodes",
+    "whatid",
+    "which",
+    "which_shader",
+    "who",
+    "wmater",
+    "xpush",
+    "ypr",
+    "zap",
+    "zoom",
+]
+
 
 def _execute_ged_command(ged_func, *args, **kwargs):
     if not _GED_INSTANCE:
@@ -89,8 +352,8 @@ class GED(object):
     ged_close()
 
     Beware that this version will close first whatever other DB was open !
-
     """
+
     def __init__(self, file_name, dbtype=DBType.DB, existing_only=True):
         self.file_name = file_name
         result = libged.ged_open(dbtype, file_name, cta.bool(existing_only))
@@ -169,1046 +432,6 @@ class GED(object):
         return self.execute_command(libged.ged_in, *args, command_name="in")
 
 #*********** TODO: implement explicit list of params ? *******************#
-    @ged_command
-    def E(self, *args):
-        return self.execute_command(libged.ged_E, *args)
-
-    @ged_command
-    def adc(self, *args):
-        return self.execute_command(libged.ged_adc, *args)
-
-    @ged_command
-    def add_metaballpt(self, *args):
-        return self.execute_command(libged.ged_add_metaballpt, *args)
-
-    @ged_command
-    def adjust(self, *args):
-        return self.execute_command(libged.ged_adjust, *args)
-
-    @ged_command
-    def ae2dir(self, *args):
-        return self.execute_command(libged.ged_ae2dir, *args)
-
-    @ged_command
-    def aet(self, *args):
-        return self.execute_command(libged.ged_aet, *args)
-
-    @ged_command
-    def analyze(self, *args):
-        return self.execute_command(libged.ged_analyze, *args)
-
-    @ged_command
-    def annotate(self, *args):
-        return self.execute_command(libged.ged_annotate, *args)
-
-    @ged_command
-    def append_pipept(self, *args):
-        return self.execute_command(libged.ged_append_pipept, *args)
-
-    @ged_command
-    def arb(self, *args):
-        return self.execute_command(libged.ged_arb, *args)
-
-    @ged_command
-    def arced(self, *args):
-        return self.execute_command(libged.ged_arced, *args)
-
-    @ged_command
-    def arot(self, *args):
-        return self.execute_command(libged.ged_arot, *args)
-
-    @ged_command
-    def attr(self, *args):
-        return self.execute_command(libged.ged_attr, *args)
-
-    @ged_command
-    def autoview(self, *args):
-        return self.execute_command(libged.ged_autoview, *args)
-
-    @ged_command
-    def bb(self, *args):
-        return self.execute_command(libged.ged_bb, *args)
-
-    @ged_command
-    def bev(self, *args):
-        return self.execute_command(libged.ged_bev, *args)
-
-    @ged_command
-    def blast(self, *args):
-        return self.execute_command(libged.ged_blast, *args)
-
-    @ged_command
-    def bo(self, *args):
-        return self.execute_command(libged.ged_bo, *args)
-
-    @ged_command
-    def bot(self, *args):
-        return self.execute_command(libged.ged_bot, *args)
-
-    @ged_command
-    def bot_condense(self, *args):
-        return self.execute_command(libged.ged_bot_condense, *args)
-
-    @ged_command
-    def bot_decimate(self, *args):
-        return self.execute_command(libged.ged_bot_decimate, *args)
-
-    @ged_command
-    def bot_dump(self, *args):
-        return self.execute_command(libged.ged_bot_dump, *args)
-
-    @ged_command
-    def bot_edge_split(self, *args):
-        return self.execute_command(libged.ged_bot_edge_split, *args)
-
-    @ged_command
-    def bot_face_fuse(self, *args):
-        return self.execute_command(libged.ged_bot_face_fuse, *args)
-
-    @ged_command
-    def bot_face_sort(self, *args):
-        return self.execute_command(libged.ged_bot_face_sort, *args)
-
-    @ged_command
-    def bot_face_split(self, *args):
-        return self.execute_command(libged.ged_bot_face_split, *args)
-
-    @ged_command
-    def bot_flip(self, *args):
-        return self.execute_command(libged.ged_bot_flip, *args)
-
-    @ged_command
-    def bot_fuse(self, *args):
-        return self.execute_command(libged.ged_bot_fuse, *args)
-
-    @ged_command
-    def bot_merge(self, *args):
-        return self.execute_command(libged.ged_bot_merge, *args)
-
-    @ged_command
-    def bot_smooth(self, *args):
-        return self.execute_command(libged.ged_bot_smooth, *args)
-
-    @ged_command
-    def bot_split(self, *args):
-        return self.execute_command(libged.ged_bot_split, *args)
-
-    @ged_command
-    def bot_sync(self, *args):
-        return self.execute_command(libged.ged_bot_sync, *args)
-
-    @ged_command
-    def bot_vertex_fuse(self, *args):
-        return self.execute_command(libged.ged_bot_vertex_fuse, *args)
-
-    @ged_command
-    def brep(self, *args):
-        return self.execute_command(libged.ged_brep, *args)
-
-    @ged_command
-    def cat(self, *args):
-        return self.execute_command(libged.ged_cat, *args)
-
-    @ged_command
-    def cc(self, *args):
-        return self.execute_command(libged.ged_cc, *args)
-
-    @ged_command
-    def center(self, *args):
-        return self.execute_command(libged.ged_center, *args)
-
-    @ged_command
-    def clone(self, *args):
-        return self.execute_command(libged.ged_clone, *args)
-
-    @ged_command
-    def coil(self, *args):
-        return self.execute_command(libged.ged_coil, *args)
-
-    @ged_command
-    def color(self, *args):
-        return self.execute_command(libged.ged_color, *args)
-
-    @ged_command
-    def comb(self, *args):
-        return self.execute_command(libged.ged_comb, *args)
-
-    @ged_command
-    def comb_color(self, *args):
-        return self.execute_command(libged.ged_comb_color, *args)
-
-    @ged_command
-    def comb_std(self, *args):
-        return self.execute_command(libged.ged_comb_std, *args)
-
-    @ged_command
-    def combmem(self, *args):
-        return self.execute_command(libged.ged_combmem, *args)
-
-    @ged_command
-    def concat(self, *args):
-        return self.execute_command(libged.ged_concat, *args)
-
-    @ged_command
-    def constraint(self, *args):
-        return self.execute_command(libged.ged_constraint, *args)
-
-    @ged_command
-    def copy(self, *args):
-        return self.execute_command(libged.ged_copy, *args)
-
-    @ged_command
-    def copyeval(self, *args):
-        return self.execute_command(libged.ged_copyeval, *args)
-
-    @ged_command
-    def copymat(self, *args):
-        return self.execute_command(libged.ged_copymat, *args)
-
-    @ged_command
-    def cpi(self, *args):
-        return self.execute_command(libged.ged_cpi, *args)
-
-    @ged_command
-    def dbip(self, *args):
-        return self.execute_command(libged.ged_dbip, *args)
-
-    @ged_command
-    def dbot_dump(self, *args):
-        return self.execute_command(libged.ged_dbot_dump, *args)
-
-    @ged_command
-    def debugbu(self, *args):
-        return self.execute_command(libged.ged_debugbu, *args)
-
-    @ged_command
-    def debugdir(self, *args):
-        return self.execute_command(libged.ged_debugdir, *args)
-
-    @ged_command
-    def debuglib(self, *args):
-        return self.execute_command(libged.ged_debuglib, *args)
-
-    @ged_command
-    def debugmem(self, *args):
-        return self.execute_command(libged.ged_debugmem, *args)
-
-    @ged_command
-    def debugnmg(self, *args):
-        return self.execute_command(libged.ged_debugnmg, *args)
-
-    @ged_command
-    def decompose(self, *args):
-        return self.execute_command(libged.ged_decompose, *args)
-
-    @ged_command
-    def delay(self, *args):
-        return self.execute_command(libged.ged_delay, *args)
-
-    @ged_command
-    def delete_metaballpt(self, *args):
-        return self.execute_command(libged.ged_delete_metaballpt, *args)
-
-    @ged_command
-    def delete_pipept(self, *args):
-        return self.execute_command(libged.ged_delete_pipept, *args)
-
-    @ged_command
-    def dir2ae(self, *args):
-        return self.execute_command(libged.ged_dir2ae, *args)
-
-    @ged_command
-    def draw(self, *args):
-        return self.execute_command(libged.ged_draw, *args)
-
-    @ged_command
-    def dump(self, *args):
-        return self.execute_command(libged.ged_dump, *args)
-
-    @ged_command
-    def dup(self, *args):
-        return self.execute_command(libged.ged_dup, *args)
-
-    @ged_command
-    def eac(self, *args):
-        return self.execute_command(libged.ged_eac, *args)
-
-    @ged_command
-    def echo(self, *args):
-        return self.execute_command(libged.ged_echo, *args)
-
-    @ged_command
-    def edarb(self, *args):
-        return self.execute_command(libged.ged_edarb, *args)
-
-    @ged_command
-    def edcodes(self, *args):
-        return self.execute_command(libged.ged_edcodes, *args)
-
-    @ged_command
-    def edcolor(self, *args):
-        return self.execute_command(libged.ged_edcolor, *args)
-
-    @ged_command
-    def edcomb(self, *args):
-        return self.execute_command(libged.ged_edcomb, *args)
-
-    @ged_command
-    def edit(self, *args):
-        return self.execute_command(libged.ged_edit, *args)
-
-    @ged_command
-    def editit(self, *args):
-        return self.execute_command(libged.ged_editit, *args)
-
-    @ged_command
-    def edmater(self, *args):
-        return self.execute_command(libged.ged_edmater, *args)
-
-    @ged_command
-    def erase(self, *args):
-        return self.execute_command(libged.ged_erase, *args)
-
-    @ged_command
-    def ev(self, *args):
-        return self.execute_command(libged.ged_ev, *args)
-
-    @ged_command
-    def exists(self, *args):
-        return self.execute_command(libged.ged_exists, *args)
-
-    @ged_command
-    def expand(self, *args):
-        return self.execute_command(libged.ged_expand, *args)
-
-    @ged_command
-    def eye(self, *args):
-        return self.execute_command(libged.ged_eye, *args)
-
-    @ged_command
-    def eye_pos(self, *args):
-        return self.execute_command(libged.ged_eye_pos, *args)
-
-    @ged_command
-    def facetize(self, *args):
-        return self.execute_command(libged.ged_facetize, *args)
-
-    @ged_command
-    def fb2pix(self, *args):
-        return self.execute_command(libged.ged_fb2pix, *args)
-
-    @ged_command
-    def find(self, *args):
-        return self.execute_command(libged.ged_find, *args)
-
-    @ged_command
-    def find_arb_edge_nearest_pt(self, *args):
-        return self.execute_command(libged.ged_find_arb_edge_nearest_pt, *args)
-
-    @ged_command
-    def find_bot_edge_nearest_pt(self, *args):
-        return self.execute_command(libged.ged_find_bot_edge_nearest_pt, *args)
-
-    @ged_command
-    def find_botpt_nearest_pt(self, *args):
-        return self.execute_command(libged.ged_find_botpt_nearest_pt, *args)
-
-    @ged_command
-    def find_metaballpt_nearest_pt(self, *args):
-        return self.execute_command(libged.ged_find_metaballpt_nearest_pt, *args)
-
-    @ged_command
-    def find_pipept_nearest_pt(self, *args):
-        return self.execute_command(libged.ged_find_pipept_nearest_pt, *args)
-
-    @ged_command
-    def form(self, *args):
-        return self.execute_command(libged.ged_form, *args)
-
-    @ged_command
-    def fracture(self, *args):
-        return self.execute_command(libged.ged_fracture, *args)
-
-    @ged_command
-    def gdiff(self, *args):
-        return self.execute_command(libged.ged_gdiff, *args)
-
-    @ged_command
-    def get(self, *args):
-        return self.execute_command(libged.ged_get, *args)
-
-    @ged_command
-    def get_autoview(self, *args):
-        return self.execute_command(libged.ged_get_autoview, *args)
-
-    @ged_command
-    def get_bot_edges(self, *args):
-        return self.execute_command(libged.ged_get_bot_edges, *args)
-
-    @ged_command
-    def get_comb(self, *args):
-        return self.execute_command(libged.ged_get_comb, *args)
-
-    @ged_command
-    def get_eyemodel(self, *args):
-        return self.execute_command(libged.ged_get_eyemodel, *args)
-
-    @ged_command
-    def get_type(self, *args):
-        return self.execute_command(libged.ged_get_type, *args)
-
-    @ged_command
-    def glob(self, *args):
-        return self.execute_command(libged.ged_glob, *args)
-
-    @ged_command
-    def gqa(self, *args):
-        return self.execute_command(libged.ged_gqa, *args)
-
-    @ged_command
-    def graph(self, *args):
-        return self.execute_command(libged.ged_graph, *args)
-
-    @ged_command
-    def grid(self, *args):
-        return self.execute_command(libged.ged_grid, *args)
-
-    @ged_command
-    def grid2model_lu(self, *args):
-        return self.execute_command(libged.ged_grid2model_lu, *args)
-
-    @ged_command
-    def grid2view_lu(self, *args):
-        return self.execute_command(libged.ged_grid2view_lu, *args)
-
-    @ged_command
-    def group(self, *args):
-        return self.execute_command(libged.ged_group, *args)
-
-    @ged_command
-    def hide(self, *args):
-        return self.execute_command(libged.ged_hide, *args)
-
-    @ged_command
-    def how(self, *args):
-        return self.execute_command(libged.ged_how, *args)
-
-    @ged_command
-    def human(self, *args):
-        return self.execute_command(libged.ged_human, *args)
-
-    @ged_command
-    def illum(self, *args):
-        return self.execute_command(libged.ged_illum, *args)
-
-    @ged_command
-    def importFg4Section(self, *args):
-        return self.execute_command(libged.ged_importFg4Section, *args)
-
-    @ged_command
-    def inside(self, *args):
-        return self.execute_command(libged.ged_inside, *args)
-
-    @ged_command
-    def instance(self, *args):
-        return self.execute_command(libged.ged_instance, *args)
-
-    @ged_command
-    def isize(self, *args):
-        return self.execute_command(libged.ged_isize, *args)
-
-    @ged_command
-    def item(self, *args):
-        return self.execute_command(libged.ged_item, *args)
-
-    @ged_command
-    def joint(self, *args):
-        return self.execute_command(libged.ged_joint, *args)
-
-    @ged_command
-    def keep(self, *args):
-        return self.execute_command(libged.ged_keep, *args)
-
-    @ged_command
-    def keypoint(self, *args):
-        return self.execute_command(libged.ged_keypoint, *args)
-
-    @ged_command
-    def kill(self, *args):
-        return self.execute_command(libged.ged_kill, *args)
-
-    @ged_command
-    def killall(self, *args):
-        return self.execute_command(libged.ged_killall, *args)
-
-    @ged_command
-    def killrefs(self, *args):
-        return self.execute_command(libged.ged_killrefs, *args)
-
-    @ged_command
-    def killtree(self, *args):
-        return self.execute_command(libged.ged_killtree, *args)
-
-    @ged_command
-    def ged_ged_list(self, *args):
-        return self.execute_command(libged.ged_list, *args)
-
-    @ged_command
-    def loadview(self, *args):
-        return self.execute_command(libged.ged_loadview, *args)
-
-    @ged_command
-    def lod(self, *args):
-        return self.execute_command(libged.ged_lod, *args)
-
-    @ged_command
-    def log(self, *args):
-        return self.execute_command(libged.ged_log, *args)
-
-    @ged_command
-    def lookat(self, *args):
-        return self.execute_command(libged.ged_lookat, *args)
-
-    @ged_command
-    def lt(self, *args):
-        return self.execute_command(libged.ged_lt, *args)
-
-    @ged_command
-    def m2v_point(self, *args):
-        return self.execute_command(libged.ged_m2v_point, *args)
-
-    @ged_command
-    def make(self, *args):
-        return self.execute_command(libged.ged_make, *args)
-
-    @ged_command
-    def make_bb(self, *args):
-        return self.execute_command(libged.ged_make_bb, *args)
-
-    @ged_command
-    def make_name(self, *args):
-        return self.execute_command(libged.ged_make_name, *args)
-
-    @ged_command
-    def make_pnts(self, *args):
-        return self.execute_command(libged.ged_make_pnts, *args)
-
-    @ged_command
-    def ged_ged_match(self, *args):
-        return self.execute_command(libged.ged_match, *args)
-
-    @ged_command
-    def mater(self, *args):
-        return self.execute_command(libged.ged_mater, *args)
-
-    @ged_command
-    def memprint(self, *args):
-        return self.execute_command(libged.ged_memprint, *args)
-
-    @ged_command
-    def mirror(self, *args):
-        return self.execute_command(libged.ged_mirror, *args)
-
-    @ged_command
-    def model2grid_lu(self, *args):
-        return self.execute_command(libged.ged_model2grid_lu, *args)
-
-    @ged_command
-    def model2view(self, *args):
-        return self.execute_command(libged.ged_model2view, *args)
-
-    @ged_command
-    def model2view_lu(self, *args):
-        return self.execute_command(libged.ged_model2view_lu, *args)
-
-    @ged_command
-    def move(self, *args):
-        return self.execute_command(libged.ged_move, *args)
-
-    @ged_command
-    def move_all(self, *args):
-        return self.execute_command(libged.ged_move_all, *args)
-
-    @ged_command
-    def move_arb_edge(self, *args):
-        return self.execute_command(libged.ged_move_arb_edge, *args)
-
-    @ged_command
-    def move_arb_face(self, *args):
-        return self.execute_command(libged.ged_move_arb_face, *args)
-
-    @ged_command
-    def move_botpt(self, *args):
-        return self.execute_command(libged.ged_move_botpt, *args)
-
-    @ged_command
-    def move_botpts(self, *args):
-        return self.execute_command(libged.ged_move_botpts, *args)
-
-    @ged_command
-    def move_metaballpt(self, *args):
-        return self.execute_command(libged.ged_move_metaballpt, *args)
-
-    @ged_command
-    def move_pipept(self, *args):
-        return self.execute_command(libged.ged_move_pipept, *args)
-
-    @ged_command
-    def mrot(self, *args):
-        return self.execute_command(libged.ged_mrot, *args)
-
-    @ged_command
-    def nirt(self, *args):
-        return self.execute_command(libged.ged_nirt, *args)
-
-    @ged_command
-    def nmg_collapse(self, *args):
-        return self.execute_command(libged.ged_nmg_collapse, *args)
-
-    @ged_command
-    def nmg_fix_normals(self, *args):
-        return self.execute_command(libged.ged_nmg_fix_normals, *args)
-
-    @ged_command
-    def nmg_simplify(self, *args):
-        return self.execute_command(libged.ged_nmg_simplify, *args)
-
-    @ged_command
-    def ocenter(self, *args):
-        return self.execute_command(libged.ged_ocenter, *args)
-
-    @ged_command
-    def orient(self, *args):
-        return self.execute_command(libged.ged_orient, *args)
-
-    @ged_command
-    def orotate(self, *args):
-        return self.execute_command(libged.ged_orotate, *args)
-
-    @ged_command
-    def oscale(self, *args):
-        return self.execute_command(libged.ged_oscale, *args)
-
-    @ged_command
-    def otranslate(self, *args):
-        return self.execute_command(libged.ged_otranslate, *args)
-
-    @ged_command
-    def overlay(self, *args):
-        return self.execute_command(libged.ged_overlay, *args)
-
-    @ged_command
-    def pathlist(self, *args):
-        return self.execute_command(libged.ged_pathlist, *args)
-
-    @ged_command
-    def pathsum(self, *args):
-        return self.execute_command(libged.ged_pathsum, *args)
-
-    @ged_command
-    def perspective(self, *args):
-        return self.execute_command(libged.ged_perspective, *args)
-
-    @ged_command
-    def pix2fb(self, *args):
-        return self.execute_command(libged.ged_pix2fb, *args)
-
-    @ged_command
-    def plot(self, *args):
-        return self.execute_command(libged.ged_plot, *args)
-
-    @ged_command
-    def pmat(self, *args):
-        return self.execute_command(libged.ged_pmat, *args)
-
-    @ged_command
-    def pmodel2view(self, *args):
-        return self.execute_command(libged.ged_pmodel2view, *args)
-
-    @ged_command
-    def png(self, *args):
-        return self.execute_command(libged.ged_png, *args)
-
-    @ged_command
-    def polybinout(self, *args):
-        return self.execute_command(libged.ged_polybinout, *args)
-
-    @ged_command
-    def pov(self, *args):
-        return self.execute_command(libged.ged_pov, *args)
-
-    @ged_command
-    def prcolor(self, *args):
-        return self.execute_command(libged.ged_prcolor, *args)
-
-    @ged_command
-    def prefix(self, *args):
-        return self.execute_command(libged.ged_prefix, *args)
-
-    @ged_command
-    def prepend_pipept(self, *args):
-        return self.execute_command(libged.ged_prepend_pipept, *args)
-
-    @ged_command
-    def preview(self, *args):
-        return self.execute_command(libged.ged_preview, *args)
-
-    @ged_command
-    def protate(self, *args):
-        return self.execute_command(libged.ged_protate, *args)
-
-    @ged_command
-    def ps(self, *args):
-        return self.execute_command(libged.ged_ps, *args)
-
-    @ged_command
-    def pscale(self, *args):
-        return self.execute_command(libged.ged_pscale, *args)
-
-    @ged_command
-    def pset(self, *args):
-        return self.execute_command(libged.ged_pset, *args)
-
-    @ged_command
-    def ptranslate(self, *args):
-        return self.execute_command(libged.ged_ptranslate, *args)
-
-    @ged_command
-    def pull(self, *args):
-        return self.execute_command(libged.ged_pull, *args)
-
-    @ged_command
-    def push(self, *args):
-        return self.execute_command(libged.ged_push, *args)
-
-    @ged_command
-    def put(self, *args):
-        return self.execute_command(libged.ged_put, *args)
-
-    @ged_command
-    def put_comb(self, *args):
-        return self.execute_command(libged.ged_put_comb, *args)
-
-    @ged_command
-    def putmat(self, *args):
-        return self.execute_command(libged.ged_putmat, *args)
-
-    @ged_command
-    def qray(self, *args):
-        return self.execute_command(libged.ged_qray, *args)
-
-    @ged_command
-    def quat(self, *args):
-        return self.execute_command(libged.ged_quat, *args)
-
-    @ged_command
-    def qvrot(self, *args):
-        return self.execute_command(libged.ged_qvrot, *args)
-
-    @ged_command
-    def rcodes(self, *args):
-        return self.execute_command(libged.ged_rcodes, *args)
-
-    @ged_command
-    def rect(self, *args):
-        return self.execute_command(libged.ged_rect, *args)
-
-    @ged_command
-    def red(self, *args):
-        return self.execute_command(libged.ged_red, *args)
-
-    @ged_command
-    def redraw(self, *args):
-        return self.execute_command(libged.ged_redraw, *args)
-
-    @ged_command
-    def regdef(self, *args):
-        return self.execute_command(libged.ged_regdef, *args)
-
-    @ged_command
-    def region(self, *args):
-        return self.execute_command(libged.ged_region, *args)
-
-    @ged_command
-    def remove(self, *args):
-        return self.execute_command(libged.ged_remove, *args)
-
-    @ged_command
-    def reopen(self, *args):
-        return self.execute_command(libged.ged_reopen, *args)
-
-    @ged_command
-    def report(self, *args):
-        return self.execute_command(libged.ged_report, *args)
-
-    @ged_command
-    def rfarb(self, *args):
-        return self.execute_command(libged.ged_rfarb, *args)
-
-    @ged_command
-    def rmap(self, *args):
-        return self.execute_command(libged.ged_rmap, *args)
-
-    @ged_command
-    def rmat(self, *args):
-        return self.execute_command(libged.ged_rmat, *args)
-
-    @ged_command
-    def rmater(self, *args):
-        return self.execute_command(libged.ged_rmater, *args)
-
-    @ged_command
-    def rot(self, *args):
-        return self.execute_command(libged.ged_rot, *args)
-
-    @ged_command
-    def rot_point(self, *args):
-        return self.execute_command(libged.ged_rot_point, *args)
-
-    @ged_command
-    def rotate_about(self, *args):
-        return self.execute_command(libged.ged_rotate_about, *args)
-
-    @ged_command
-    def rotate_arb_face(self, *args):
-        return self.execute_command(libged.ged_rotate_arb_face, *args)
-
-    @ged_command
-    def rrt(self, *args):
-        return self.execute_command(libged.ged_rrt, *args)
-
-    @ged_command
-    def rselect(self, *args):
-        return self.execute_command(libged.ged_rselect, *args)
-
-    @ged_command
-    def rt(self, *args):
-        return self.execute_command(libged.ged_rt, *args)
-
-    @ged_command
-    def rtabort(self, *args):
-        return self.execute_command(libged.ged_rtabort, *args)
-
-    @ged_command
-    def rtcheck(self, *args):
-        return self.execute_command(libged.ged_rtcheck, *args)
-
-    @ged_command
-    def rtwizard(self, *args):
-        return self.execute_command(libged.ged_rtwizard, *args)
-
-    @ged_command
-    def savekey(self, *args):
-        return self.execute_command(libged.ged_savekey, *args)
-
-    @ged_command
-    def saveview(self, *args):
-        return self.execute_command(libged.ged_saveview, *args)
-
-    @ged_command
-    def scale(self, *args):
-        return self.execute_command(libged.ged_scale, *args)
-
-    @ged_command
-    def screen_grab(self, *args):
-        return self.execute_command(libged.ged_screen_grab, *args)
-
-    @ged_command
-    def search(self, *args):
-        return self.execute_command(libged.ged_search, *args)
-
-    @ged_command
-    def select(self, *args):
-        return self.execute_command(libged.ged_select, *args)
-
-    @ged_command
-    def set_output_script(self, *args):
-        return self.execute_command(libged.ged_set_output_script, *args)
-
-    @ged_command
-    def set_transparency(self, *args):
-        return self.execute_command(libged.ged_set_transparency, *args)
-
-    @ged_command
-    def set_uplotOutputMode(self, *args):
-        return self.execute_command(libged.ged_set_uplotOutputMode, *args)
-
-    @ged_command
-    def setview(self, *args):
-        return self.execute_command(libged.ged_setview, *args)
-
-    @ged_command
-    def shaded_mode(self, *args):
-        return self.execute_command(libged.ged_shaded_mode, *args)
-
-    @ged_command
-    def shader(self, *args):
-        return self.execute_command(libged.ged_shader, *args)
-
-    @ged_command
-    def shells(self, *args):
-        return self.execute_command(libged.ged_shells, *args)
-
-    @ged_command
-    def showmats(self, *args):
-        return self.execute_command(libged.ged_showmats, *args)
-
-    @ged_command
-    def simulate(self, *args):
-        return self.execute_command(libged.ged_simulate, *args)
-
-    @ged_command
-    def size(self, *args):
-        return self.execute_command(libged.ged_size, *args)
-
-    @ged_command
-    def slew(self, *args):
-        return self.execute_command(libged.ged_slew, *args)
-
-    @ged_command
-    def solids_on_ray(self, *args):
-        return self.execute_command(libged.ged_solids_on_ray, *args)
-
-    @ged_command
-    def sphgroup(self, *args):
-        return self.execute_command(libged.ged_sphgroup, *args)
-
-    @ged_command
-    def summary(self, *args):
-        return self.execute_command(libged.ged_summary, *args)
-
-    @ged_command
-    def sync(self, *args):
-        return self.execute_command(libged.ged_sync, *args)
-
-    @ged_command
-    def tables(self, *args):
-        return self.execute_command(libged.ged_tables, *args)
-
-    @ged_command
-    def tire(self, *args):
-        return self.execute_command(libged.ged_tire, *args)
-
-    @ged_command
-    def title(self, *args):
-        return self.execute_command(libged.ged_title, *args)
-
-    @ged_command
-    def tol(self, *args):
-        return self.execute_command(libged.ged_tol, *args)
-
-    @ged_command
-    def tops(self, *args):
-        return self.execute_command(libged.ged_tops, *args)
-
-    @ged_command
-    def tra(self, *args):
-        return self.execute_command(libged.ged_tra, *args)
-
-    @ged_command
-    def track(self, *args):
-        return self.execute_command(libged.ged_track, *args)
-
-    @ged_command
-    def tree(self, *args):
-        return self.execute_command(libged.ged_tree, *args)
-
-    @ged_command
-    def unhide(self, *args):
-        return self.execute_command(libged.ged_unhide, *args)
-
-    @ged_command
-    def units(self, *args):
-        return self.execute_command(libged.ged_units, *args)
-
-    @ged_command
-    def v2m_point(self, *args):
-        return self.execute_command(libged.ged_v2m_point, *args)
-
-    @ged_command
-    def vdraw(self, *args):
-        return self.execute_command(libged.ged_vdraw, *args)
-
-    @ged_command
-    def version(self, *args):
-        return self.execute_command(libged.ged_version, *args)
-
-    @ged_command
-    def view2grid_lu(self, *args):
-        return self.execute_command(libged.ged_view2grid_lu, *args)
-
-    @ged_command
-    def view2model(self, *args):
-        return self.execute_command(libged.ged_view2model, *args)
-
-    @ged_command
-    def view2model_lu(self, *args):
-        return self.execute_command(libged.ged_view2model_lu, *args)
-
-    @ged_command
-    def view2model_vec(self, *args):
-        return self.execute_command(libged.ged_view2model_vec, *args)
-
-    @ged_command
-    def view_func(self, *args):
-        return self.execute_command(libged.ged_view_func, *args)
-
-    @ged_command
-    def viewdir(self, *args):
-        return self.execute_command(libged.ged_viewdir, *args)
-
-    @ged_command
-    def vnirt(self, *args):
-        return self.execute_command(libged.ged_vnirt, *args)
-
-    @ged_command
-    def voxelize(self, *args):
-        return self.execute_command(libged.ged_voxelize, *args)
-
-    @ged_command
-    def vrot(self, *args):
-        return self.execute_command(libged.ged_vrot, *args)
-
-    @ged_command
-    def wcodes(self, *args):
-        return self.execute_command(libged.ged_wcodes, *args)
-
-    @ged_command
-    def whatid(self, *args):
-        return self.execute_command(libged.ged_whatid, *args)
-
-    @ged_command
-    def which(self, *args):
-        return self.execute_command(libged.ged_which, *args)
-
-    @ged_command
-    def which_shader(self, *args):
-        return self.execute_command(libged.ged_which_shader, *args)
-
-    @ged_command
-    def who(self, *args):
-        return self.execute_command(libged.ged_who, *args)
-
-    @ged_command
-    def wmater(self, *args):
-        return self.execute_command(libged.ged_wmater, *args)
-
-    @ged_command
-    def xpush(self, *args):
-        return self.execute_command(libged.ged_xpush, *args)
-
-    @ged_command
-    def ypr(self, *args):
-        return self.execute_command(libged.ged_ypr, *args)
-
-    @ged_command
-    def zap(self, *args):
-        return self.execute_command(libged.ged_zap, *args)
-
-    @ged_command
-    def zoom(self, *args):
-        return self.execute_command(libged.ged_zoom, *args)
-
 #********************* TODO: wrap params ******************************#
     @ged_command
     def addToDisplay(self, *args):
@@ -1407,3 +630,32 @@ class GED(object):
         # todo: wrap params: struct ged_view *gvp
         # return self.execute_command(libged.ged_view_update, "view_update", *args)
         raise NotImplementedError("Not implemented yet !")
+
+def _construct_ged_commands(ged_commands=_GED_COMMANDS):
+    """
+    Update the GED class to contain additional functions. Eventually it may be
+    nice to include the actual expected parameters, rather than a list of
+    parameters.
+
+    :param ged_commands: names of each libged function
+    :type ged_commands: list of strings
+    """
+    for command_name in ged_commands:
+        try:
+            libgedfunction = libged.__getattribute__("ged_" + command_name)
+        except AttributeError:
+            # AttributeError happens when the generated bindings don't have
+            # this GED function.
+            pass
+        else:
+            # create a new function
+            def some_ged_command(self, *args):
+                return self.execute_command(libgedfunction, *args)
+
+            # apply the wrapper
+            some_ged_command = ged_command(some_ged_command)
+
+            # apply it to the GED object
+            setattr(GED, command_name, some_ged_command)
+
+_construct_ged_commands()
