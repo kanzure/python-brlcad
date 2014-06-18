@@ -12,7 +12,7 @@ import brlcad.primitives.table as p_table
 import brlcad.primitives as primitives
 
 # This is unfortunately needed because the original signature
-# has an array of doubles and ctpyes refuses to take None as value for that
+# has an array of doubles and ctypes refuses to take None as value for that
 libwdb.mk_addmember.argtypes = [
     libwdb.String, libwdb.POINTER(libwdb.struct_bu_list), libwdb.POINTER(libwdb.c_double), libwdb.c_int
 ]
