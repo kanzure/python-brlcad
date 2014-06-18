@@ -1,10 +1,11 @@
 """
 Python wrapper for libwdb adapting python types to the needed ctypes structures.
 """
+import os
 import fnmatch
+
 import brlcad._bindings.libwdb as libwdb
 from brlcad.vmath import Transform
-import os
 from brlcad.util import check_missing_params
 import brlcad.ctypes_adaptors as cta
 from brlcad.exceptions import BRLCADException
