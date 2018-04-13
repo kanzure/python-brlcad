@@ -223,7 +223,7 @@ def load_brlcad_options(config):
 def find_shared_lib_file(base_dirs, lib_name):
     for base_dir in base_dirs:
         base_path = os.path.join(base_dir, lib_name)
-        for ext in [".so", ".dll"]:
+        for ext in [".so", ".dll", ".dylib"]:
             lib_path = base_path + ext
             if os.access(lib_path, os.R_OK):
                 return lib_path
